@@ -1,6 +1,6 @@
 from flask import render_template, session, redirect, url_for, flash, request, \
     current_app
-from ..models import User, Post, Permission
+from ..models import User, Post, Permission, Comment, Category
 from .forms import EditProfileForm, PostForm, CommentForm
 from flask_login import login_required, current_user
 from ..decorators import admin_required
@@ -13,6 +13,7 @@ def index():
     form = PostForm()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
         post = Post(body=form.body.data,
+                    category_id=form.category.data,
                     author=current_user._get_current_object())
         db.session.add(post)
         return redirect(url_for('.index'))

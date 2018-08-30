@@ -3,7 +3,7 @@ from wtforms import StringField, TextAreaField, BooleanField, SelectField,\
     SubmitField
 from wtforms.validators import Required, Length, Email, Regexp
 from wtforms import ValidationError
-from ..models import Role, User
+from ..models import Role, User, Category
 from flask_pagedown.fields import PageDownField
 
 class EditProfileForm(FlaskForm):
@@ -50,4 +50,12 @@ class CommentForm(FlaskForm):
     body = StringField('Enter your comment', validators=[Required()])
     submit = SubmitField('Submit')
     
+class PostForm(FlaskForm):
+    body = PageDownField("写点什么？", validators=[Required()])
+    category = SelectField("选择文章分类", validators=[Required()], coerce=int)
+    submit = SubmitField('Submit')
+    
+    def __init__(self, *args, **kwargs):
+        super(PostForm, self).__init__(*args, **kwargs)
+        self.category.choices = [(c.id, c.name) for c in Category.query.all()]
 

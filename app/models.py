@@ -194,6 +194,7 @@ class Post(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     body_html = db.Column(db.Text)
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
@@ -225,3 +226,12 @@ class Comment(db.Model):
             tags=allowed_tags, strip=True))
 
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)
+
+class Category(db.Model):
+    __tablename__ = 'categories'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    posts = db.relationship('Post', backref='category', lazy='dynamic')
+    
+    def __repr__(self):
+        return '<Category %r>' % self.name
