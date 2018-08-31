@@ -13,9 +13,10 @@ def index():
     form = PostForm()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
         post = Post(body=form.body.data,
-                    category_id=form.category.data,
+                    category=Category.query.get(form.category.data),
                     author=current_user._get_current_object())
         db.session.add(post)
+        db.session.commit()
         return redirect(url_for('.index'))
     page = request.args.get('page', 1, type=int)
     pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page,
@@ -110,3 +111,15 @@ def edit(id):
         return redirect(url_for('.post', id=post.id))
     form.body.data = post.body
     return render_template('edit_post.html', form=form)
+    
+@main.route('/learn')
+def learn():
+    posts = Post.query.filter_by(category_id=1).order_by(Post.timestamp.desc()).all()
+    return render_template('learn.html', posts=posts)
+    
+@main.route('/life')
+def life():
+    posts = Post.query.filter_by(category_id=2).order_by(Post.timestamp.desc()).all()
+    return render_template('life.html', posts=posts)
+    
+    

@@ -57,5 +57,5 @@ class PostForm(FlaskForm):
     
     def __init__(self, *args, **kwargs):
         super(PostForm, self).__init__(*args, **kwargs)
-        self.category.choices = [(c.id, c.name) for c in Category.query.all()]
+        self.category.choices = [(category.id, category.name) for category in Category.query.all()]
 

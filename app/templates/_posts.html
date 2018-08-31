@@ -20,10 +20,12 @@
                 {% if current_user == post.author %}
                 <a href="{{ url_for('.edit', id=post.id) }}">
                     <span class="label label-primary">Edit</span>
+                    <a><span class="label label-default">删除文章</span></a>
                 </a>
                 {% elif current_user.is_administrator() %}
                 <a href="{{ url_for('.edit', id=post.id) }}">
                     <span class="label label-danger">Edit [Admin]</span>
+                    <a><span class="label label-default">删除文章</span></a>
                 </a>
                 {% endif %}
                 <a href={{ url_for('.post', id=post.id) }}>
