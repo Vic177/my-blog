@@ -196,6 +196,11 @@ class Post(db.Model):
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     
+    def post_delete(self, id):
+        p = Post.query.filter_by(id=id).first()
+        if p:
+            db.session.delete(p)
+    
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',

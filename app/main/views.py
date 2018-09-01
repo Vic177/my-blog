@@ -122,4 +122,11 @@ def life():
     posts = Post.query.filter_by(category_id=2).order_by(Post.timestamp.desc()).all()
     return render_template('life.html', posts=posts)
     
+@main.route('/post/<int:id>/delete')
+@login_required
+def post_delete(id):
+    post = Post.query.get_or_404(id)
+    if current_user == post.author or current_user.can(Permission.ADMINISTER):
+        post.post_delete(id)
+    return redirect(url_for('.index'))
     
