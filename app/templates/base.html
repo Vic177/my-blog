@@ -2,11 +2,16 @@
 
 {% block title %}My Blog{% endblock %}
 
-{% block header %}
+{% block head %}
 {{ super() }}
-<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-<link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='mystyles.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Awesome/css/font-awesome.min.css') }}">
+<style type="text/css">
+    * {
+        padding:0;
+        margin:0;
+        }
+</style>
 {% endblock %}
 
 {% block navbar %}
@@ -23,27 +28,28 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="/">首页</a></li>
+                <li><a href="/"><i class="fa fa-home fa-fw" aria-hidden="true"></i>&nbsp;首页</a></li>
                 <li><a href="{{ url_for('main.life') }}">杂谈</a></li>
                 <li><a href="{{ url_for('main.learn') }}">python学习</a></li>
-                <li><a href="#">留言板</a><li>
-                <li><a href="#">关于博主</a><li>
+                <li><a href="#"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i>&nbsp;留言板</a><li>
+                <li><a href="#"><i class="fa fa-book fa-fw" aria-hidden="true"></i>&nbsp;关于我</a><li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_authenticated %}
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    Account<b class="caret"></b>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user fa-fw" aria-hidden="true"></i>
+                    账户<b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('auth.change_password') }}">Change Password</a></li>
-                        <li><a href="{{ url_for('auth.change_email_request') }}">Change Email</a></li>
-                        <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
-                        <li><a href="{{ url_for('main.user', username=current_user.username) }}">Profile</a><li>
+                        <li><a href="{{ url_for('auth.change_password') }}">修改密码</a></li>
+                        <li><a href="{{ url_for('auth.change_email_request') }}">修改邮箱</a></li>
+                        <li><a href="{{ url_for('main.user', username=current_user.username) }}">个人资料</a><li>
+                        <li class="divider"></li>
+                        <li><a href="{{ url_for('auth.logout') }}">退出</a></li>
                     </ul>
                 </li>
                 {% else %}
-                <li><a href="{{ url_for('auth.login') }}">请登陆</a></li>
+                <li><a href="{{ url_for('auth.login') }}"><i class="fa fa-user fa-fw" aria-hidden="true"></i>请登陆</a></li>
                 {% endif %}
         </div>
     </div>

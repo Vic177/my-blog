@@ -1,7 +1,7 @@
 from flask import render_template, session, redirect, url_for, flash, request, \
     current_app
 from ..models import User, Post, Permission, Comment, Category
-from .forms import EditProfileForm, PostForm, CommentForm
+from .forms import EditProfileForm, PostForm, CommentForm, EditProfileAdminForm
 from flask_login import login_required, current_user
 from ..decorators import admin_required
 from .. import db
@@ -14,7 +14,8 @@ def index():
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
         post = Post(body=form.body.data,
                     category=Category.query.get(form.category.data),
-                    author=current_user._get_current_object())
+                    author=current_user._get_current_object(),
+                    title=form.title.data)
         db.session.add(post)
         db.session.commit()
         return redirect(url_for('.index'))
@@ -105,10 +106,12 @@ def edit(id):
         abort(403)
     form = PostForm()
     if form.validate_on_submit():
+        post.title = form.title.data
         post.body = form.body.data
         db.session.add(post)
         flash('The post has been updated.')
         return redirect(url_for('.post', id=post.id))
+    form.title.data = post.title
     form.body.data = post.body
     return render_template('edit_post.html', form=form)
     

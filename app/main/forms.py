@@ -42,15 +42,12 @@ class EditProfileAdminForm(FlaskForm):
                 User.query.filter_by(username=field.data).first():
             raise ValidationError('Username already in use.')
 
-class PostForm(FlaskForm):
-    body = PageDownField("写点什么？", validators=[Required()])
-    submit = SubmitField('Submit')
-    
 class CommentForm(FlaskForm):
     body = StringField('Enter your comment', validators=[Required()])
     submit = SubmitField('Submit')
     
 class PostForm(FlaskForm):
+    title = StringField("标题")
     body = PageDownField("写点什么？", validators=[Required()])
     category = SelectField("选择文章分类", validators=[Required()], coerce=int)
     submit = SubmitField('Submit')

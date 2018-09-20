@@ -195,6 +195,7 @@ class Post(db.Model):
     body_html = db.Column(db.Text)
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
+    title = db.Column(db.String(64))
     
     def post_delete(self, id):
         p = Post.query.filter_by(id=id).first()
