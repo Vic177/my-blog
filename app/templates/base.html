@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block navbar %}
-<div class="navbar navbar-inverse" role="navigation">
+<div class="navbar navbar-inverse" role="navigation" style="">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -29,8 +29,16 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="/"><i class="fa fa-home fa-fw" aria-hidden="true"></i>&nbsp;首页</a></li>
-                <li><a href="{{ url_for('main.life') }}">杂谈</a></li>
-                <li><a href="{{ url_for('main.learn') }}">python学习</a></li>
+                {% for tag in tags %}
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ tag.tag_name }}<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        {% for category in tag.categories %}
+                        <li><a href="{{ url_for('main.category', name=category.name) }}">{{ category.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                {% endfor %}
+                </li>
                 <li><a href="#"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i>&nbsp;留言板</a><li>
                 <li><a href="#"><i class="fa fa-book fa-fw" aria-hidden="true"></i>&nbsp;关于我</a><li>
             </ul>

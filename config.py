@@ -8,7 +8,7 @@ class Config:
     FLASKY_MAIL_SUBJECT_PREFIX = '[Blog]'
     FLASKY_MAIL_SENDER = '1771710969@qq.com'
     FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')
-    FLASKY_POSTS_PER_PAGE = 5
+    FLASKY_POSTS_PER_PAGE = 10
     FLASKY_COMMENTS_PER_PAGE = 30
     
     @staticmethod

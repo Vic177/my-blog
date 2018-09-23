@@ -115,16 +115,6 @@ def edit(id):
     form.body.data = post.body
     return render_template('edit_post.html', form=form)
     
-@main.route('/learn')
-def learn():
-    posts = Post.query.filter_by(category_id=1).order_by(Post.timestamp.desc()).all()
-    return render_template('learn.html', posts=posts)
-    
-@main.route('/life')
-def life():
-    posts = Post.query.filter_by(category_id=2).order_by(Post.timestamp.desc()).all()
-    return render_template('life.html', posts=posts)
-    
 @main.route('/post/<int:id>/delete')
 @login_required
 def post_delete(id):
@@ -132,4 +122,9 @@ def post_delete(id):
     if current_user == post.author or current_user.can(Permission.ADMINISTER):
         post.post_delete(id)
     return redirect(url_for('.index'))
-    
+
+@main.route('/category/<name>')
+def category(name):
+    category = Category.query.filter_by(name=name).first()
+    posts = Post.query.filter_by(category_id=category.id).order_by(Post.timestamp.desc()).all()
+    return render_template('category.html', posts=posts, category=category)

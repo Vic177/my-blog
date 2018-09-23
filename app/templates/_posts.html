@@ -3,7 +3,7 @@
     <li class="post">
         {% if current_user == post.author %}
         <div class="dropdown" style="float: right;">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fa fa-cog fa-spin" aria-hidden="true"></i>&nbsp;操作
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fa fa-cog" aria-hidden="true"></i>&nbsp;操作
             </a>
             <ul class="dropdown-menu">
                 <li><a href="{{ url_for('.edit', id=post.id) }}"><i class="fa fa-pencil fa-fw"></i>编辑文章</a></li>
@@ -12,7 +12,7 @@
         </div>
         {% elif current_user.is_administrator() %}
         <div class="dropdown" style="float: right;">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fa fa-cog fa-spin" aria-hidden="true"></i>&nbsp;操作
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fa fa-cog" aria-hidden="true"></i>&nbsp;操作
             </a>
             <ul class="dropdown-menu">
                 <li><a href="{{ url_for('.edit', id=post.id) }}"><i class="fa fa-pencil fa-fw"></i>编辑文章[管理员]</a></li>
@@ -26,8 +26,15 @@
                 </div>
                 <div class="post-date">
                     <small>
-                        <a href="{{ url_for('.user', username=post.author.username) }}"><i class="fa fa-user-circle"></i>&nbsp;{{ post.author.username }}</a>
-                        发表于&nbsp;<i class="fa fa-calendar fa-fw" aria-hidden="true"></i>&nbsp;{{ moment(post.timestamp).format('YYYY/MM/DD') }}&nbsp;&nbsp;&nbsp;{{ moment(post.timestamp).fromNow() }}&nbsp;&nbsp;<span class="label label-success" style="background-color: #5bc0de"><i class="fa fa-tags"></i>&nbsp;{{post.category.name}}</span>
+                            <a href="{{ url_for('.user', username=post.author.username) }}">
+                                <i class="fa fa-user-circle"></i>&nbsp;{{ post.author.username }}
+                            </a>
+                            发表于&nbsp;<i class="fa fa-calendar fa-fw" aria-hidden="true"></i>&nbsp;{{ moment(post.timestamp).format('YYYY/MM/DD') }}&nbsp;&nbsp;&nbsp;{{ moment(post.timestamp).fromNow() }}&nbsp;&nbsp;
+                            <a href="{{ url_for('main.category', name=post.category.name) }}">
+                                <span class="label label-success" style="background-color: #5bc0de">
+                                    <i class="fa fa-tags"></i>&nbsp;{{ post.category.name }}
+                                </span>
+                            </a>
                     </small>
                 </div>
             </div>

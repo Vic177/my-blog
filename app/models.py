@@ -233,11 +233,40 @@ class Comment(db.Model):
 
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)
 
+class Tag(db.Model):
+    __tablename__ = 'tags'
+    id = db.Column(db.Integer, primary_key=True)
+    tag_name = db.Column(db.String(64), unique=True)
+    categories = db.relationship('Category', backref='tag', lazy='dynamic')
+    
+    def __repr__(self):
+        return '<Tag %r>' % self.tag_name
+
 class Category(db.Model):
     __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
+    name = db.Column(db.String(64), unique=True, index=True, nullable=False)
     posts = db.relationship('Post', backref='category', lazy='dynamic')
-    
+    tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'))
+
     def __repr__(self):
         return '<Category %r>' % self.name
+
+#分类和分类标签
+tag_category = {'生活':['随笔', '足迹', '电影'],
+                '技术分享':['flask', 'python', 'Django', 'Bootstrap', 'CSS'],
+                }
+
+#插入分类和分类的标签
+def insert_tags_categories():
+    for t, category_1 in tag_category.items():
+            tag = Tag.query.filter_by(tag_name=t).first()
+            if tag is None:
+                tag = Tag(tag_name=t)
+            db.session.add(tag)
+            for c in category_1:
+                category = Category.query.filter_by(name=c).first()
+                if category is None:
+                    category = Category(name=c,tag_id=tag.id)
+                db.session.add(category)
+    db.session.commit()
