@@ -50,6 +50,7 @@ ul.comments li.comment{
 	padding: 20px;
 	border: 10px;
 	list-style-type: none;
+	box-shadow: 1px 1px 1px;
 	background-color: #FFFFFF;
 
 }

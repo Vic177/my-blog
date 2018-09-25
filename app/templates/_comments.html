@@ -8,7 +8,7 @@
             <a href="{{ url_for('.user', username=comment.author.username) }}" style="font-size: 18px;">{{ comment.author.username }}</a>
         </div>
         <div class="comment-content">
-            <div class="comment-date"><small>发表于&nbsp;{{ moment(comment.timestamp).format('YYYY/MM/DD HH:MM') }}&nbsp;&nbsp;{{ moment(comment.timestamp).fromNow() }}</small></div>
+            <div class="comment-date"><small>发表于&nbsp;{{ moment(comment.timestamp).format('YYYY-MM-DD hh:mm:ss') }}</small></div>
             <div class="comment-body" style="margin-top: 10px">
                 {% if comment.body_html %}
                     {{ comment.body_html | safe }}
