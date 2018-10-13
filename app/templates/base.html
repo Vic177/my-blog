@@ -4,7 +4,7 @@
 
 {% block head %}
 {{ super() }}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='mystyles.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/mystyles.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Awesome/css/font-awesome.min.css') }}">
 <style type="text/css">
     * {
@@ -72,5 +72,7 @@
 
 {% block scripts %}
 {{ super() }}
+<script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/myscripts.js') }}"></script>
 {{ moment.include_moment() }}
 {% endblock %}

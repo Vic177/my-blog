@@ -1,7 +1,7 @@
 from flask import render_template, session, redirect, url_for, flash, request, \
     current_app
-from ..models import User, Post, Permission, Comment, Category
-from .forms import EditProfileForm, PostForm, CommentForm, EditProfileAdminForm
+from ..models import User, Post, Permission, Comment, Category, Reply
+from .forms import EditProfileForm, PostForm, CommentForm, EditProfileAdminForm, ReplyForm
 from flask_login import login_required, current_user
 from ..decorators import admin_required
 from .. import db
@@ -79,11 +79,13 @@ def edit_profile_admin(id):
 def post(id):
     post = Post.query.get_or_404(id)
     form = CommentForm()
+    replyform = ReplyForm()
     if form.validate_on_submit():
         comment = Comment(body=form.body.data,
                           post=post,
                           author=current_user._get_current_object())
         db.session.add(comment)
+        db.session.commit()
         flash('Your comment has been published.')
         return redirect(url_for('.post', id=post.id, page=-1))
     page = request.args.get('page', 1, type=int)
@@ -94,8 +96,9 @@ def post(id):
         page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
         error_out=False)
     comments = pagination.items
-    return render_template('post.html', posts=[post], form=form,
-                           comments=comments, pagination=pagination)
+    replies = Reply.query.filter_by(post=post).order_by(Reply.timestamp.asc()).all()
+    return render_template('post.html', posts=[post], form=form, replyform=replyform,
+                           comments=comments, pagination=pagination, replies=replies)
     
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -126,5 +129,35 @@ def post_delete(id):
 @main.route('/category/<name>')
 def category(name):
     category = Category.query.filter_by(name=name).first()
-    posts = Post.query.filter_by(category_id=category.id).order_by(Post.timestamp.desc()).all()
+    posts = Post.query.filter_by(category=category).order_by(Post.timestamp.desc()).all()
     return render_template('category.html', posts=posts, category=category)
+
+
+@main.route('/replyto_comment/<int:id>', methods=['POST'])
+@login_required
+def replyto_comment(id):
+    comment = Comment.query.get_or_404(id)
+    if request.method == 'POST':
+        reply = Reply(body=request.form.get('body'),
+                      comment=comment,
+                      author=current_user._get_current_object(),
+                      replyto_id=comment.id,
+                      replyto_user=comment.author,
+                      post=comment.post)
+        db.session.add(reply)
+        db.session.commit()
+        return redirect(url_for('.post', id=comment.post.id))
+
+@main.route('/replyto_reply/<int:id>', methods=['GET', 'POST'])
+@login_required
+def replyto_reply(id):
+    reply = Reply.query.get_or_404(id)
+    if request.method == 'POST':
+        replyto = Reply(body=request.form.get('body'),
+                        comment=reply.comment,
+                        author=current_user._get_current_object(),
+                        post=reply.post,
+                        replyto_user=reply.replyto_user,
+                        reply_type='reply')
+        db.session.add(replyto)
+        return redirect(url_for('.post', id=reply.post.id))

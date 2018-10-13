@@ -6,7 +6,7 @@
 
 {% block page_content %}
 {% include '_posts.html' %}
-<h4 id="comments" style=" margin: 20px 10px;">评论：</h4>
+<h4 id="comments" style="margin: 10px 60px;">评论：</h4>
 {% if current_user.can(Permission.COMMENT) %}
 <div class="comment-form" style=" margin: 10px; padding: 0; border: 10px">
     {{ wtf.quick_form(form) }}

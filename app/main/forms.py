@@ -3,7 +3,7 @@ from wtforms import StringField, TextAreaField, BooleanField, SelectField,\
     SubmitField
 from wtforms.validators import Required, Length, Email, Regexp
 from wtforms import ValidationError
-from ..models import Role, User, Category
+from ..models import Role, User, Category, Comment, Reply
 from flask_pagedown.fields import PageDownField
 
 class EditProfileForm(FlaskForm):
@@ -55,4 +55,8 @@ class PostForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(PostForm, self).__init__(*args, **kwargs)
         self.category.choices = [(category.id, category.name) for category in Category.query.all()]
+
+class ReplyForm(FlaskForm):
+    body = TextAreaField("", validators=[Required()])
+    submit = SubmitField('提交')
 

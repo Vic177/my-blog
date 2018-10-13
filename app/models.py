@@ -60,6 +60,8 @@ class User(UserMixin,db.Model):
     avatar_hash = db.Column(db.String(32))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
+    replies = db.relationship('Reply', backref='author', primaryjoin='Reply.author_id==User.id')
+    relpies_to = db.relationship('Reply', backref='replyto_user', primaryjoin='Reply.replyto_uid==User.id')
 
     def __init__(self,**kwargs):
         super(User, self).__init__(**kwargs)
@@ -196,6 +198,7 @@ class Post(db.Model):
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     title = db.Column(db.String(64))
+    relpies = db.relationship('Reply', backref='post', lazy='dynamic')
     
     def post_delete(self, id):
         p = Post.query.filter_by(id=id).first()
@@ -221,7 +224,8 @@ class Comment(db.Model):
     timestamp = db.Column(db.DateTime, index=True,  default=datetime.utcnow)
     disabled = db.Column(db.Boolean) 
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    post_id = db.Column(db.Integer, db.ForeignKey('posts.id')) 
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+    replies = db.relationship('Reply', backref='comment', lazy='dynamic') 
     
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
@@ -232,6 +236,21 @@ class Comment(db.Model):
             tags=allowed_tags, strip=True))
 
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)
+
+
+class Reply(db.Model):
+    __tablename__ = 'relpies'
+    id = db.Column(db.Integer, primary_key=True)
+    comment_id = db.Column(db.Integer, db.ForeignKey('comments.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+    body = db.Column(db.Text)
+    body_html = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    reply_type = db.Column(db.String(64), default='comment')   #回复的类型，默认是评论comment
+    replyto_id = db.Column(db.Integer)    #回复对象的id， 默认是comment_id
+    replyto_uid = db.Column(db.Integer, db.ForeignKey('users.id'))
+
 
 class Tag(db.Model):
     __tablename__ = 'tags'

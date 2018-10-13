@@ -21,8 +21,6 @@ div.post-thumbnail .post-title {
 	
 }
 
-
-
 div.post-date {
 }
 
@@ -45,12 +43,27 @@ div.post-footer a button {
 	margin-bottom: 0;
 }
 
-ul.comments li.comment{
+ul.comments {
 	margin: 10px;
-	padding: 20px;
-	border: 10px;
-	list-style-type: none;
-	box-shadow: 1px 1px 1px;
-	background-color: #FFFFFF;
+}
 
+ul.comments li.comment {
+	margin: 0px auto;
+	padding: 5px;
+	border: 5px;
+	list-style-type: none;
+	background-color: #ABAEB0;
+}
+
+ul.replies {
+	margin: 2px;
+	margin-left: 10px;
+	padding: 5px;
+}
+
+ul.replies li.reply {
+	padding: 2px;
+	padding-left: 15px;
+	border-bottom:1px dashed #97ADB8;
+	background-color: #F08181;
 }

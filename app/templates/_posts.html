@@ -47,7 +47,7 @@
                 {% endif %}
             </div>
             <div class="post-footer">
-                 <a href="{{ url_for('.post', id=post.id) }}#comments">
+                 <a href="{{ url_for('main.post', id=post.id) }}#comments">
                     <button class="btn btn-info">
                         <i class="fa fa-comments" aria-hidden="true"></i>&nbsp;{{ post.comments.count() }}&nbsp;评论
                     </button>
