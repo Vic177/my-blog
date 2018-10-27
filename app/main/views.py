@@ -1,7 +1,9 @@
 from flask import render_template, session, redirect, url_for, flash, request, \
     current_app
-from ..models import User, Post, Permission, Comment, Category, Reply
-from .forms import EditProfileForm, PostForm, CommentForm, EditProfileAdminForm, ReplyForm
+from ..models import User, Role, Post, Permission, Comment, Category, Reply, \
+                     Message
+from .forms import EditProfileForm, PostForm, CommentForm, EditProfileAdminForm, ReplyForm, \
+                   MessageForm
 from flask_login import login_required, current_user
 from ..decorators import admin_required
 from .. import db
@@ -12,18 +14,19 @@ from . import main
 def index():
     form = PostForm()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
-        post = Post(body=form.body.data,
+        post = Post(title=form.title.data,
+                    body=form.body.data,
                     category=Category.query.get(form.category.data),
-                    author=current_user._get_current_object(),
-                    title=form.title.data)
+                    author=current_user._get_current_object())
         db.session.add(post)
         db.session.commit()
         return redirect(url_for('.index'))
+    admin = User.query.filter(Role.name=="Administrator").first()
     page = request.args.get('page', 1, type=int)
     pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page,
         per_page=current_app.config['FLASKY_POSTS_PER_PAGE'], error_out=False)
     posts = pagination.items
-    return render_template('index.html', form=form, posts=posts, pagination=pagination)
+    return render_template('index.html', posts=posts, admin=admin, pagination=pagination, form=form)
     
 @main.route('/user/<username>')
 def user(username):
@@ -83,7 +86,8 @@ def post(id):
     if form.validate_on_submit():
         comment = Comment(body=form.body.data,
                           post=post,
-                          author=current_user._get_current_object())
+                          author=current_user._get_current_object(),
+                          )
         db.session.add(comment)
         db.session.commit()
         flash('Your comment has been published.')
@@ -96,9 +100,8 @@ def post(id):
         page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
         error_out=False)
     comments = pagination.items
-    replies = Reply.query.filter_by(post=post).order_by(Reply.timestamp.asc()).all()
     return render_template('post.html', posts=[post], form=form, replyform=replyform,
-                           comments=comments, pagination=pagination, replies=replies)
+                           comments=comments, pagination=pagination)
     
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -143,10 +146,13 @@ def replyto_comment(id):
                       author=current_user._get_current_object(),
                       replyto_id=comment.id,
                       replyto_user=comment.author,
-                      post=comment.post)
+                      )
         db.session.add(reply)
         db.session.commit()
-        return redirect(url_for('.post', id=comment.post.id))
+        if comment.post:
+            return redirect(url_for('.post', id=comment.post.id))
+        else:
+            return redirect(url_for('.message'))
 
 @main.route('/replyto_reply/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -156,8 +162,50 @@ def replyto_reply(id):
         replyto = Reply(body=request.form.get('body'),
                         comment=reply.comment,
                         author=current_user._get_current_object(),
-                        post=reply.post,
+                        replyto_id=reply.id,
                         replyto_user=reply.replyto_user,
                         reply_type='reply')
         db.session.add(replyto)
-        return redirect(url_for('.post', id=reply.post.id))
+        if reply.comment.post:  
+            return redirect(url_for('.post', id=reply.comment.post_id))
+        else:
+            return redirect(url_for('.message'))
+
+@main.route('/write_post/', methods=['GET', 'POST'])
+def write_post():
+    form = PostForm()
+    if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
+        post = Post(title=form.title.data,
+                    body=form.body.data,
+                    category=Category.query.get(form.category.data),
+                    author=current_user._get_current_object())
+        db.session.add(post)
+        db.session.commit()
+        return redirect(url_for('main.index'))
+    return render_template('write_post.html', form=form)
+
+
+@main.route('/message_page', methods=['GET', 'POST'])
+def message():
+    messages = Message.query.order_by(Message.timestamp.desc()).all()
+    form = MessageForm()
+    if form.validate_on_submit():
+        message = Message(body=form.body.data,
+                          author=current_user._get_current_object()
+                          )
+        db.session.add(message)
+        db.session.commit()
+        return redirect(url_for('.message'))
+    return render_template('message_page.html', form=form, messages=messages)
+
+@main.route('/comment-message/<int:id>', methods=['GET', 'POST'])
+@login_required
+def comment_message(id):
+    message = Message.query.get_or_404(id)
+    if request.method == 'POST':
+        comment = Comment(body=request.form.get('body'),
+                          author=current_user._get_current_object(),
+                          message=message)
+        db.session.add(comment)
+        db.session.commit()
+        return redirect(url_for('.message'))

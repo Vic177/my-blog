@@ -4,19 +4,53 @@
 
 {% block title %}我的博客{% endblock %}
 
+{% block head %}
+{{ super() }}
+
+<style type="text/css">
+.user-info{text-align: center;}
+#info span,strong{display: block;}
+#myModal{ position: fixed;}
+.index-top{margin-bottom: 20px; margin-top: 0px; padding:15px; background-color: #9DABCD;}
+.index-top h3{margin: 0px;}
+</style>
+
+{% endblock %}
+
 {% block page_content %}
-	<div class="container">
-	    {% if current_user.can(Permission.WRITE_ARTICLES) %}
-	    {{ wtf.quick_form(form) }}
-	    {% endif %}
+    {% include 'modal.html' %}
+	<div class="index-top">
+		<h3>欢迎来到Vic的小站！</h3>
+	    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">写文章</button>
 	</div>
 	<div class="container">
 		<div class="row">
-			<div class="col-md-2">
-				<p>自定义栏目</p>	
+			<div class="side col-md-3">
+			    <div class="panel panel-info">
+			    	<div class="panel-heading"><small>个人中心</small></div>
+			    	<div class="panel-body">
+			    		<div class="user-info">
+			    			<img class="img-rounded profile-thumbnail" src="{{ admin.gravatar(size=80) }}">
+							<div class="username"><a href="#"><strong>{{ admin.name }}</strong></a></div>
+							<p class="about_me">{{ admin.about_me }}</p>
+							<ul class="list-inline" id="info">
+								<li><a href="#"><span>文章</span><strong>55</strong></a></li>
+								<li><a href="#"><span>留言</span><strong>55</strong></a></li>
+								<li><a href="#"><span>关注</span><strong>55</strong></a></li>
+								<li><a href="#"><span>粉丝</span><strong>55</strong></a></li>
+							</ul>
+							<ul class="list-inline" id="contact">
+								<p style="display: inline;">联系方式：</p>
+								<li><a href="#"><i class="fa fa-envelope" aria-hidden="true"></i></a></li>
+								<li><a href="#"><i class="fa fa-weibo" aria-hidden="true"></i></a></li>
+								<li><a href="#"><i class="fa fa-github" aria-hidden="true"></i></a></li>
+							</ul>
+			    		</div>
+			    	</div>
+			    </div>
 			</div>
-			<div class="col-md-10" >
-				{% include '_posts.html' %}
+			<div class="col-md-8">
+				{% include 'post_summary.html' %}
 	            {% if pagination %}
 	            <div class="pagination">
 	            {{ macros.pagination_widget(pagination, '.index') }}
@@ -29,5 +63,6 @@
 
 {% block scripts %}
 {{ super() }}
-{{ pagedown.include_pagedown() }}
+<script src="{{ url_for('static', filename='tinymce/js/tinymce/tinymce.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/tinymce_setup.js') }}"></script>
 {% endblock %}

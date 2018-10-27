@@ -3,5 +3,11 @@
 {% block title %}Blog-分类-{{ category.name }}{% endblock %}
 
 {% block page_content %}
-{% include '_posts.html' %}
+<div class="container">
+	<div class="row">
+		<div class="col-sm-8 col-sm-offset-2">
+			{% include 'post_summary.html' %}
+		</div>
+	</div>
+</div>
 {% endblock %}

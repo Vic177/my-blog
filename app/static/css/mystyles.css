@@ -6,7 +6,6 @@ ul.posts li.post {
 	margin: 10px;
 	padding: 20px;
 	border: 10px;
-	box-shadow: 1px 1px 1px;
 	list-style-type: none;
 	background-color: #FFFFFF;
 }
@@ -18,6 +17,7 @@ div.post-thumbnail {
 }
 
 div.post-thumbnail .post-title {
+	text-align: center;
 	
 }
 
@@ -43,27 +43,140 @@ div.post-footer a button {
 	margin-bottom: 0;
 }
 
-ul.comments {
-	margin: 10px;
+
+.comment{ 
+	margin: 15px auto; 
+	padding: 0 20px; 
+	font-size: 14px;  
 }
 
-ul.comments li.comment {
-	margin: 0px auto;
-	padding: 5px;
-	border: 5px;
+.comment:after{
+	content: ""; 
+	height: 0; 
+	display: block;
+	clear: both;
+}
+
+.user-avatar{ 
+	padding: 0px; 
+	width: 5%; 
+	margin-top: 2px; 
+	float: left; 
+	position: relative;
+}
+
+.user-avatar img{
+	margin-right: 10px;
+}
+
+.comment p {
+	margin-bottom: 5px;
+}
+
+.comment-reply{
+	float: right; 
+	width:95%; 
+	border-bottom: 1px dotted #8B8F8F;
+}
+
+.comment-content{
+	clear: both;
+}
+
+.comment-footer{
+	line-height: 18px; 
+	height: 18px;
+}
+
+.comment-footer:after{
+	content: ""; 
+	height: 0; 
+	display: block; 
+	clear: both;}
+
+ul{
 	list-style-type: none;
-	background-color: #ABAEB0;
 }
 
-ul.replies {
-	margin: 2px;
-	margin-left: 10px;
-	padding: 5px;
+.comment-footer .comment-date{
+	float: left;
+	padding-right: 10px;
 }
 
-ul.replies li.reply {
-	padding: 2px;
-	padding-left: 15px;
-	border-bottom:1px dashed #97ADB8;
-	background-color: #F08181;
+.comment-footer ul{
+	width: 300px; 
+	float: right;
+}
+
+.comment-footer ul li{
+	padding: 0px 10px;
+	border-right: 1px #928B8B solid; 
+	float: right;
+}
+
+.comment-footer ul li:first-child{
+	border-right: none;
+}
+
+.replies{ 
+	background-color: #DCDCDE;
+}
+
+.reply{
+	margin-top: 5px; 
+	padding: 5px; 
+	padding-right: 0px; 
+	border-bottom: 1px dotted #8B8F8F;
+}
+
+.reply:last-child{
+	border-bottom: none;
+}
+
+.reply-footer{
+	line-height: 18px; 
+	height: 18px;
+}
+
+.reply-footer:after{
+	content: ""; 
+	height: 0; 
+	display: block; 
+	clear: both;
+}
+
+.reply-footer .reply-date{
+	float: left;
+}
+
+.reply-footer ul{
+	width: 300px; 
+	float: right;
+}
+
+.reply-footer ul li{
+	padding: 0px 10px; 
+	border-right: 1px #928B8B solid; 
+	float: right;
+}
+
+.reply-footer ul li:first-child{
+	border-right: none;
+}
+
+.comment-operation button {
+	font-size: 12px; 
+	background-color: #F1F8E5; 
+	border: none; padding: 0px 3px; 
+	color: #51504E;
+}
+
+.reply-operation button {
+	font-size: 12px; 
+	background-color: #DCDCDE;
+	 border: none; padding: 0px 3px;
+	 color: #51504E;}
+
+form {
+	margin-top:10px;
 }

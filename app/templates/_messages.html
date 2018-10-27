@@ -1,0 +1,41 @@
+<style>
+*{margin:0px; padding: 0px;}
+	ul{list-style-type: none; text-align: right;}
+	.message-body{margin-bottom: 5px;}
+	.message-body p{margin:0px; text-align: left;}
+	.message-footer{margin-top: 5px; text-align: left;}
+
+</style>
+<ul class="messages">
+	<li class="message">
+		<div class="row">
+			<div class="col-xs-1 col-md-offset-1">
+				<img class="img-rounded profile-thumbnail" src="#">
+			</div>
+			<div class="col-xs-9">
+				<div class="message-body">
+					<p>
+						<a href="#">留言者&nbsp;：&nbsp;</a>
+						留言内容。。。。。。。。。
+					</p>
+				</div>
+				<div class="message-footer">
+					<div class="row">
+						<div class="col-xs-5">
+							2018-10-20 18:12:38   
+						</div>
+						<div class="col-xs-7">
+							<ul class="list-inline">
+								<li class="to-comment"><button class="btn btn-info btn-xs">回复</button></li>
+                    			<li><button class="btn btn-info btn-xs">赞</button></li>
+                    			<li><button class="btn btn-info btn-xs">隐藏</button></li>
+                    			<li><button class="btn btn-info btn-xs">不看此条</button></li>
+							</ul>
+						</div>
+					</div>		
+				</div>
+				{% include '_comments.html' %}
+			</div>
+		</div>
+	</li>
+</ul>

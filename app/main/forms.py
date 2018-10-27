@@ -47,9 +47,9 @@ class CommentForm(FlaskForm):
     submit = SubmitField('Submit')
     
 class PostForm(FlaskForm):
-    title = StringField("标题", validators=[Required()])
-    body = PageDownField("写点什么？", validators=[Required()])
-    category = SelectField("选择文章分类", validators=[Required()], coerce=int)
+    title = StringField("", validators=[Required()])
+    body = TextAreaField("")
+    category = SelectField("分类", validators=[Required()], coerce=int)
     submit = SubmitField('Submit')
     
     def __init__(self, *args, **kwargs):
@@ -60,3 +60,7 @@ class ReplyForm(FlaskForm):
     body = TextAreaField("", validators=[Required()])
     submit = SubmitField('提交')
 
+
+class MessageForm(FlaskForm):
+    body = TextAreaField("留言", validators=[Required()])
+    submit = SubmitField('提交')

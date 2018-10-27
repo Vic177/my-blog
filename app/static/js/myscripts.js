@@ -1,25 +1,31 @@
 $(document).ready(function(){
-	$(".comment-footer button").click(function(){
-		//当前元素父级元素.comment的同胞元素中子元素中的.comment-footer form隐藏
-		$(this).parents(".comment").siblings().find(".comment-footer form").hide();
-		//当前元素父级元素.comment的同胞元素中子元素中的.reply-date form隐藏
-		$(this).parents(".comment").siblings().find(".reply-date form").hide();
-		//当前元素父级元素.comment的子元素中的.comment-footer form隐藏
-		$(this).parents(".comment").find(".reply-date form").hide();
-		$(this).siblings(".comment-footer form").toggle("fast");
+	$(".to-comment button").click(function(){
+		$(this).parents(".comment").siblings().find("form.commentform").hide();//
+		$(this).parents(".comment").siblings().find("form.replyform").hide();//
+		$(this).parents(".comment-footer").siblings(".replies").find("form.replyform").hide();
+		$(this).parents(".comment-footer").siblings("form").toggle();
 	});
 });
 
 $(document).ready(function(){
-	$(".reply-date button").click(function(){
-		//当前元素父级元素.comment的子元素中的.comment-footer form隐藏
-		$(this).parents(".comment").find(".comment-footer form").hide();
-		//当前元素父级元素.comment的同胞元素中子元素中的.comment-footer form隐藏
-		$(this).parents(".comment").siblings().find(".comment-footer form").hide();
-		//当前元素父级元素.comment的同胞元素中子元素中的.comment-footer form隐藏
-		$(this).parents(".comment").siblings().find(".reply-date form").hide();
-		//当前元素父级元素.reply的子元素中的.reply-date form隐藏
-		$(this).parents(".reply").siblings().find(".reply-date form").hide();
-		$(this).siblings(".reply-date form").toggle("fast");
+	$(".to-reply button").click(function(){
+		$(this).parents(".comment").siblings().find("form.commentform, form.replyform").hide();//
+		$(this).parents(".comment").find("form.commentform").hide();//
+		$(this).parents(".reply").siblings().find("form.replyform").hide();//
+		$(this).parents(".reply-footer").siblings("form").toggle();
 	});
 });
+
+$(document).ready(function(){
+	$(".to-message button").click(function(){
+		$(this).parents(".message").siblings().find("form.comment-message").hide();
+		$(this).parents(".message-footer").siblings("form").toggle();
+	});
+});
+
+$(document).ready(function(){
+	$(".dialogue button").click(function(){
+		$(this).parents(".comment-footer").siblings(".replies").toggle();
+	});
+});
+

@@ -2,62 +2,74 @@
 <ul class="comments">
     {% for comment in comments %}
     <li class="comment">
-        <div class="comment-thumbnail" style="display: inline; text-align: inherit;">
-            <a href="{{ url_for('.user', username=comment.author.username) }}">
-                <img class="img-rounded profile-thumbnail" src="{{ comment.author.gravatar(size=13) }}">
-            </a>&nbsp;
-            <a href="{{ url_for('.user', username=comment.author.username) }}" style="font-size: 18px;">{{ comment.author.username }}</a>&nbsp;：
+        <div class="user-avatar">
+            <img class="img-rounded profile-thumbnail" src="{{ comment.author.gravatar(25) }}">
         </div>
-        <div class="comment-body" style="margin-top: 10px; display: inline;">
-                {% if comment.body_html %}
+        <div class="comment-reply">
+            <div class="comment-content">
+                <p>
+                    <a href="{{ url_for('.user', username=comment.author.username) }}">{{ comment.author.username }}</a>
+                    &nbsp;：&nbsp;
+                    {% if comment.body_html %}
                     {{ comment.body_html | safe }}
-                {% else %}
+                    {% else %}
                     {{ comment.body }}
+                    {% endif %}
+                </p>
+            </div>
+            <div class="comment-footer">
+                <div class="comment-date">{{ moment(comment.timestamp).format('YYYY-MM-DD HH:mm:ss') }}</div>
+                {% if current_user.is_authenticated %}
+                <ul class="comment-operation">
+                    <li class="to-comment"><button class="btn btn-info btn-xs">回复</button></li>
+                    <li><button class="btn btn-info btn-xs">赞</button></li>
+                    <li><button class="btn btn-info btn-xs">隐藏</button></li>
+                </ul>
                 {% endif %}
-        </div>
-        <div class="comment-footer">
-            <div class="comment-date" style="display: inline;"><small>发表于&nbsp;{{ moment(comment.timestamp).format('YYYY-MM-DD HH:mm:ss') }}</small></div>
-            <button type="button" class="btn btn-info btn-xs"><i class="fa fa-comment-o"></i>&nbsp;回复</button>
-            <form role="form" action="{{ url_for('.replyto_comment', id=comment.id) }}" method="post" style="display: none">
+            </div> 
+            <form role="form" class="commentform" method="post" action="{{ url_for('.replyto_comment', id=comment.id ) }}"style="display: none;" ">
                 <div class="form-group">
                     <textarea class="form-control" name="body" rows="2" placeholder=" 回复{{ comment.author.username }}：" required="required"></textarea>
                     <button type="submit" class="btn btn-default">发表</button>
                 </div>
             </form>
-        </div>
-        <div>
             <ul class="replies">
-                {% for reply in replies %}
+                {% for reply in comment.replies %}
                 {% if reply.comment==comment %}
-                <li class="reply" style="list-style-type: none;">
-                    <div class="reply-thumbnail" style="display: inline;">
-                        {% if reply.reply_type=="reply" %}
-                            <a href="{{ url_for('.user', username=reply.author.username)}}">{{ reply.author.username }}</a>
-                            &nbsp;回复&nbsp;
-                            <a href="{{ url_for('.user', username=reply.replyto_user.username) }}">{{ reply.replyto_user.username }}</a>
-                            &nbsp;：
-                        {% endif %}
-                        {% if reply.reply_type=="comment" %}
-                            <a href="{{ url_for('.user', username=reply.author.username)}}">{{ reply.author.username }}</a>&nbsp;：
-                        {% endif %}
-                    </div>
-                    <div class="reply-body" style="display: inline; text-align: left; ">
-                            {% if reply.body_html %}
-                            {{ reply.body_html | safe }}
-                            {% else %}
-                            {{ reply.body }}
+                <li class="reply">
+                    <div class="reply-content">
+                        <p>
+                            {% if reply.reply_type=="comment" %}
+                                <a href="{{ url_for('.user', username=reply.author.username)}}">{{ reply.author.username }}</a>
+                                &nbsp;：&nbsp;
                             {% endif %}
+                            {% if reply.reply_type=="reply" %}
+                                <a href="{{ url_for('.user', username=reply.author.username)}}">{{ reply.author.username }}</a>
+                                &nbsp;回复&nbsp;
+                                <a href="{{ url_for('.user', username=reply.replyto_user.username) }}">{{ reply.replyto_user.username }}</a>
+                                 &nbsp;：&nbsp;
+                            {% endif %}
+                            {% if reply.body_html %}
+                                {{ reply.body_html | safe }}
+                                {% else %}
+                                {{ reply.body }}
+                            {% endif %}
+                        </p>     
+                    </div>
+                    <div class="reply-footer">
+                        <div class="reply-date"><small>{{ moment(reply.timestamp).format('YYYY-MM-DD HH:mm:ss') }}</small></div>
+                        <ul class="reply-operation">
+                            <li class="to-reply"><button class="btn btn-info btn-xs">回复</button></li>
+                            <li><button class="btn btn-info btn-xs">赞</button></li>
+                            <li><button class="btn btn-info btn-xs">不看此条</button></li>
+                        </ul>
+                    </div>
+                    <form role="form" class="replyform" action="{{ url_for('.replyto_reply', id=reply.id ) }}" method="post" style="display: none">
+                        <div class="form-group">
+                            <textarea class="form-control" name="body" rows="2" placeholder=" 回复{{ reply.replyto_user.username }}：" required="required"></textarea>
+                            <button type="submit" class="btn btn-default">发表</button>
                         </div>
-                    <div class="reply-date">
-                        <small>{{ moment(reply.timestamp).format('YYYY-MM-DD HH:mm:ss') }}</small>
-                        <button type="button" class="btn btn-info btn-xs"><i class="fa fa-comment-o"></i></button>
-                        <form role="form" action="{{ url_for('.replyto_reply', id=reply.id) }}" method="post" style="display: none">
-                            <div class="form-group">
-                                <textarea class="form-control" name="body" rows="2" placeholder=" 回复{{ reply.replyto_user.username }}：" required="required"></textarea>
-                                <button type="submit" class="btn btn-default">发表</button>
-                            </div>
-                        </form>
-                    </div>   
+                    </form>   
                 </li>
                 {% endif %}
                 {% endfor %}
@@ -66,3 +78,5 @@
     </li>
     {% endfor %}
 </ul>
+    
+    

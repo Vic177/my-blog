@@ -18,3 +18,4 @@ def inject_category():
 @main.app_context_processor
 def inject_tag():
 	return dict(tags=Tag.query.all())
+

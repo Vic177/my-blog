@@ -62,7 +62,9 @@ class User(UserMixin,db.Model):
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
     replies = db.relationship('Reply', backref='author', primaryjoin='Reply.author_id==User.id')
     relpies_to = db.relationship('Reply', backref='replyto_user', primaryjoin='Reply.replyto_uid==User.id')
-
+    messages = db.relationship('Message', backref='author', primaryjoin='Message.author_id==User.id')
+    messaged = db.relationship('Message', backref='messageto_user', primaryjoin='Message.to_uid==User.id')
+    
     def __init__(self,**kwargs):
         super(User, self).__init__(**kwargs)
         if self.role is None:
@@ -115,6 +117,7 @@ class User(UserMixin,db.Model):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'reset': self.id})
 
+    @staticmethod
     def reset_password(self, token, new_password):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
@@ -200,22 +203,12 @@ class Post(db.Model):
     title = db.Column(db.String(64))
     relpies = db.relationship('Reply', backref='post', lazy='dynamic')
     
+    
     def post_delete(self, id):
         p = Post.query.filter_by(id=id).first()
         if p:
             db.session.delete(p)
-    
-    @staticmethod
-    def on_changed_body(target, value, oldvalue, initiator):
-        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
-                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
-                        'h1', 'h2', 'h3', 'p']
-        target.body_html = bleach.linkify(bleach.clean(
-            markdown(value, output_format='html'),
-            tags=allowed_tags, strip=True))
-            
-db.event.listen(Post.body, 'set', Post.on_changed_body)
-    
+
 class Comment(db.Model):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)
@@ -225,7 +218,8 @@ class Comment(db.Model):
     disabled = db.Column(db.Boolean) 
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
-    replies = db.relationship('Reply', backref='comment', lazy='dynamic') 
+    replies = db.relationship('Reply', backref='comment', lazy='dynamic')
+    messages = db.Column(db.Integer, db.ForeignKey('messages.id')) 
     
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
@@ -250,7 +244,8 @@ class Reply(db.Model):
     reply_type = db.Column(db.String(64), default='comment')   #回复的类型，默认是评论comment
     replyto_id = db.Column(db.Integer)    #回复对象的id， 默认是comment_id
     replyto_uid = db.Column(db.Integer, db.ForeignKey('users.id'))
-
+    message_id = db.Column(db.Integer, db.ForeignKey('messages.id'))
+   
 
 class Tag(db.Model):
     __tablename__ = 'tags'
@@ -271,21 +266,35 @@ class Category(db.Model):
     def __repr__(self):
         return '<Category %r>' % self.name
 
+
+    #插入分类和分类的标签
+    @staticmethod
+    def insert_tags_categories():
+        for t, category_1 in tag_category.items():
+                tag = Tag.query.filter_by(tag_name=t).first()
+                if tag is None:
+                    tag = Tag(tag_name=t)
+                db.session.add(tag)
+                for c in category_1:
+                    category = Category.query.filter_by(name=c).first()
+                    if category is None:
+                        category = Category(name=c,tag_id=tag.id)
+                    db.session.add(category)
+        db.session.commit()
+
 #分类和分类标签
 tag_category = {'生活':['随笔', '足迹', '电影'],
                 '技术分享':['flask', 'python', 'Django', 'Bootstrap', 'CSS'],
                 }
 
-#插入分类和分类的标签
-def insert_tags_categories():
-    for t, category_1 in tag_category.items():
-            tag = Tag.query.filter_by(tag_name=t).first()
-            if tag is None:
-                tag = Tag(tag_name=t)
-            db.session.add(tag)
-            for c in category_1:
-                category = Category.query.filter_by(name=c).first()
-                if category is None:
-                    category = Category(name=c,tag_id=tag.id)
-                db.session.add(category)
-    db.session.commit()
+
+class Message(db.Model):
+    __tablename__ = "messages"
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))   #留言者
+    to_uid = db.Column(db.Integer, db.ForeignKey('users.id'))    #被留言者
+    comments = db.relationship('Comment', backref='message', lazy='dynamic')
+    replies = db.relationship('Reply', backref='message', lazy='dynamic')
+    

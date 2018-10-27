@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}留言{% endblock %}
+{% block head %}
+{{ super() }}
+<style type="text/css">
+.message{margin-top: 20px;}
+.message-body p {margin-bottom: 5px;}
+
+.message-footer{ line-height: 15px;}
+.list-inline{text-align: right;}
+.list-inline button{font-size: 12px; border: none; padding: 0px 3px; color: #51504E; background-color:#F1F8E5; }
+form.comment-message{display: none;}
+</style>
+{% endblock %}
+
+{% block page_content %}
+<div class="container">
+	<div class="row">
+		<div class="col-sm-8 col-sm-offset-2">
+			<h3>欢迎！登陆后可以留言哦！</h3>
+			{% if current_user.can(Permission.COMMENT) %}
+			<form role="form" method="post" action="{{ url_for('main.message') }}">
+				{{ form.hidden_tag() }}
+				{{ wtf.form_field(form.body) }}
+				{{ wtf.form_field(form.submit) }}
+			</form>
+			{% endif %}
+			<ul class="messages">
+				{% for message in messages %}
+				<li class="message">
+					<div class="row">
+						<div class="col-xs-1 col-md-offset-1">
+							<img class="img-rounded profile-thumbnail" src="{{ message.author.gravatar(size=30) }}">
+						</div>
+						<div class="col-xs-9">
+							<div class="message-body">
+								<p>
+									<a href="{{ url_for('.user', username=message.author.username) }}">
+									    {{ message.author.username }}
+									</a>留言：&nbsp;
+									{{ message.body | safe }}
+								</p>
+							</div>
+							<div class="message-footer">
+								<div class="row">
+									<div class="col-xs-5">
+										<div class="message-date"><small>{{ moment(message.timestamp).format('YYYY-MM-DD HH:mm:ss') }}</small></div>
+									</div>
+									<div class="col-xs-7">
+										<ul class="list-inline">
+											<li><button class="btn btn-info btn-xs">隐藏</button></li>
+			                    			<li><button class="btn btn-info btn-xs">不看此条</button></li>
+			                    			<li><button class="btn btn-info btn-xs">赞</button></li>
+			                    			<li class="to-message"><button class="btn btn-info btn-xs">回复</button></li>
+										</ul>
+									</div>
+								</div>		
+							</div>
+							<form role="form" class="comment-message" method="post" action="{{ url_for('.comment_message', id=message.id) }}">
+				                <div class="form-group">
+				                    <textarea class="form-control" name="body" rows="2" placeholder=" 回复{{ message.author.username }}：" required="required"></textarea>
+				                    <button type="submit" class="btn btn-default">发表</button>
+				                </div>
+				            </form>
+							{% set comments=message.comments %}
+							{% include '_comments.html' %}
+						</div>
+					</div>
+				</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+</div>
+{% endblock %}

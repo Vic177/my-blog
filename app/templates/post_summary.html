@@ -1,0 +1,42 @@
+<ul class="posts">
+    {% for post in posts %}
+    <li class="post">
+        <div class="post-content" style="margin-top: 10px;">
+            <div class="post-thumbnail">
+                <div class="post-title">
+                    <h3><a href="{{ url_for('.post', id=post.id) }}" style="color: black">{{ post.title }}</a></h3>
+                </div>
+                <div class="post-date">
+                    <small>
+                            <a href="{{ url_for('.user', username=post.author.username) }}">
+                                <i class="fa fa-user-circle"></i>&nbsp;{{ post.author.username }}
+                            </a>
+                            发表于&nbsp;<i class="fa fa-calendar fa-fw" aria-hidden="true"></i>&nbsp;{{ moment(post.timestamp).format('YYYY/MM/DD') }}&nbsp;&nbsp;&nbsp;{{ moment(post.timestamp).fromNow() }}&nbsp;&nbsp;
+                            <a href="{{ url_for('main.category', name=post.category.name) }}">
+                                <span class="label label-success" style="background-color: #5bc0de">
+                                    <i class="fa fa-tags"></i>&nbsp;{{ post.category.name }}
+                                </span>
+                            </a>
+                    </small>
+                </div>
+            </div>
+            <br>
+            <div class="post-body">
+                    {{ post.body | truncate(200,true) | safe  }}
+            </div>
+            <div class="post-footer">
+                 <a href="{{ url_for('main.post', id=post.id) }}#comments">
+                    <button class="btn btn-info">
+                        <i class="fa fa-comments" aria-hidden="true"></i>&nbsp;{{ post.comments.count() }}&nbsp;评论
+                    </button>
+                </a>
+                <a href="{{ url_for('.post', id=post.id) }}">
+                    <button class="btn btn-info" style="border-color: #767396; background-color: #767396">
+                        更多&nbsp;<i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                    </button>
+                </a>
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
