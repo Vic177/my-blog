@@ -43,11 +43,11 @@ class EditProfileAdminForm(FlaskForm):
             raise ValidationError('Username already in use.')
 
 class CommentForm(FlaskForm):
-    body = StringField('Enter your comment', validators=[Required()])
+    body = StringField('', validators=[Required()])
     submit = SubmitField('Submit')
     
 class PostForm(FlaskForm):
-    title = StringField("", validators=[Required()])
+    title = StringField("标题", validators=[Required()])
     body = TextAreaField("")
     category = SelectField("分类", validators=[Required()], coerce=int)
     submit = SubmitField('Submit')

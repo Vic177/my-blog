@@ -1,14 +1,17 @@
 from flask import render_template, session, redirect, url_for, flash, request, \
-    current_app
+    current_app, send_from_directory, flash, jsonify
 from ..models import User, Role, Post, Permission, Comment, Category, Reply, \
                      Message
 from .forms import EditProfileForm, PostForm, CommentForm, EditProfileAdminForm, ReplyForm, \
                    MessageForm
 from flask_login import login_required, current_user
-from ..decorators import admin_required
+from ..decorators import admin_required, permission_required
+from flask_dropzone import random_filename
+
 from .. import db
 
 from . import main 
+import os
 
 @main.route('/', methods=['GET','POST'])
 def index():
@@ -31,9 +34,10 @@ def index():
 @main.route('/user/<username>')
 def user(username):
     user = User.query.filter_by(username=username).first()
+    posts = Post.query.filter_by(author=user).order_by(Post.timestamp.desc()).all()
     if user is None:
         abort(404)
-    return render_template('user.html', user=user)
+    return render_template('user.html', user=user, posts=posts)
     
 @main.route('/edit-profile', methods=['GET','POST'])
 @login_required
@@ -127,7 +131,28 @@ def post_delete(id):
     post = Post.query.get_or_404(id)
     if current_user == post.author or current_user.can(Permission.ADMINISTER):
         post.post_delete(id)
+        flash('文章删除成功！')
     return redirect(url_for('.index'))
+
+@main.route('/comment/<int:id>/delete')
+@login_required
+def comment_delete(id):
+    comment = Comment.query.get_or_404(id)
+    post_id = comment.post.id
+    if current_user == comment.author or current_user.can(Permission.ADMINISTER):
+        comment.comment_delete()
+        flash('评论删除成功！')
+    return redirect(url_for('.post', id=post_id))
+
+@main.route('/reply/<int:id>/delete')
+@login_required
+def reply_delete(id):
+    reply = Reply.query.get_or_404(id)
+    post_id = reply.post.id
+    if current_user == reply.author or current_user.can(Permission.ADMINISTER):
+        reply.reply_delete()
+        flash('回复删除成功！')
+    return redirect(url_for('.post', id=post_id))
 
 @main.route('/category/<name>')
 def category(name):
@@ -152,7 +177,7 @@ def replyto_comment(id):
         if comment.post:
             return redirect(url_for('.post', id=comment.post.id))
         else:
-            return redirect(url_for('.message'))
+            return redirect(url_for('.message', username=comment.message.author.username))
 
 @main.route('/replyto_reply/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -163,13 +188,13 @@ def replyto_reply(id):
                         comment=reply.comment,
                         author=current_user._get_current_object(),
                         replyto_id=reply.id,
-                        replyto_user=reply.replyto_user,
+                        replyto_user=reply.author,
                         reply_type='reply')
         db.session.add(replyto)
         if reply.comment.post:  
             return redirect(url_for('.post', id=reply.comment.post_id))
         else:
-            return redirect(url_for('.message'))
+            return redirect(url_for('.message', username=reply.message.author.username))
 
 @main.route('/write_post/', methods=['GET', 'POST'])
 def write_post():
@@ -185,17 +210,18 @@ def write_post():
     return render_template('write_post.html', form=form)
 
 
-@main.route('/message_page', methods=['GET', 'POST'])
-def message():
-    messages = Message.query.order_by(Message.timestamp.desc()).all()
+@main.route('/message_page/<username>', methods=['GET', 'POST'])
+def message(username):
+    user = User.query.filter_by(username=username).first()
+    messages = Message.query.filter_by(messageto_user=user).order_by(Message.timestamp.desc()).all()
     form = MessageForm()
     if form.validate_on_submit():
         message = Message(body=form.body.data,
-                          author=current_user._get_current_object()
-                          )
+                          author=current_user._get_current_object(),
+                          messageto_user=user)
         db.session.add(message)
         db.session.commit()
-        return redirect(url_for('.message'))
+        return redirect(url_for('.message', username=username))
     return render_template('message_page.html', form=form, messages=messages)
 
 @main.route('/comment-message/<int:id>', methods=['GET', 'POST'])
@@ -208,4 +234,94 @@ def comment_message(id):
                           message=message)
         db.session.add(comment)
         db.session.commit()
-        return redirect(url_for('.message'))
+        return redirect(url_for('.message', username=message.author.username))
+
+@main.route('/follow/<username>', methods=['GET', 'POST'])
+def follow(username):
+    if not current_user.is_authenticated:
+        return jsonify(message='Login Required'), 403
+    if not current_user.confirmed:
+        return jsonify(message='Confirmed account required.'), 400
+    if not current_user.can(Permission.FOLLOW):
+        return jsonify(message='No permission.'), 403
+
+    user = User.query.filter_by(username=username).first_or_404()
+    if current_user.is_following(user):
+        return jsonify(message='Already followed.'), 400
+    current_user.follow(user)
+    return jsonify(message=('已关注 ' + user.username))
+
+
+@main.route('/unfollow/<username>', methods=['GET', 'POST'])
+def unfollow(username):
+    if not current_user.is_authenticated:
+        return jsonify(message='Login Required'), 403
+    if not current_user.confirmed:
+        return jsonify(message='Confirmed account required.'), 400
+    if not current_user.can(Permission.FOLLOW):
+        return jsonify(message='No permission.'), 403
+
+    user = User.query.filter_by(username=username).first_or_404()
+    if not current_user.is_following(user):
+        return jsonify(message='Not follow yet.'), 400
+    current_user.unfollow(user)
+    return jsonify(message=('已取消关注对  ' + user.username + ' 的关注'))
+
+@main.route('/update-followers-count/<int:user_id>')
+def update_followers_count(user_id):
+    user = User.query.get_or_404(user_id)
+    count = user.followers.count() - 1 #用户关注自己要减去
+    return jsonify(count=count)
+
+
+@main.route('/followers/<username>')
+def followers(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('Invalid user.')
+        return redirect(url_for('.index'))
+    page = request.args.get('page', 1, type=int)
+    pagination = user.followers.paginate(
+        page, per_page=current_app.config['FLASKY_FOLLOWERS_PER_PAGE'],
+        error_out=False)
+    follows = [{'user': item.follower, 'timestamp': item.timestamp}
+               for item in pagination.items]
+    return render_template('followers.html', user=user, title="Followers of",
+                           endpoint='.followers', pagination=pagination,
+                           follows=follows)
+
+
+@main.route('/followed-by/<username>')
+def followed_by(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('Invalid user.')
+        return redirect(url_for('.index'))
+    page = request.args.get('page', 1, type=int)
+    pagination = user.followed.paginate(
+        page, per_page=current_app.config['FLASKY_FOLLOWERS_PER_PAGE'],
+        error_out=False)
+    follows = [{'user': item.followed, 'timestamp': item.timestamp}
+               for item in pagination.items]
+    return render_template('followers.html', user=user, title="Followed by",
+                           endpoint='.followed_by', pagination=pagination,
+                           follows=follows)
+
+
+@main.route('/avatars/<path:filename>')
+def get_avatar(filename):
+    return send_from_directory(current_app.config['AVATARS_SAVE_PATH'], filename)
+
+@main.route('/images/<path:filename>')
+def  get_image(filename):
+    return send_from_directory(current_app.config['IMAGE_SAVE_PATH'], filename)
+
+@main.route('/upload', methods=['GET', 'POST'])
+@login_required
+def upload():
+    if request.method == 'POST':
+        f = request.files.get('file')
+        filename = random_filename(f.filename)
+        f.save(os.path.join(current_app.config['IMAGE_SAVE_PATH'], filename))
+        url = url_for('main.get_image', filename=filename)
+        return jsonify( location = url )

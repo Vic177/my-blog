@@ -1,4 +1,4 @@
-from . import db
+from . import db, avatars
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, AnonymousUserMixin
 from . import login_manager
@@ -9,6 +9,7 @@ import hashlib
 from flask import request
 from markdown import markdown
 import bleach
+from flask_avatars import Identicon
 
 
 class Role(db.Model):
@@ -43,6 +44,15 @@ class Role(db.Model):
     
     def __repr__(self):
         return '<Role %r>' % self.name
+
+
+class Follow(db.Model):
+    __tablename__ = 'follows'
+    follower_id = db.Column(db.Integer,db.ForeignKey('users.id'),
+                            primary_key=True)
+    followed_id = db.Column(db.Integer,db.ForeignKey('users.id'),
+                            primary_key=True)
+    timestamp = db.Column(db.DateTime,default=datetime.utcnow)
         
 class User(UserMixin,db.Model):
     __tablename__ = 'users'
@@ -64,9 +74,29 @@ class User(UserMixin,db.Model):
     relpies_to = db.relationship('Reply', backref='replyto_user', primaryjoin='Reply.replyto_uid==User.id')
     messages = db.relationship('Message', backref='author', primaryjoin='Message.author_id==User.id')
     messaged = db.relationship('Message', backref='messageto_user', primaryjoin='Message.to_uid==User.id')
+    avatar_row = db.Column(db.String(64))
+    avatar_s = db.Column(db.String(64))
+    avatar_m = db.Column(db.String(64))
+    avatar_l = db.Column(db.String(64))
+
+
+    followed = db.relationship('Follow',
+                               foreign_keys=[Follow.follower_id],
+                               backref=db.backref('follower',lazy='joined'),
+                               lazy='dynamic',
+                               cascade='all, delete-orphan')
+    followers = db.relationship('Follow',
+                               foreign_keys=[Follow.followed_id],
+                               backref=db.backref('followed',lazy='joined'),
+                               lazy='dynamic',
+                               cascade='all, delete-orphan')
+    comments = db.relationship('Comment', backref='author', lazy='dynamic')
+
     
     def __init__(self,**kwargs):
         super(User, self).__init__(**kwargs)
+        self.generate_avatar()
+        self.follow(self)
         if self.role is None:
             if self.email == current_app.config['FLASKY_ADMIN']:
                 self.role = Role.query.filter_by(permissions=0xff).first()
@@ -162,11 +192,58 @@ class User(UserMixin,db.Model):
             self.email.encode('utf-8')).hexdigest()
         return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
             url=url, hash=hash, size=size, default=default, rating=rating)
+    
+    def generate_avatar(self):
+        avatar = Identicon()
+        filenames = avatar.generate(text=self.username)
+        self.avatar_s = filenames[0]
+        self.avatar_m = filenames[1]
+        self.avatar_l = filenames[2]
+        db.session.commit()
+        
+
+
             
     def ping(self):
         self.last_seen = datetime.utcnow()
         db.session.add(self)
         
+    @staticmethod
+    def add_self_follows():
+        for user in User.query.all():
+            if not user.is_following(user):
+                user.follow(user)
+                db.session.add(user)
+                db.session.commit()
+
+    def follow(self, user):
+        if not self.is_following(user):
+            f = Follow(follower=self, followed=user)
+            db.session.add(f)
+            db.session.commit()
+
+    def unfollow(self, user):
+        f = self.followed.filter_by(followed_id=user.id).first()
+        if f:
+            db.session.delete(f)
+            db.session.commit()
+
+    def is_following(self, user):
+        if user.id is None:
+            return False
+        return self.followed.filter_by(
+            followed_id=user.id).first() is not None
+
+    def is_followed_by(self, user):
+        if user.id is None:
+            return False
+        return self.followers.filter_by(
+            follower_id=user.id).first() is not None
+            
+    @property
+    def followed_posts(self):
+        return Post.query.join(Follow,Follow.followed_id == Post.author_id)\
+            .filter(Follow.follower_id == self.id)
     
     def __repr__(self):
         return '<User %r>' %self.name
@@ -218,9 +295,13 @@ class Comment(db.Model):
     disabled = db.Column(db.Boolean) 
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
-    replies = db.relationship('Reply', backref='comment', lazy='dynamic')
-    messages = db.Column(db.Integer, db.ForeignKey('messages.id')) 
+    message_id = db.Column(db.Integer, db.ForeignKey('messages.id'))
+    replies = db.relationship('Reply', backref='comment', lazy='dynamic') 
     
+    def comment_delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i',
@@ -245,6 +326,10 @@ class Reply(db.Model):
     replyto_id = db.Column(db.Integer)    #回复对象的id， 默认是comment_id
     replyto_uid = db.Column(db.Integer, db.ForeignKey('users.id'))
     message_id = db.Column(db.Integer, db.ForeignKey('messages.id'))
+
+    def reply_delete(self):
+        db.session.delete(self)
+        db.session.commit()
    
 
 class Tag(db.Model):
@@ -293,8 +378,8 @@ class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))   #留言者
-    to_uid = db.Column(db.Integer, db.ForeignKey('users.id'))    #被留言者
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id')) 
+    to_uid = db.Column(db.Integer, db.ForeignKey('users.id'))
     comments = db.relationship('Comment', backref='message', lazy='dynamic')
     replies = db.relationship('Reply', backref='message', lazy='dynamic')
     

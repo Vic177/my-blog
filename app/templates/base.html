@@ -6,6 +6,7 @@
 {{ super() }}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/mystyles.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Awesome/css/font-awesome.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='toast2/toast.css') }}">
 <style type="text/css">
     * {
         padding:0;
@@ -39,6 +40,7 @@
                     </ul>
                 {% endfor %}
                 </li>
+                <!-- <li><a href="{{ url_for('main.message', username=current_user.username) }}">留言</a><li> -->
                 <li><a href="#"><i class="fa fa-book fa-fw" aria-hidden="true"></i>&nbsp;关于博主</a><li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -65,6 +67,12 @@
 
 {% block content %}
 <div class="container">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
     {% block page_content %}{% endblock %}
 </div>
 {% endblock %}
@@ -73,5 +81,9 @@
 {{ super() }}
 <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/myscripts.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='toast2/toast.js') }}"></script>
+<script type=text/javascript>
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
 {{ moment.include_moment() }}
 {% endblock %}

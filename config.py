@@ -8,8 +8,19 @@ class Config:
     FLASKY_MAIL_SUBJECT_PREFIX = '[Blog]'
     FLASKY_MAIL_SENDER = '1771710969@qq.com'
     FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')
+    FLASKY_UPLOAD_PATH = os.path.join(basedir, 'uploads')
     FLASKY_POSTS_PER_PAGE = 10
     FLASKY_COMMENTS_PER_PAGE = 30
+    FLASKY_FOLLOWERS_PER_PAGE = 50
+    DROPZONE_MAX_FILE_SIZE = 3
+    DROPZONE_MAX_FILES = 30
+    DROPZONE_ALLOWED_FILE_TYPE = 'image'
+    MAX_CONTENT_LENGTH = 5 * 1024 * 1024
+    AVATARS_SAVE_PATH = os.path.join(FLASKY_UPLOAD_PATH, 'avatars')
+    AVATARS_SIZE_TUPLE = (30, 100, 200)
+    IMAGE_SAVE_PATH = os.path.join(FLASKY_UPLOAD_PATH, 'images')
+
+
     
     @staticmethod
     def init_app(app):

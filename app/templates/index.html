@@ -21,7 +21,8 @@
     {% include 'modal.html' %}
 	<div class="index-top">
 		<h3>欢迎来到Vic的小站！</h3>
-	    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">写文章</button>
+		<button type="button" class="btn btn-default"><a href="{{ url_for('.write_post') }}">写文章</a></button>
+	   <!--  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">写文章</button> -->
 	</div>
 	<div class="container">
 		<div class="row">
@@ -30,12 +31,9 @@
 			    	<div class="panel-heading"><small>个人中心</small></div>
 			    	<div class="panel-body">
 			    		<div class="user-info">
-			    			<img class="img-rounded profile-thumbnail" src="{{ admin.gravatar(size=80) }}">
-							<div class="username"><a href="#"><strong>{{ admin.name }}</strong></a></div>
-							<p class="about_me">{{ admin.about_me }}</p>
 							<ul class="list-inline" id="info">
 								<li><a href="#"><span>文章</span><strong>55</strong></a></li>
-								<li><a href="#"><span>留言</span><strong>55</strong></a></li>
+								<li><a href="{{ url_for('.message',username=current_user.username) }}"><span>留言</span><strong>55</strong></a></li>
 								<li><a href="#"><span>关注</span><strong>55</strong></a></li>
 								<li><a href="#"><span>粉丝</span><strong>55</strong></a></li>
 							</ul>
@@ -59,10 +57,4 @@
 			</div>
 		</div>
 	<div>
-{% endblock %}
-
-{% block scripts %}
-{{ super() }}
-<script src="{{ url_for('static', filename='tinymce/js/tinymce/tinymce.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/tinymce_setup.js') }}"></script>
 {% endblock %}

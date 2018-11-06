@@ -1,42 +1,64 @@
 <ul class="posts">
     {% for post in posts %}
     <li class="post">
-        <div class="post-content" style="margin-top: 10px;">
-            <div class="post-thumbnail">
-                <div class="post-title">
-                    <h3><a href="{{ url_for('.post', id=post.id) }}" style="color: black">{{ post.title }}</a></h3>
-                </div>
-                <div class="post-date">
-                    <small>
-                            <a href="{{ url_for('.user', username=post.author.username) }}">
-                                <i class="fa fa-user-circle"></i>&nbsp;{{ post.author.username }}
-                            </a>
-                            发表于&nbsp;<i class="fa fa-calendar fa-fw" aria-hidden="true"></i>&nbsp;{{ moment(post.timestamp).format('YYYY/MM/DD') }}&nbsp;&nbsp;&nbsp;{{ moment(post.timestamp).fromNow() }}&nbsp;&nbsp;
-                            <a href="{{ url_for('main.category', name=post.category.name) }}">
-                                <span class="label label-success" style="background-color: #5bc0de">
-                                    <i class="fa fa-tags"></i>&nbsp;{{ post.category.name }}
-                                </span>
-                            </a>
-                    </small>
-                </div>
+            <div class="post-header">
+                <h4><a href="{{ url_for('.post',id=post.id) }}">{{ post.title }}</a></h4>
             </div>
-            <br>
+            <div class="post-info">
+                <ul class="list-inline">
+                    <li class="post-author">
+                        <a href="{{ url_for('.user', username=post.author.username) }}">
+                            <i class="fa fa-user-circle"></i>
+                            &nbsp;{{ post.author.username }}
+                        </a>
+                    </li>
+                    <li>
+                        <i class="fa fa-calendar fa-fw" aria-hidden="true"></i>
+                        <span>{{ moment(post.timestamp).format('YYYY/MM/DD HH:mm:ss') }}&nbsp;</span>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('main.category', name=post.category.name) }}">
+                            <i class="fa fa-tags"></i>
+                            <span>&nbsp;{{ post.category.name }}</span>
+                        </a>
+                    </li>
+                </ul>   
+            </div>
             <div class="post-body">
-                    {{ post.body | truncate(200,true) | safe  }}
+                {{ post.body | safe | truncate(200,true)   }}
             </div>
             <div class="post-footer">
-                 <a href="{{ url_for('main.post', id=post.id) }}#comments">
-                    <button class="btn btn-info">
-                        <i class="fa fa-comments" aria-hidden="true"></i>&nbsp;{{ post.comments.count() }}&nbsp;评论
-                    </button>
-                </a>
-                <a href="{{ url_for('.post', id=post.id) }}">
-                    <button class="btn btn-info" style="border-color: #767396; background-color: #767396">
-                        更多&nbsp;<i class="fa fa-angle-double-right" aria-hidden="true"></i>
-                    </button>
-                </a>
+                <div class="footer-info">
+                    <a href="{{ url_for('main.post', id=post.id) }}#comments"><button class="btn btn-default btn-xs"><i class="fa fa-comments"></i><span>&nbsp;{{ post.comments.count() }}&nbsp;评论</span></button></a>
+                    <a href="#"><button class="btn btn-default btn-xs">阅读全文</button></a>
+                </div>
+                <div class="next">
+                    
+                </div>   
             </div>
-        </div>
+            {% if current_user.is_authenticated %}
+            <div class="post-op">
+                <div class="op-log">
+                    <i class="fa fa-angle-down fa-lg" aria-hidden="true"></i>
+                </div>
+                <div class="op">
+                    <ul>
+                        
+                        {% if current_user == post.author %}
+                        <li>
+                            <a href="{{ url_for('main.edit', id=post.id) }}"><i class="fa fa-pencil fa-fw"></i>&nbsp;编辑</a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('main.post_delete',id=post.id) }}"><i class="fa fa-trash-o fa-fw"></i>&nbsp;删除</a>
+                        </li>
+                        <li>
+                        {% endif %}
+                        <a href="#"><i class="fa fa-bookmark"></i>&nbsp;收藏</a>
+                        </li>
+                    </ul>      
+                </div>
+            </div>
+            {% endif %}
     </li>
     {% endfor %}
 </ul>

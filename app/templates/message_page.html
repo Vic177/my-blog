@@ -4,15 +4,6 @@
 {% block title %}留言{% endblock %}
 {% block head %}
 {{ super() }}
-<style type="text/css">
-.message{margin-top: 20px;}
-.message-body p {margin-bottom: 5px;}
-
-.message-footer{ line-height: 15px;}
-.list-inline{text-align: right;}
-.list-inline button{font-size: 12px; border: none; padding: 0px 3px; color: #51504E; background-color:#F1F8E5; }
-form.comment-message{display: none;}
-</style>
 {% endblock %}
 
 {% block page_content %}
@@ -21,7 +12,7 @@ form.comment-message{display: none;}
 		<div class="col-sm-8 col-sm-offset-2">
 			<h3>欢迎！登陆后可以留言哦！</h3>
 			{% if current_user.can(Permission.COMMENT) %}
-			<form role="form" method="post" action="{{ url_for('main.message') }}">
+			<form role="form" method="post">
 				{{ form.hidden_tag() }}
 				{{ wtf.form_field(form.body) }}
 				{{ wtf.form_field(form.submit) }}
@@ -39,7 +30,8 @@ form.comment-message{display: none;}
 								<p>
 									<a href="{{ url_for('.user', username=message.author.username) }}">
 									    {{ message.author.username }}
-									</a>留言：&nbsp;
+									</a>留言给：&nbsp;
+									<a href="{{ url_for('.user', username=message.author.username) }}">{{ message.messageto_user.username }}</a>：
 									{{ message.body | safe }}
 								</p>
 							</div>
@@ -58,13 +50,12 @@ form.comment-message{display: none;}
 									</div>
 								</div>		
 							</div>
-							<form role="form" class="comment-message" method="post" action="{{ url_for('.comment_message', id=message.id) }}">
-				                <div class="form-group">
-				                    <textarea class="form-control" name="body" rows="2" placeholder=" 回复{{ message.author.username }}：" required="required"></textarea>
-				                    <button type="submit" class="btn btn-default">发表</button>
-				                </div>
-				            </form>
-							{% set comments=message.comments %}
+							<!-- <form role="form" class="comment-message" method="post" action="{{ url_for('.comment_message', id=message.id)}}"> -->
+<!-- 								{{ form.hidden_tag() }} -->
+<!-- 								{{ wtf.form_field(form.body) }} -->
+<!-- 								{{ wtf.form_field(form.submit) }} -->
+<!-- 							</form> -->
+							{% set comments = message.comments %}
 							{% include '_comments.html' %}
 						</div>
 					</div>

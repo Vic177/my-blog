@@ -3,7 +3,7 @@
     {% for comment in comments %}
     <li class="comment">
         <div class="user-avatar">
-            <img class="img-rounded profile-thumbnail" src="{{ comment.author.gravatar(25) }}">
+            <img class="img-rounded profile-thumbnail" src="{{ url_for('main.get_avatar', filename=comment.author.avatar_s ) }}">
         </div>
         <div class="comment-reply">
             <div class="comment-content">
@@ -23,7 +23,7 @@
                 <ul class="comment-operation">
                     <li class="to-comment"><button class="btn btn-info btn-xs">回复</button></li>
                     <li><button class="btn btn-info btn-xs">赞</button></li>
-                    <li><button class="btn btn-info btn-xs">隐藏</button></li>
+                    <li><a href="{{ url_for('main.comment_delete', id=comment.id) }}"><button class="btn btn-info btn-xs">删除</button></a></li>
                 </ul>
                 {% endif %}
             </div> 
@@ -61,7 +61,8 @@
                         <ul class="reply-operation">
                             <li class="to-reply"><button class="btn btn-info btn-xs">回复</button></li>
                             <li><button class="btn btn-info btn-xs">赞</button></li>
-                            <li><button class="btn btn-info btn-xs">不看此条</button></li>
+                            <li><a href="{{ url_for('main.reply_delete', id=reply.id ) }}"><button class="btn btn-info btn-xs">删除
+                            </button></a></li>
                         </ul>
                     </div>
                     <form role="form" class="replyform" action="{{ url_for('.replyto_reply', id=reply.id ) }}" method="post" style="display: none">
@@ -78,5 +79,4 @@
     </li>
     {% endfor %}
 </ul>
-    
     

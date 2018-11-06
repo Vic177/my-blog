@@ -1,12 +1,13 @@
 from flask import render_template, redirect, request, url_for, flash
-from . import auth 
 from flask_login import login_user, login_required, logout_user
 from ..models import User
 from .forms import LoginForm, RegistrationForm, ChangePasswordForm, \
     PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm
+from .forms import UploadAvatarForm, CropAvatarForm
 from ..email import send_email
 from flask_login import current_user
-from .. import db
+from .. import db, avatars
+from . import auth
     
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -154,10 +155,45 @@ def change_email(token):
         flash('Invalid request.')
     return redirect(url_for('main.index'))
 
+@auth.route('/change-avatar')
+@login_required
+def change_avatar():
+    upload_form = UploadAvatarForm()
+    crop_form = CropAvatarForm()
+    return render_template('setting/change_avatar.html', upload_form=upload_form, crop_form=crop_form)
+
+@auth.route('/upload-avatar', methods=['POST'])
+@login_required
+def upload_avatar():
+    form = UploadAvatarForm()
+    if form.validate_on_submit():
+        f = form.image.data
+        filename = avatars.save_avatar(f)
+        current_user.avatar_row = filename
+        db.session.commit()
+        flash("图片已上传，请剪切！")
+    return redirect(url_for('.change_avatar'))
 
 
-    
-    
+@auth.route('/crop-avatar', methods=['POST'])
+@login_required
+def crop_avatar():
+    form = CropAvatarForm()
+    if form.validate_on_submit():
+        x = form.x.data
+        y = form.y.data
+        w = form.w.data
+        h = form.h.data
+        filenames = avatars.crop_avatar(current_user.avatar_row, x, y, w, h)
+        current_user.avatar_s = filenames[0]
+        current_user.avatar_m = filenames[1]
+        current_user.avatar_l = filenames[2]
+        db.session.commit()
+        flash('剪切成功！')
+    return redirect(url_for('.change_avatar'))
+
+
+
     
     
     

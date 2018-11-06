@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Blog - 操作中心 {% endblock %}
+
+
+{% block page_content %}
+<nav class="navbar navbar-default" role="navigation">
+    <div class="navbar-header">
+		<a class="navbar-brand" href="#">操作中心</a>
+	</div>
+   	<div>
+        <ul class="nav navbar-nav">
+         	<li><a href="#">修改头像</a></li>
+         	<li><a href="#">修改密码</a></li>
+         	<li><a href="#">修改邮箱</a></li>
+      	</ul>
+    </div>
+</nav>
+<div class="container">
+	{% block setting_content %}
+	{% endblock %}}
+</div>
+{% endblock %}

@@ -2,33 +2,164 @@
 
 {% block title %}Blog - {{ user.username }}{% endblock %}
 
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user.css') }}">
+{% endblock %}
+
 {% block page_content %}
-<div class="page-header">
-    <img class="img-rounded profile-thumbnail" src="{{ user.gravatar(size=256) }}">
-    <div class="profile-header">
-        <h1>{{ user.username }}</h1>
-        {% if user.name or user.location %}
-        <p>
-            {% if user.name %}{{ user.name }}<br>{% endif %}
-            {% if user.location %}
-                From <a href="http://maps.google.com/?q={{ user.location }}">{{ user.location }}</a><br>
-            {% endif %}
-        </p>
-        {% endif %}
-        {% if current_user.is_administrator() %}
-        <p><a href="mailto:{{ user.email }}">{{ user.email }}</a></p>
-        {% endif %}
-        {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
-        <p>Member since {{ moment(user.member_since).format('L') }}. Last seen {{ moment(user.last_seen).fromNow() }}.</p>
-        <p>{{ user.posts.count() }} blog posts. {{ user.comments.count() }} comments.</p>
-        <p>
-            {% if user == current_user %}
-            <a class="btn btn-default" href="{{ url_for('.edit_profile') }}">Edit Profile</a>
-            {% endif %}
-            {% if current_user.is_administrator() %}
-            <a class="btn btn-danger" href="{{ url_for('.edit_profile_admin', id=user.id) }}">Edit Profile [Admin]</a>
-            {% endif %}
-        </p>
-    </div>
+<div class="user-navbar">
+    <ul>
+        <li><a href="#">个人主页</a></li>
+        <li><a href="{{ url_for('main.message', username=user.username) }}">留言板</a></li>
+        <li><a href="{{ url_for('auth.change_avatar') }}">修改头像</a></li>
+        <li><a href="#">我的文章</a></li>
+        <li><a href="#">我的相册</a></li>
+        <li><a href="#">我的收藏</a></li>
+        <li><a href="#">操作中心</a></li>
+  
+    </ul>
 </div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="page-header">
+                <img class="img-rounded profile-thumbnail" src="{{ url_for('main.get_avatar', filename=user.avatar_l ) }}">
+                <div class="profile-header">
+                    <h1>{{ user.username }}</h1>
+                    {% if user.name or user.location %}
+                    <p>
+                        {% if user.name %}{{ user.name }}<br>{% endif %}
+                        {% if user.location %}
+                            From <a href="http://maps.google.com/?q={{ user.location }}">{{ user.location }}</a><br>
+                        {% endif %}
+                    </p>
+                    {% endif %}
+                    {% if current_user.is_administrator() %}
+                    <p><a href="mailto:{{ user.email }}">{{ user.email }}</a></p>
+                    {% endif %}
+                    {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
+                    <p>Member since {{ moment(user.member_since).format('L') }}. Last seen {{ moment(user.last_seen).fromNow() }}.</p>
+                    <p>{{ user.posts.count() }} blog posts. {{ user.comments.count() }} comments.</p>
+                    <p>
+                        {% if user == current_user %}
+                        <a class="btn btn-default" href="{{ url_for('.edit_profile') }}">Edit Profile</a>
+                        {% endif %}
+                        {% if current_user.is_administrator() %}
+                        <a class="btn btn-danger" href="{{ url_for('.edit_profile_admin', id=user.id) }}">Edit Profile [Admin]</a>
+                        {% endif %}
+                    </p>
+                    <p>
+                        {% if current_user.is_authenticated and user != current_user %}
+                            {% if current_user.is_following(user) %}
+                                <button data-id="{{ user.id }}"
+                                        data-href="{{ url_for('main.unfollow', username=user.username) }}" 
+                                        class=" btn btn-dark btn-sm unfollow-btn">
+                                    取消关注
+                                </button>
+                                <button data-id="{{ user.id }}" 
+                                        data-href="{{ url_for('main.follow', username=user.username) }}" 
+                                        class="btn btn-info btn-sm follow-btn"
+                                        style="display: none;">
+                                    关注
+                                </button>
+                            {% else %}
+                                <button data-id="{{ user.id }}" 
+                                        data-href="{{ url_for('main.follow', username=user.username) }}" 
+                                        class="btn btn-info btn-sm follow-btn">
+                                    关注
+                                </button>
+                                <button data-id="{{ user.id }}"
+                                        data-href="{{ url_for('main.unfollow', username=user.username) }}" 
+                                        class=" btn btn-dark btn-sm unfollow-btn"
+                                        style="display: none;">
+                                    取消关注
+                                </button>
+                            {% endif %}
+                        {% endif %}
+                        <a href="{{ url_for('.followers', username=user.username) }}">
+                            <span>粉丝：</span>
+                            <strong id="followers-count" 
+                                    data-href="{{ url_for('main.update_followers_count', user_id = user.id) }}" 
+                                    class="badge">
+                                {{ user.followers.count() -1 }}
+                            </strong>
+                        </a>
+                       <a href="{{ url_for('.followed_by', username=user.username) }}">关注： <span class="badge">{{ user.followed.count() -1 }}</span></a>
+                       {% if current_user.is_authenticated and user != current_user and user.is_following(current_user) %}
+                       | <span class="label label-default">Follows you</span>
+                       {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            {% include '_posts.html' %}
+        </div>
+    </div> 
+    
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    function follow(e) {
+        var $el = $(e.target); //当前元素
+        var id = $el.data('id');
+        $.ajax({
+            type: 'POST',
+            url: $el.data('href'),
+            success: function(data) {
+                $el.siblings(".unfollow-btn").show();
+                $el.hide();
+                update_followers_count();
+                toast(data.message);
+            },
+            error: function(error) {
+                toast('Server error, please try again later.')
+            }
+        });
+    }
+
+    function unfollow(e) {
+        var $el = $(e.target);
+        var id = $el.data('id');
+        $.ajax({
+            type: 'POST',
+            url: $el.data('href'),
+            success: function(data) {
+                $el.siblings(".follow-btn").show();
+                $el.hide();
+                update_followers_count();
+                toast(data.message);
+            },
+            error: function(error) {
+                toast('Server error, please try again later.')
+            }
+        });
+    }
+
+    function update_followers_count(id) {
+        var $el = $("#followers-count");
+        $.ajax({
+            type: 'GET',
+            url: $el.data('href'),
+            success: function(data) {
+                $el.text(data.count);
+            },
+            error: function(error) {
+                toast('Server error, please try again later.')
+            }
+        });
+    }
+
+$(document).ready(function(){
+    $(".follow-btn").on('click', follow.bind(this)); //需要绑定this， 否则this为全局变量
+    $(".unfollow-btn").on('click', unfollow.bind(this));
+});
+        
+    //$(document).on('click', '.follow-btn', follow.bind(this));
+    //$(document).on('click', '.unfollow-btn', unfollow.bind(this));
+</script>
 {% endblock %}

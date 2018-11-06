@@ -1,182 +1,360 @@
-body {
-	background-color: #F1F8E5;
+*
+{
+    margin: 0;
+    padding: 0;
 }
 
-ul.posts li.post {
-	margin: 10px;
-	padding: 20px;
-	border: 10px;
-	list-style-type: none;
-	background-color: #FFFFFF;
+body
+{
+    background-color: #f1f8e5;
 }
-
-div.post-thumbnail {
-	margin: 0;
-	border: 0;
-	padding: 0;
-}
-
-div.post-thumbnail .post-title {
-	text-align: center;
-	
-}
-
-div.post-date {
-}
-
-div.post-body {
-	text-indent: 30px;
-	font-size: 15px;
-}
-
-div.post-footer {
-	text-align: right;
-}
-
-div.post-footer a {
-	text-decoration: none;
-}
-
-div.post-footer a button {
-	margin: 2px;
-	width: 100px;
-	margin-bottom: 0;
-}
-
-
-.comment{ 
-	margin: 15px auto; 
-	padding: 0 20px; 
-	font-size: 14px;  
-}
-
-.comment:after{
-	content: ""; 
-	height: 0; 
-	display: block;
-	clear: both;
-}
-
-.user-avatar{ 
-	padding: 0px; 
-	width: 5%; 
-	margin-top: 2px; 
-	float: left; 
-	position: relative;
-}
-
-.user-avatar img{
-	margin-right: 10px;
-}
-
-.comment p {
-	margin-bottom: 5px;
-}
-
-.comment-reply{
-	float: right; 
-	width:95%; 
-	border-bottom: 1px dotted #8B8F8F;
-}
-
-.comment-content{
-	clear: both;
-}
-
-.comment-footer{
-	line-height: 18px; 
-	height: 18px;
-}
-
-.comment-footer:after{
-	content: ""; 
-	height: 0; 
-	display: block; 
-	clear: both;}
 
 ul{
 	list-style-type: none;
 }
 
-.comment-footer .comment-date{
-	float: left;
+
+.comment
+{
+    font-size: 14px;
+
+    margin: 15px auto;
+    padding: 0 20px;
+}
+
+.comment:after
+{
+    display: block;
+    clear: both;
+
+    height: 0;
+
+    content: '';
+}
+
+.user-avatar
+{
+    position: relative;
+
+    float: left;
+
+    width: 5%;
+    margin-top: 2px;
+    padding: 0;
+}
+
+.user-avatar img
+{
+    margin-right: 10px;
+}
+
+.comment p
+{
+    margin-bottom: 5px;
+}
+
+.comment-reply
+{
+    float: right;
+
+    width: 95%;
+
+    border-bottom: 1px dotted #8b8f8f;
+}
+
+.comment-content
+{
+    clear: both;
+}
+
+.comment-footer
+{
+    line-height: 18px;
+
+    height: 18px;
+}
+
+.comment-footer:after
+{
+    display: block;
+    clear: both;
+
+    height: 0;
+
+    content: '';
+}
+
+ul
+{
+    list-style-type: none;
+}
+
+.comment-footer .comment-date
+{
+    float: left;
+
+    padding-right: 10px;
+}
+
+.comment-footer ul
+{
+    float: right;
+
+    width: 300px;
+}
+
+.comment-footer ul li
+{
+    float: right;
+
+    padding: 0 10px;
+
+    border-right: 1px #928b8b solid;
+}
+
+.comment-footer ul li:first-child
+{
+    border-right: none;
+}
+
+.replies
+{
+    background-color: #dcdcde;
+}
+
+.reply
+{
+    margin-top: 5px;
+    padding: 5px;
+    padding-right: 0;
+
+    border-bottom: 1px dotted #8b8f8f;
+}
+
+.reply:last-child
+{
+    border-bottom: none;
+}
+
+.reply-footer
+{
+    line-height: 18px;
+
+    height: 18px;
+}
+
+.reply-footer:after
+{
+    display: block;
+    clear: both;
+
+    height: 0;
+
+    content: '';
+}
+
+
+
+.reply-footer ul
+{
+    float: right;
+
+    width: 300px;
+}
+
+.reply-footer .reply-date
+{
+    float: left;
+}
+
+.reply-footer ul li
+{
+    float: right;
+
+    padding: 0 10px;
+
+    border-right: 1px #928b8b solid;
+}
+
+.reply-footer ul li:first-child
+{
+    border-right: none;
+}
+
+.comment-operation button
+{
+    font-size: 12px;
+
+    padding: 0 3px;
+
+    color: #51504e;
+    border: none;
+    background-color: #f1f8e5;
+}
+
+.reply-operation button
+{
+    font-size: 12px;
+
+    padding: 0 3px;
+
+    color: #51504e;
+    border: none;
+    background-color: #dcdcde;
+}
+
+.post
+{
+    margin: 10px;
+    padding: 10px;
+    background-color: #fff;
+    position: relative;
+}
+
+.post .post-header
+{
+    height: 25px;
+
+    text-align: center;
+}
+
+.post .post-header h4
+{
+    font-family: 'Sans-serif';
+    font-weight: 600;
+    line-height: 25px;
+
+    height: 25px;
+    margin: 0;
+}
+
+.post .post-header a
+{
+    text-decoration: none;
+
+    color: #5c5b5b;
+}
+
+.post .post-header a:hover
+{
+    color: #f78c2f;
+}
+
+.post .post-info ul
+{
+    font-size: 12px;
+
+    margin-top: 10px;
+
+    text-align: center;
+}
+
+.post .post-info ul a
+{
+    text-decoration: none;
+
+    color: #5c5b5b;
+}
+
+.post .post-info ul a:hover
+{
+    color: #f78c2f;
+}
+
+.post .post-info .post-author a
+{
+    color: #f5a341;
+}
+
+.post-body
+{
+    margin: 20px auto;
+    padding: 10px;
+
+    background-color: #fff;
+}
+
+.post-footer
+{
+    text-align: right;
+}
+
+.post-footer a
+{
+    margin: 0 10px;
+}
+
+.post-op{
+	position: absolute;
+	top: 10px;
+	right: 10px;
+}
+
+.post-op{
+	margin: 0 5px;
+	width: 80px;
+	height: 100px;
+	position: absolute;
+	top: 10px;
+	right: 0;
+}
+
+.post-op .op-log{
+	text-align: right;
 	padding-right: 10px;
 }
 
-.comment-footer ul{
-	width: 300px; 
-	float: right;
+.post-op .op-log i{
+    width: 18px;
+    text-align: center;
 }
 
-.comment-footer ul li{
-	padding: 0px 10px;
-	border-right: 1px #928B8B solid; 
-	float: right;
+.post-op .op{
+	margin-top: 10px;
+	width: 80px;
+	border: 1px solid #8D8C8C;
+	position: relative;
+	background-color: #F8F4F4;
+    display: none;
+
 }
 
-.comment-footer ul li:first-child{
-	border-right: none;
-}
-
-.replies{ 
-	background-color: #DCDCDE;
-}
-
-.reply{
-	margin-top: 5px; 
-	padding: 5px; 
-	padding-right: 0px; 
-	border-bottom: 1px dotted #8B8F8F;
-}
-
-.reply:last-child{
+/* 实现小三角 */
+.post-op .op:before{ 
+	content: "";
+	width: 10px;
+	height: 10px;
+	border: 1px solid #8D8C8C;
+	position: absolute;
+	top: -6px;
+	right: 10px;
+	transform: rotate(45deg);/* 旋转45度 */
 	border-bottom: none;
-}
-
-.reply-footer{
-	line-height: 18px; 
-	height: 18px;
-}
-
-.reply-footer:after{
-	content: ""; 
-	height: 0; 
-	display: block; 
-	clear: both;
-}
-
-.reply-footer .reply-date{
-	float: left;
-}
-
-.reply-footer ul{
-	width: 300px; 
-	float: right;
-}
-
-.reply-footer ul li{
-	padding: 0px 10px; 
-	border-right: 1px #928B8B solid; 
-	float: right;
-}
-
-.reply-footer ul li:first-child{
 	border-right: none;
+	background-color:  #F8F4F4;
 }
 
-.comment-operation button {
-	font-size: 12px; 
-	background-color: #F1F8E5; 
-	border: none; padding: 0px 3px; 
-	color: #51504E;
+.post-op ul {
+	margin: 10px 0;
+}
+.post-op .op ul li a{
+	display: block;
+	width: inherit;
+	height: 20px;
+	line-height: 20px;
+	text-align: center;
+	text-decoration: none;
+	color: #2C2B2B;
 }
 
-.reply-operation button {
-	font-size: 12px; 
-	background-color: #DCDCDE;
-	 border: none; padding: 0px 3px;
-	 color: #51504E;}
-
-form {
-	margin-top:10px;
+.post-op .op ul li a:hover{
+	color: #f78c2f;
+	text-decoration: none;
+	background-color: #E2E0E0;
 }
+
+
+form.comment-message{
+    display: none;
+}
+

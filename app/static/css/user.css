@@ -1,0 +1,28 @@
+* { margin: 0; border: 0; }
+
+.user-navbar ul{
+	width: 600px;
+	margin: 0 auto;
+	border: 1px solid black;
+	
+}
+
+.user-navbar ul:after{
+	content: "";
+	display: block;
+	clear: both;	
+}
+
+
+.user-navbar ul li{
+	width: 80px;
+	height: 40px;
+	line-height: 40px;
+	border: 1px solid red;
+	text-align: center;
+	float: left;
+}
+
+
+
+

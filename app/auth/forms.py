@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, HiddenField
 from wtforms.validators import Required, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 from ..models import User
 
 class LoginForm(FlaskForm):
@@ -64,3 +65,14 @@ class ChangeEmailForm(FlaskForm):
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('Email already registered.')
+
+class UploadAvatarForm(FlaskForm):
+    image = FileField('Upload (<= 3M)', validators=[FileRequired(), FileAllowed(['jpg', 'png'], 'The file format should be .jpg .png')])
+    submit = SubmitField('提交')
+
+class CropAvatarForm(FlaskForm):
+    x = HiddenField("")
+    y = HiddenField("")
+    w = HiddenField("")
+    h = HiddenField("")
+    submit = SubmitField('确认剪切')

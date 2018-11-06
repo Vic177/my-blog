@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Blog - Change Avatar{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='Jcrop/css/jquery.Jcrop.min.css') }}">
+<style>
+	#preview-box {
+            display: block;
+            position: absolute;
+            top: 10px;
+            right: -280px;
+            padding: 6px;
+            border: 1px rgba(0, 0, 0, .4) solid;
+            background-color: white;
+
+            -webkit-border-radius: 6px;
+            -moz-border-radius: 6px;
+            border-radius: 6px;
+
+            -webkit-box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, 0.2);
+            -moz-box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, 0.2);
+            box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, 0.2);
+        }
+</style>
+{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Change Your Avatar</h1>
+</div>
+<div>
+    <form action="{{ url_for('auth.upload_avatar') }}" method="post" enctype="multipart/form-data">
+        {{ upload_form.hidden_tag() }}
+    	{{ wtf.form_field(upload_form.image) }}
+        {{ wtf.form_field(upload_form.submit) }}
+    </form>
+    <br>
+    {{ avatars.crop_box('main.get_avatar', current_user.avatar_row) }}
+	{{ avatars.preview_box('main.get_avatar', current_user.avatar_row) }}
+    <form action="{{ url_for('auth.crop_avatar') }}" method="post">
+    	{{ crop_form.hidden_tag() }}
+        {{ wtf.form_field(crop_form.x) }}
+        {{ wtf.form_field(crop_form.y) }}
+        {{ wtf.form_field(crop_form.w) }}
+        {{ wtf.form_field(crop_form.h) }}
+        {{ wtf.form_field(crop_form.submit) }}
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='Jcrop/js/jquery.Jcrop.min.js') }}"></script>
+{{ avatars.init_jcrop() }}
+{% endblock %}

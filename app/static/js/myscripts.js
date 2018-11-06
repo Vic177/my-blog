@@ -29,3 +29,12 @@ $(document).ready(function(){
 	});
 });
 
+
+$(document).ready(function(){
+	$(".post-op").mouseover(function(){
+		$(this).find(".op").css("display","block")
+	});
+	$(".post-op").mouseout(function(){
+		$(this).find(".op").css("display","none")
+	});
+});
