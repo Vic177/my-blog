@@ -7,7 +7,7 @@
 {% block page_content %}
 <div class="container">
 	<div class="row">
-		<div class="col-sm-8 col-sm-offset-2">
+		<div class="col-sm-8 col-sm-offset-2 col-xs-12">
 			{% include '_posts.html' %}
 			{% if current_user.can(Permission.COMMENT) %}
 			<form role="form" id="comment" method="post">

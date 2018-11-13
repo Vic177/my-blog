@@ -1,0 +1,23 @@
+<li class="comment media" style="border-top: 1px solid #B4B6B5; padding: 10px 0;">
+    <div class="media-left">
+        <a href="#">
+            <img class="media-object" src="{{ url_for('main.get_avatar', filename=comment.author.avatar_s ) }}">
+        </a>
+    </div>
+    <div class="media-body">
+        <h4 class="media-heading">
+            <a href="{{ url_for('.user', username=comment.author.username) }}">{{ comment.author.username }}</a>
+        </h4>
+        <p>{{ comment.body | safe }}</p>
+        <div class="row comment-footer">
+            <ul class="list-inline" style="height: 25px;line-height: 25px;">
+                <li class="comment-date"><small>{{ moment(comment.timestamp).format('YYYY-MM-DD HH:mm:ss') }}</small></li>
+                {% if current_user.is_authenticated %}
+                <li><a href="#" class="btn btn-default btn-xs"><i class="fa fa-trash-o" aria-hidden="true"></i></a></li>
+                <li><a href="#" class="btn btn-default btn-xs"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></a></li>
+                <li><a href="#" class="btn btn-default btn-xs"><i class="fa fa-commenting-o" aria-hidden="true"></i></a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</li>

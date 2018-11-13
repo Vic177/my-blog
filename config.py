@@ -1,4 +1,5 @@
 import os
+from flask_uploads import IMAGES
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
@@ -12,13 +13,21 @@ class Config:
     FLASKY_POSTS_PER_PAGE = 10
     FLASKY_COMMENTS_PER_PAGE = 30
     FLASKY_FOLLOWERS_PER_PAGE = 50
-    DROPZONE_MAX_FILE_SIZE = 3
+    DROPZONE_MAX_FILE_SIZE = 5
     DROPZONE_MAX_FILES = 30
     DROPZONE_ALLOWED_FILE_TYPE = 'image'
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024
     AVATARS_SAVE_PATH = os.path.join(FLASKY_UPLOAD_PATH, 'avatars')
     AVATARS_SIZE_TUPLE = (30, 100, 200)
-    IMAGE_SAVE_PATH = os.path.join(FLASKY_UPLOAD_PATH, 'images')
+    IMAGE_SAVE_PATH = os.path.join(FLASKY_UPLOAD_PATH, 'images') #文章图片保存
+    PHOTO_SAVE_PATH = os.path.join(FLASKY_UPLOAD_PATH, 'photos') #flask_dropdown路径
+    FLASKY_PHOTO_SIZE = {'small': 200, 'medium': 800}
+    FLASKY_PHOTO_SUFFIX = {
+        FLASKY_PHOTO_SIZE['small']: '_s',
+        FLASKY_PHOTO_SIZE['medium']: '_m',
+    }
+    UPLOADED_PHOTOS_DEST = os.path.join(FLASKY_UPLOAD_PATH, 'photos') #flask_uploads 保存路径
+    UPLOADED_PHOTOS_ALLOW = IMAGES
 
 
     

@@ -10,6 +10,8 @@ from flask import request
 from markdown import markdown
 import bleach
 from flask_avatars import Identicon
+from . import photosSet
+import os
 
 
 class Role(db.Model):
@@ -78,13 +80,15 @@ class User(UserMixin,db.Model):
     avatar_s = db.Column(db.String(64))
     avatar_m = db.Column(db.String(64))
     avatar_l = db.Column(db.String(64))
+    albums = db.relationship('Album', backref='author', lazy='dynamic', cascade='all')
 
-
+    #用户的关注
     followed = db.relationship('Follow',
                                foreign_keys=[Follow.follower_id],
                                backref=db.backref('follower',lazy='joined'),
                                lazy='dynamic',
                                cascade='all, delete-orphan')
+    #用户的粉丝
     followers = db.relationship('Follow',
                                foreign_keys=[Follow.followed_id],
                                backref=db.backref('followed',lazy='joined'),
@@ -383,3 +387,57 @@ class Message(db.Model):
     comments = db.relationship('Comment', backref='message', lazy='dynamic')
     replies = db.relationship('Reply', backref='message', lazy='dynamic')
     
+
+class Photo(db.Model):
+    __tablename__ = "photos"
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(64))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    album_id = db.Column(db.Integer, db.ForeignKey('albums.id'))
+    filename_s = db.Column(db.String(64))
+    filename_m = db.Column(db.String(64))
+    cover = db.Column(db.Boolean, default=False)
+
+
+    @property
+    def url(self):
+        return photosSet.url(self.filename)
+    
+    @property
+    def url_s(self):
+        return photosSet.url(self.filename_s)
+
+    @property
+    def url_m(self):
+        return photosSet.url(self.filename_m)
+    
+
+
+    def __repr__(self):
+        return '<Photo %r>' % self.filename
+
+@db.event.listens_for(Photo, 'after_delete', named=True) #监听图片删除时间，删除对应的文件
+def delete_photo(**kwargs):
+    target = kwargs['target']
+    for filename in [target.filename, target.filename_s, target.filename_m]:
+        if filename is not None:
+            path = photosSet.path(filename)
+            if os.path.exists(path):
+                os.remove(path)
+
+
+class Album(db.Model):
+    __tablename__ = "albums"
+    id = db.Column(db.Integer, primary_key=True)
+    albumname = db.Column(db.String(64))
+    decription = db.Column(db.String(500))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    photos = db.relationship('Photo', backref='album', lazy='dynamic', cascade='all')
+
+    def __repr__(self):
+        return '<Album %r>' % self.albumname
+
+"""
+@db.event.listen_for(Album, 'after_delete', name=True)
+"""

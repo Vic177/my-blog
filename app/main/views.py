@@ -2,13 +2,15 @@ from flask import render_template, session, redirect, url_for, flash, request, \
     current_app, send_from_directory, flash, jsonify
 from ..models import User, Role, Post, Permission, Comment, Category, Reply, \
                      Message
+from ..models import Album, Photo
 from .forms import EditProfileForm, PostForm, CommentForm, EditProfileAdminForm, ReplyForm, \
-                   MessageForm
+                   MessageForm, AlbumForm
 from flask_login import login_required, current_user
 from ..decorators import admin_required, permission_required
 from flask_dropzone import random_filename
+from ..utils import resize_image
 
-from .. import db
+from .. import db, photosSet
 
 from . import main 
 import os
@@ -316,7 +318,7 @@ def get_avatar(filename):
 def  get_image(filename):
     return send_from_directory(current_app.config['IMAGE_SAVE_PATH'], filename)
 
-@main.route('/upload', methods=['GET', 'POST'])
+@main.route('/upload', methods=['GET', 'POST']) #文章图片上传
 @login_required
 def upload():
     if request.method == 'POST':
@@ -325,3 +327,86 @@ def upload():
         f.save(os.path.join(current_app.config['IMAGE_SAVE_PATH'], filename))
         url = url_for('main.get_image', filename=filename)
         return jsonify( location = url )
+
+
+
+@main.route('/album/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def album(user_id):
+    user = User.query.filter_by(id=user_id).first_or_404()
+    albums = Album.query.filter_by(author=user).all()
+    form = AlbumForm()
+    if form.validate_on_submit():
+        album = Album(albumname=form.albumname.data,
+                      decription=form.decription.data,
+                      author=current_user._get_current_object())
+        db.session.add(album)
+        db.session.commit()
+        return redirect(url_for('main.upload_photos', album_id=album.id))
+    return render_template('album.html', form=form, albums=albums, user=user)
+
+@main.route('/upload-photos/<int:album_id>', methods=['GET', 'POST'])
+@login_required
+def upload_photos(album_id):
+    album = Album.query.filter_by(id=album_id).first_or_404()
+    if request.method == 'POST' and 'file' in request.files:
+        f = request.files.get('file')
+        filename = random_filename(f.filename)
+        folder = album.author.username + '/' + album.albumname
+        fname = photosSet.save(f, folder=folder, name=filename)
+        filename_s = resize_image(f, fname, 200)
+        filename_m = resize_image(f, fname, 800)
+        photo = Photo(filename=fname,
+                      album=album,
+                      filename_s=filename_s,
+                      filename_m=filename_m)
+        db.session.add(photo)
+        db.session.commit()
+    return render_template('upload_photos.html', album=album)
+
+@main.route('/album_show/<int:album_id>', methods=['GET', 'POST'])
+@login_required
+def album_show(album_id):
+    album = Album.query.filter_by(id=album_id).first_or_404()
+    photos = Photo.query.filter_by(album_id=album_id).all()
+    form = AlbumForm()
+    if request.method == 'POST':
+        album.albumname = form.albumname.data
+        album.decription = form.decription.data
+        db.session.add(album)
+        db.session.commit()
+        albumname = album.albumname
+        decription = album.decription
+        message = "修改成功！"
+        return jsonify(albumname=albumname, decription=decription, message=message)
+    return render_template('album_show.html', album=album, photos=photos, form=form)
+
+"""
+@main.route('/get_photo/<path:filename>')
+def get_photo(filename):
+    return photosSet.url(filename)
+"""
+
+@main.route('/delete/photo/<int:photo_id>', methods=['GET', 'POST'])
+@login_required
+def delete_photo(photo_id):
+    photo = Photo.query.get_or_404(photo_id)
+    if current_user != photo.album.author:
+        abort(404)
+    db.session.delete(photo)
+    db.session.commit()
+    flash('图片已删除！')
+    return redirect(url_for('.album_show', album_id = photo.album.id))
+
+@main.route('/delete/album/<int:album_id>', methods=['POST', 'GET'])
+@login_required
+def delete_album(album_id):
+    album = Album.query.get_or_404(album_id)
+    if current_user != album.author:
+        abort(404)
+    db.session.delete(album)
+    db.session.commit()
+    flash('相册已删除！')
+    return redirect(url_for('.album', user_id=album.author.id))
+
+

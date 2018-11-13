@@ -4,6 +4,7 @@
 
 {% block head %}
 {{ super() }}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/mystyles.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Awesome/css/font-awesome.min.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='toast2/toast.css') }}">
@@ -52,7 +53,7 @@
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for('auth.change_password') }}">修改密码</a></li>
                         <li><a href="{{ url_for('auth.change_email_request') }}">修改邮箱</a></li>
-                        <li><a href="{{ url_for('main.user', username=current_user.username) }}">个人资料</a><li>
+                        <li><a href="{{ url_for('main.user', username=current_user.username) }}">个人中心</a><li>
                         <li class="divider"></li>
                         <li><a href="{{ url_for('auth.logout') }}">退出</a></li>
                     </ul>
@@ -68,7 +69,7 @@
 {% block content %}
 <div class="container">
     {% for message in get_flashed_messages() %}
-    <div class="alert alert-warning">
+    <div class="alert alert-info">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
         {{ message }}
     </div>
@@ -79,11 +80,11 @@
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/myscripts.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='toast2/toast.js') }}"></script>
 <script type=text/javascript>
     $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 </script>
+
 {{ moment.include_moment() }}
 {% endblock %}

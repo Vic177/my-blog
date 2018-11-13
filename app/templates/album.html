@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Blog - 上传图片{% endblock %}
+
+{% block head %}
+{{ super() }}
+<style>
+
+</style>
+{% endblock %}
+
+{% block page_content %}
+<div class="container">
+	<div class="row">
+		<div class="col-sm-8 col-sm-offset-2 col-xs-12">
+			<h3>{% if user == current_user %}我的相册{% else %}{{ user.username }}的相册{% endif %}</h3>
+			<div>
+				<button class="btn btn-default" data-toggle="modal" data-target="#new-album">新建相册</button>
+			</div>
+			<!-- Modal -->
+			<div class="modal fade" id="new-album" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+			    <div class="modal-dialog" role="document">
+			    	<div class="modal-content">
+			      		<div class="modal-header">
+			        		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        		<h4 class="modal-title" id="myModalLabel">新建相册</h4>
+			      		</div>
+			      		<div class="modal-body">
+			       			<form id="add-album" class="form" method="POST">
+				                {{ form.hidden_tag() }}
+				                {{ wtf.form_field(form.albumname) }}
+				                {{ wtf.form_field(form.decription) }}
+		           			</form>
+			      		</div>
+			      		<div class="modal-footer">
+					        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					        <button type="submit" class="btn btn-primary" onclick="submit_form()">保存</button>
+			      		</div>
+			    	</div>
+			  	</div>
+			</div>
+			<div class="albums-list">
+					<ul class="album">
+						{% for album in albums %}
+						<li class="album col-xs-12 col-sm-6 col-md-4 col-lg-4 col-xl-4">
+							<div class="album-head">
+								<span><a href="{{ url_for('.album_show', album_id=album.id) }}">{{ album.albumname }}</a></span>
+							</div>
+							<div class="album-body" style="height: 200px; background-color: #DDC3C3;">
+								<img src="" alt="">
+							</div>
+							<div class="album-footer">
+								<a href="#"><span>浏览量（0）</span><em>创建于：{{ moment(album.timestamp).format('YY-MM-DD') }}</em></a>
+							</div>
+						</li>
+						{% endfor %}
+					</ul>
+			</div>
+		</div>
+	</div>
+	
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+	function submit_form() {
+		var form = document.getElementById('add-album');
+		if (form.albumname.value != "" && form.decription.value != ""){
+			
+			form.submit();
+			// body...
+			$("#new-album").on("hidden.bs.modal", function() {
+		        $(this).removeData("bs.modal");
+		    });
+		}else{
+			alert("表单不能为空！")
+		}
+	}
+</script>
+{% endblock %}
