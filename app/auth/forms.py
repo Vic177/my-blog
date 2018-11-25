@@ -6,9 +6,9 @@ from flask_wtf.file import FileField, FileAllowed, FileRequired
 from ..models import User
 
 class LoginForm(FlaskForm):
-    email = StringField('邮箱地址', validators=[Required(), Length(1,64),
+    email = StringField('', validators=[Required(), Length(1,64),
                                              Email()])
-    password = PasswordField('密码', validators=[Required()])
+    password = PasswordField('', validators=[Required()])
     remember_me = BooleanField('记住密码')
     submit = SubmitField('登陆')
 
@@ -32,47 +32,47 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('该用户名已存在！')
 
 class ChangePasswordForm(FlaskForm):
-    old_password = PasswordField('Old password', validators=[Required()])
-    password = PasswordField('New password', validators=[
+    old_password = PasswordField('旧密码', validators=[Required()])
+    password = PasswordField('新密码', validators=[
         Required(), EqualTo('password2', message='Passwords must match')])
-    password2 = PasswordField('Confirm new password', validators=[Required()])
-    submit = SubmitField('Update Password')
+    password2 = PasswordField('确认密码', validators=[Required()])
+    submit = SubmitField('修改密码')
     
 class PasswordResetRequestForm(FlaskForm):
-    email = StringField('Email', validators=[Required(), Length(1, 64),
+    email = StringField('邮箱地址', validators=[Required(), Length(1, 64),
                                              Email()])
-    submit = SubmitField('Reset Password')
+    submit = SubmitField('确认')
 
 
 class PasswordResetForm(FlaskForm):
-    email = StringField('Email', validators=[Required(), Length(1, 64),
+    email = StringField('邮箱地址', validators=[Required(), Length(1, 64),
                                              Email()])
-    password = PasswordField('New Password', validators=[
+    password = PasswordField('新密码', validators=[
         Required(), EqualTo('password2', message='Passwords must match')])
-    password2 = PasswordField('Confirm password', validators=[Required()])
-    submit = SubmitField('Reset Password')
+    password2 = PasswordField('确认密码', validators=[Required()])
+    submit = SubmitField('重置密码')
 
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first() is None:
             raise ValidationError('Unknown email address.')
             
 class ChangeEmailForm(FlaskForm):
-    email = StringField('New Email', validators=[Required(), Length(1, 64),
+    email = StringField('新邮箱', validators=[Required(), Length(1, 64),
                                                  Email()])
-    password = PasswordField('Password', validators=[Required()])
-    submit = SubmitField('Update Email Address')
+    password = PasswordField('密码', validators=[Required()])
+    submit = SubmitField('更改邮箱地址')
 
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('Email already registered.')
 
 class UploadAvatarForm(FlaskForm):
-    image = FileField('Upload (<= 3M)', validators=[FileRequired(), FileAllowed(['jpg', 'png'], 'The file format should be .jpg .png')])
-    submit = SubmitField('提交')
+    image = FileField('图片大小请不要超过3M!', validators=[FileRequired(), FileAllowed(['jpg', 'png'], 'The file format should be .jpg .png')])
+    submit = SubmitField('确认上传')
 
 class CropAvatarForm(FlaskForm):
-    x = HiddenField("")
-    y = HiddenField("")
-    w = HiddenField("")
-    h = HiddenField("")
-    submit = SubmitField('确认剪切')
+    x = HiddenField()
+    y = HiddenField()
+    w = HiddenField()
+    h = HiddenField()
+    submit = SubmitField('剪切并上传')

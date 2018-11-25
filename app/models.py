@@ -70,12 +70,10 @@ class User(UserMixin,db.Model):
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     avatar_hash = db.Column(db.String(32))
-    posts = db.relationship('Post', backref='author', lazy='dynamic')
+    posts = db.relationship('Post', backref='author', lazy='dynamic', cascade='all')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
     replies = db.relationship('Reply', backref='author', primaryjoin='Reply.author_id==User.id')
     relpies_to = db.relationship('Reply', backref='replyto_user', primaryjoin='Reply.replyto_uid==User.id')
-    messages = db.relationship('Message', backref='author', primaryjoin='Message.author_id==User.id')
-    messaged = db.relationship('Message', backref='messageto_user', primaryjoin='Message.to_uid==User.id')
     avatar_row = db.Column(db.String(64))
     avatar_s = db.Column(db.String(64))
     avatar_m = db.Column(db.String(64))
@@ -279,7 +277,7 @@ class Post(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     body_html = db.Column(db.Text)
-    comments = db.relationship('Comment', backref='post', lazy='dynamic')
+    comments = db.relationship('Comment', backref='post', lazy='dynamic', cascade='all')
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     title = db.Column(db.String(64))
     relpies = db.relationship('Reply', backref='post', lazy='dynamic')
@@ -299,8 +297,8 @@ class Comment(db.Model):
     disabled = db.Column(db.Boolean) 
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
-    message_id = db.Column(db.Integer, db.ForeignKey('messages.id'))
-    replies = db.relationship('Reply', backref='comment', lazy='dynamic') 
+    replies = db.relationship('Reply', backref='comment', lazy='dynamic', cascade='all')
+    comment_type = db.Column(db.String(64))
     
     def comment_delete(self):
         db.session.delete(self)
@@ -326,10 +324,8 @@ class Reply(db.Model):
     body_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    reply_type = db.Column(db.String(64), default='comment')   #回复的类型，默认是评论comment
     replyto_id = db.Column(db.Integer)    #回复对象的id， 默认是comment_id
     replyto_uid = db.Column(db.Integer, db.ForeignKey('users.id'))
-    message_id = db.Column(db.Integer, db.ForeignKey('messages.id'))
 
     def reply_delete(self):
         db.session.delete(self)
@@ -373,10 +369,11 @@ class Category(db.Model):
 
 #分类和分类标签
 tag_category = {'生活':['随笔', '足迹', '电影'],
-                '技术分享':['flask', 'python', 'Django', 'Bootstrap', 'CSS'],
+                '技术分享':['Flask', 'Python', 'Django', '前端'],
                 }
 
 
+#留言表
 class Message(db.Model):
     __tablename__ = "messages"
     id = db.Column(db.Integer, primary_key=True)
@@ -384,8 +381,6 @@ class Message(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id')) 
     to_uid = db.Column(db.Integer, db.ForeignKey('users.id'))
-    comments = db.relationship('Comment', backref='message', lazy='dynamic')
-    replies = db.relationship('Reply', backref='message', lazy='dynamic')
     
 
 class Photo(db.Model):

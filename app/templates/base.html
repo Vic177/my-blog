@@ -8,58 +8,102 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/mystyles.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Awesome/css/font-awesome.min.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='toast2/toast.css') }}">
-<style type="text/css">
-    * {
-        padding:0;
-        margin:0;
-        }
-</style>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base.css') }}">
 {% endblock %}
 
 {% block navbar %}
-<div class="navbar navbar-inverse" role="navigation">
+<div class="navbar navbar-default" role="navigation">
     <div class="container">
         <div class="navbar-header">
+            <a class="navbar-brand" href="/">The Dream Space</a>
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Vic的个人博客</a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="/"><i class="fa fa-home fa-fw" aria-hidden="true"></i>&nbsp;首页</a></li>
-                {% for tag in tags %}
+                <li><a href="/">首页</a></li>
                 <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ tag.tag_name }}</a>
-                    <ul class="dropdown-menu">
-                        {% for category in tag.categories %}
-                        <li><a href="{{ url_for('main.category', name=category.name) }}">{{ category.name }}</a></li>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">话题</a>
+                    <ul class="dropdown-menu" style="min-width: 100%;">
+                        {% for category in categories %}
+                        <li><a href="#">{{ category.name }}</a></li>
                         {% endfor %}
                     </ul>
-                {% endfor %}
                 </li>
-                <!-- <li><a href="{{ url_for('main.message', username=current_user.username) }}">留言</a><li> -->
-                <li><a href="#"><i class="fa fa-book fa-fw" aria-hidden="true"></i>&nbsp;关于博主</a><li>
+                <li><a href="#">关于作者</a><li>
             </ul>
+            <div>
+                <form class="navbar-form navbar-left" role="search">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search">
+                    </div>
+                    <button type="submit" class="btn btn-default"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </form>    
+            </div>
             <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_authenticated %}
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user fa-fw" aria-hidden="true"></i>
-                    账户<b class="caret"></b>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('auth.change_password') }}">修改密码</a></li>
-                        <li><a href="{{ url_for('auth.change_email_request') }}">修改邮箱</a></li>
-                        <li><a href="{{ url_for('main.user', username=current_user.username) }}">个人中心</a><li>
-                        <li class="divider"></li>
-                        <li><a href="{{ url_for('auth.logout') }}">退出</a></li>
-                    </ul>
-                </li>
+                    <li class="nav-item dropdown hidden-caret">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbar-notifacation" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-bell-o" aria-hidden="true"></i>
+                            <span class="notification">消息数量</span>
+                        </a>
+                        <ul class="dropdown-menu notif-box" aria-labelledby="navbarDropdown">
+                            <li>
+                                <div class="dropdown-title">您有4条新消息</div>
+                            </li>
+                            <li>
+                                <div class="notif-center">
+                                    <a href="#">
+                                        <div class="notif-icon notif-primary"> <i class="fa fa-user-plus"></i> </div>
+                                        <div class="notif-content">
+                                            <span class="notif-block">
+                                                New user registered
+                                            </span>
+                                            <span class="time">5 minutes ago</span> 
+                                        </div>
+                                    </a>
+                                    <a href="#">
+                                        <div class="notif-icon notif-success"> <i class="fa fa-commenting" aria-hidden="true"> </i></div>
+                                        <div class="notif-content">
+                                            <span class="notif-block">
+                                                Rahmad commented on Admin
+                                            </span>
+                                            <span class="time">12 minutes ago</span> 
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="dropdown-toggle" id="navbar-user" data-toggle="dropdown">
+                            <img class="img-circle" src="{{ url_for('main.get_avatar', filename=current_user.avatar_s ) }}">
+                            <span>{{ current_user.username }}</span>
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li class="user-box">
+                                <div class="u-avatar">
+                                    <img class="img-rounded" src="{{ url_for('main.get_avatar', filename=current_user.avatar_m ) }}">
+                                </div>
+                                <div class="u-text">
+                                    <h4>{{ current_user.username }}</h4>
+                                    <p>{{ current_user.email }}</p>
+                                </div>
+                            </li>
+                            <li role="presentation" class="divider"></li>
+                            <li><a href="{{ url_for('main.user', username=current_user.username) }}">个人主页</a><li>
+                            <li><a href="{{ url_for('main.edit_profile') }}">设置中心</a></li>
+                            <li class="divider"></li>
+                            <li><a href="{{ url_for('auth.logout') }}">退出</a></li>
+                        </ul>
+                    </li>
                 {% else %}
-                <li><a href="{{ url_for('auth.login') }}"><i class="fa fa-user fa-fw" aria-hidden="true"></i>请登陆</a></li>
+                    <li><a href="{{ url_for('auth.login') }}">登陆 / 注册</a></li>
                 {% endif %}
         </div>
     </div>
@@ -82,8 +126,13 @@
 {{ super() }}
 <script type="text/javascript" src="{{ url_for('static', filename='js/myscripts.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='toast2/toast.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.validate.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.form.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/messages_zh.js') }}"></script>
 <script type=text/javascript>
     $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+    
 </script>
 
 {{ moment.include_moment() }}

@@ -7,9 +7,9 @@ from ..models import Role, User, Category, Comment, Reply
 from flask_pagedown.fields import PageDownField
 
 class EditProfileForm(FlaskForm):
-    name = StringField('Real name', validators=[Length(0,64)])
-    location = StringField('Location', validators=[Length(0,64)])
-    about_me = TextAreaField('About me')
+    name = StringField('姓名', validators=[Length(0,64)])
+    location = StringField('坐标', validators=[Length(0,64)])
+    about_me = TextAreaField('关于我')
     submit = SubmitField('Submit')
     
 class EditProfileAdminForm(FlaskForm):
@@ -43,14 +43,14 @@ class EditProfileAdminForm(FlaskForm):
             raise ValidationError('Username already in use.')
 
 class CommentForm(FlaskForm):
-    body = StringField('', validators=[Required()])
-    submit = SubmitField('Submit')
+    body = TextAreaField('', validators=[Required()])
+    submit = SubmitField('提交')
     
 class PostForm(FlaskForm):
     title = StringField("标题", validators=[Required()])
     body = TextAreaField("")
     category = SelectField("分类", validators=[Required()], coerce=int)
-    submit = SubmitField('Submit')
+    submit = SubmitField('提交')
     
     def __init__(self, *args, **kwargs):
         super(PostForm, self).__init__(*args, **kwargs)

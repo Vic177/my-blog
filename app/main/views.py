@@ -52,7 +52,7 @@ def edit_profile():
         db.session.add(current_user)
         db.session.commit()
         flash('Your profile has been updated.')
-        return redirect(url_for('.user', username=current_user.username))
+        return render_template('edit_profile.html', form=form)
     form.name.data = current_user.name
     form.location.data = current_user.location
     form.about_me.data = current_user.about_me
@@ -88,25 +88,22 @@ def edit_profile_admin(id):
 def post(id):
     post = Post.query.get_or_404(id)
     form = CommentForm()
-    replyform = ReplyForm()
-    if form.validate_on_submit():
+    if request.method == 'POST':
         comment = Comment(body=form.body.data,
                           post=post,
-                          author=current_user._get_current_object(),
-                          )
+                          author=current_user._get_current_object())
         db.session.add(comment)
         db.session.commit()
-        flash('Your comment has been published.')
-        return redirect(url_for('.post', id=post.id, page=-1))
+        return render_template('_com.html', comment=comment)
     page = request.args.get('page', 1, type=int)
     if page == -1:
         page = (post.comments.count() - 1) / \
             current_app.config['FLASKY_COMMENTS_PER_PAGE'] + 1
-    pagination = post.comments.order_by(Comment.timestamp.asc()).paginate(
+    pagination = post.comments.order_by(Comment.timestamp.desc()).paginate(
         page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
         error_out=False)
     comments = pagination.items
-    return render_template('post.html', posts=[post], form=form, replyform=replyform,
+    return render_template('post.html', posts=[post], form=form,
                            comments=comments, pagination=pagination)
     
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])
@@ -163,9 +160,9 @@ def category(name):
     return render_template('category.html', posts=posts, category=category)
 
 
-@main.route('/replyto_comment/<int:id>', methods=['POST'])
+@main.route('/reply-comment/<int:id>', methods=['POST'])
 @login_required
-def replyto_comment(id):
+def reply_comment(id):
     comment = Comment.query.get_or_404(id)
     if request.method == 'POST':
         reply = Reply(body=request.form.get('body'),
@@ -176,14 +173,11 @@ def replyto_comment(id):
                       )
         db.session.add(reply)
         db.session.commit()
-        if comment.post:
-            return redirect(url_for('.post', id=comment.post.id))
-        else:
-            return redirect(url_for('.message', username=comment.message.author.username))
+        return render_template("_reply.html", reply=reply)
 
-@main.route('/replyto_reply/<int:id>', methods=['GET', 'POST'])
+@main.route('/reply-reply/<int:id>', methods=['GET', 'POST'])
 @login_required
-def replyto_reply(id):
+def reply_reply(id):
     reply = Reply.query.get_or_404(id)
     if request.method == 'POST':
         replyto = Reply(body=request.form.get('body'),
@@ -193,10 +187,7 @@ def replyto_reply(id):
                         replyto_user=reply.author,
                         reply_type='reply')
         db.session.add(replyto)
-        if reply.comment.post:  
-            return redirect(url_for('.post', id=reply.comment.post_id))
-        else:
-            return redirect(url_for('.message', username=reply.message.author.username))
+        return redirect(url_for('.post', id=reply.comment.post_id))
 
 @main.route('/write_post/', methods=['GET', 'POST'])
 def write_post():
@@ -210,33 +201,6 @@ def write_post():
         db.session.commit()
         return redirect(url_for('main.index'))
     return render_template('write_post.html', form=form)
-
-
-@main.route('/message_page/<username>', methods=['GET', 'POST'])
-def message(username):
-    user = User.query.filter_by(username=username).first()
-    messages = Message.query.filter_by(messageto_user=user).order_by(Message.timestamp.desc()).all()
-    form = MessageForm()
-    if form.validate_on_submit():
-        message = Message(body=form.body.data,
-                          author=current_user._get_current_object(),
-                          messageto_user=user)
-        db.session.add(message)
-        db.session.commit()
-        return redirect(url_for('.message', username=username))
-    return render_template('message_page.html', form=form, messages=messages)
-
-@main.route('/comment-message/<int:id>', methods=['GET', 'POST'])
-@login_required
-def comment_message(id):
-    message = Message.query.get_or_404(id)
-    if request.method == 'POST':
-        comment = Comment(body=request.form.get('body'),
-                          author=current_user._get_current_object(),
-                          message=message)
-        db.session.add(comment)
-        db.session.commit()
-        return redirect(url_for('.message', username=message.author.username))
 
 @main.route('/follow/<username>', methods=['GET', 'POST'])
 def follow(username):
@@ -408,5 +372,3 @@ def delete_album(album_id):
     db.session.commit()
     flash('相册已删除！')
     return redirect(url_for('.album', user_id=album.author.id))
-
-

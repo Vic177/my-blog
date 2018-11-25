@@ -1,13 +1,142 @@
-{% extends "base.html" %}
+{% extends "admin_base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}Flasky - Edit Profile{% endblock %}
+{% block title %}Blog - Change Password{% endblock %}
 
-{% block page_content %}
-<div class="page-header">
-    <h1>Edit Your Profile</h1>
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login.css') }}">
+<style>
+#image-change {
+    display: none;
+    width: 100px;
+    height: 100px;
+    line-height: 100px;
+    text-align: center;
+    text-decoration: none;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 400;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#image-change i {
+    display: block;
+    position: absolute;
+    top: 25px;
+    left: 42px;
+}
+
+
+#image-change p {
+    margin: 0;
+}
+
+#image-change:hover{
+    background-color:rgba(0, 0, 0, 0.4);
+}
+
+
+</style>
+{% endblock %}
+
+{% block admin_content %}
+<div class="top-content">
+    <div class="inner-bg">
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1 profile-box">
+                <h3 class="profile-title">
+                    <span><i class="fa fa-user"></i>&nbsp;个人资料</span>
+                    <span id="profile-edit"><a href="#" type="button"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>编辑</a></span>
+                </h3>
+                <div class="profile-top">
+                    <div class="profile-top-left">
+                        <img class="img-rounded" src="{{ url_for('main.get_avatar', filename=current_user.avatar_m ) }}">
+                        <a href="{{ url_for('auth.change_avatar') }}" id="image-change">
+                            <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>
+                            <p>修改头像</p>
+                        </a>
+                    </div>
+                    <div class="profile-top-right">
+                        <h4>{{ current_user.username }}</h4>
+                        <div> 
+                            <a href="{{ url_for('.followers', username=current_user.username) }}">
+                                <span>粉丝</span>
+                                <span class="badge">{{ current_user.followers.count() -1 }}</span>
+                            </a>
+                            <a href="{{ url_for('.followed_by', username=current_user.username) }}">
+                                <span>关注</span>
+                                <span class="badge">{{ current_user.followed.count() -1 }}</span>
+                            </a>
+                        </div>
+                        <p>{{ current_user.posts.count() }} blog posts.&nbsp;&nbsp;&nbsp;{{ current_user.comments.count() }} comments.</p>
+                    </div>
+                </div>
+                <h3 class="profile-title">基本信息</h3>
+                <div class="profile-body">
+                    <p><em>邮箱：</em>{{ current_user.email }}</p>
+                    <p><em>关于我：</em>{{ current_user.about_me }}</p>
+                    <p><em>所在地：</em>{{ current_user.location }}</p>
+                    <p><em>注册时间：</em> {{ moment(current_user.member_since).format('L') }}</p>
+                    <p><em>最近登陆时间：</em>{{ moment(current_user.last_seen).format('L') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div class="col-md-4">
-    {{ wtf.quick_form(form) }}
+<div class="modal fade" id="profile" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">修改个人资料</h4>
+            </div>
+            <div class="modal-body">
+                <form id="edit-profile" class="form" method="POST">
+                    {{ form.hidden_tag() }}
+                    {{ wtf.form_field(form.name) }}
+                    {{ wtf.form_field(form.location) }}
+                    {{ wtf.form_field(form.about_me) }}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="submit" class="btn btn-primary" onclick="submit_form()">保存</button>
+            </div>
+        </div>
+    </div>
 </div>
+        
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    $(document).ready(function(){
+        $("#user-profile").addClass("active");
+    });
+
+    function submit_form() {
+        var form = document.getElementById('edit-profile');
+        form.submit();
+    }
+
+    $(document).ready(function() {
+        $("#profile-edit").click(function() {
+            $("#profile").modal('show');
+        });
+    });
+//点击显示修改头像
+    $(document).ready(function(){
+        $(".profile-top-left").mouseover(function(){
+            $("#image-change").show()
+        });
+         $(".profile-top-left").mouseout(function(){
+            $("#image-change").hide()
+        });
+
+    })
+</script>
 {% endblock %}

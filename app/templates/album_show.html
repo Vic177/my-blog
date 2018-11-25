@@ -196,7 +196,7 @@ em.photos-count{
 	//ajax无刷新添加album修改后的信息
 	$(document).ready(function(){
 		$("#submitedit").click(function(){
-			var form = $("#add-album")
+			var form = $("#add-album");
 			$.ajax({
 				url: $SCRIPT_ROOT + '/album_show/{{ album.id }}',
 				type: 'POST',
@@ -205,6 +205,7 @@ em.photos-count{
 					$("h3.album-name").text(data.albumname);
 					$("#album-desc").text(data.decription)
 					$('#change-info').modal('hide');
+					
 					toast(data.message);
 				},
 			});

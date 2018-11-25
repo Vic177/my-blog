@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}用户操作中心{% endblock %}
+
+{% block head %}
+{{ super() }}
+<style>
+
+
+</style>
+{% endblock %}
+
+{% block page_content %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-2 side-nav">
+			<ul class="nav nav-list side-nav-list">
+				<li id="user-profile"><a href="{{ url_for('main.edit_profile') }}"><i class="glyphicon glyphicon-chevron-right"></i>个人资料</a></li>
+                <li id="news"><a href="#"><i class="glyphicon glyphicon-chevron-right"></i>消息通知</a></li>
+				<li id="post-manage"><a href="#"><i class="glyphicon glyphicon-chevron-right"></i>文章管理</a></li>
+				<li id="photo-manage"><a href="#"><i class="glyphicon glyphicon-chevron-right"></i>相册管理</a></li>
+				<li id="password-change"><a href="{{ url_for('auth.change_password') }}"><i class="glyphicon glyphicon-chevron-right"></i>修改密码</a></li>
+				<li id="reset-email"><a href="{{ url_for('auth.change_email_request') }}"><i class="glyphicon glyphicon-chevron-right"></i>修改邮箱</a></li>
+                <li id="change-avatar"><a href="{{ url_for('auth.change_avatar') }}"><i class="glyphicon glyphicon-chevron-right"></i>修改头像</a></li>
+			</ul>
+		</div>
+		<div class="col-md-10">
+			{% block admin_content %}
+			{% endblock %}
+		</div>
+	</div>
+</div>
+{% endblock %}

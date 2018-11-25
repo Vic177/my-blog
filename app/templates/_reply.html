@@ -1,0 +1,25 @@
+<li class="reply media" style="margin-top: 5px; border-top: 1px dashed #D6D9D9; padding: 5px 0;" data-id="{{ reply.id }}">
+    <div class="media-left">
+        <a href="#">
+            <img class="media-object" src="{{ url_for('main.get_avatar', filename=reply.author.avatar_s ) }}" alt="...">
+        </a>
+    </div>
+    <div class="media-body">
+        <h5 class="media-heading">
+                <a href="{{ url_for('.user', username=reply.author.username)}}">{{ reply.author.username }}</a>
+                <span style="font-size: 15px;"><i class="fa fa-at" aria-hidden="true"></i></span>
+                <a href="{{ url_for('.user', username=reply.replyto_user.username) }}">{{ reply.replyto_user.username }}</a>
+        </h5>
+        <div>{{ reply.body | safe }}</div>
+        <div class="row comment-footer">
+            <ul class="list-inline col-xs-12">
+                <li class="comment-date"><small>{{ moment(reply.timestamp).format('YYYY-MM-DD HH:mm:ss') }}</small></li>
+                {% if current_user.is_authenticated %}
+                <li><a href="#" class="btn btn-default btn-xs"><i class="fa fa-trash-o" aria-hidden="true"></i></a></li>
+                <li><a href="#" class="btn btn-default btn-xs"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></a></li>
+                <li><a href="#" class="btn btn-default btn-xs reply-btn"><i class="fa fa-commenting-o" aria-hidden="true"></i></a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</li>

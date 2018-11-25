@@ -3,11 +3,53 @@
 
 {% block title %}Flasky - Register{% endblock %}
 
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login.css') }}">
+<style>
+	.form-box{
+		margin-bottom: 100px;
+	}
+</style>
+{% endblock %}
+
 {% block page_content %}
-<div class="page-header">
+
+
+<div class="top-content">
+    <div class="inner-bg">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6 col-sm-offset-3 form-box">
+                	<div class="form-top">
+                		<div class="form-top-left">
+                			<h3>欢迎！</h3>
+                    		<p>请填写注册信息：</p>
+                		</div>
+                		<div class="form-top-right">
+                			<i class="fa fa-id-card-o" aria-hidden="true"></i>
+                		</div>
+                    </div>
+                    <div class="form-bottom">
+	                    <form role="form" method="post">
+	                    	{{ form.hidden_tag() }}
+	                    	{{ wtf.form_field(form.email, placeholder="邮箱地址...") }}
+	                    	{{ wtf.form_field(form.username, placeholder="用户名...") }}
+	                    	{{ wtf.form_field(form.password, placeholder="密码..." ) }}
+	                    	{{ wtf.form_field(form.password2, placeholder="确认密码..." ) }}
+	                    	{{ wtf.form_field(form.submit) }}
+	                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+<!-- <div class="page-header">
     <h1>Register</h1>
 </div>
 <div class="col-md-4">
     {{ wtf.quick_form(form) }}
-</div>
+</div> -->
 {% endblock %}

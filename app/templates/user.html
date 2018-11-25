@@ -11,13 +11,12 @@
 <div class="user-navbar">
     <ul>
         <li><a href="#">个人主页</a></li>
-        <li><a href="{{ url_for('main.message', username=user.username) }}">留言板</a></li>
+        <li><a href="#">留言板</a></li>
         <li><a href="{{ url_for('auth.change_avatar') }}">修改头像</a></li>
         <li><a href="#">我的文章</a></li>
         <li><a href="{{ url_for('main.album', user_id=user.id) }}">我的相册</a></li>
         <li><a href="#">我的收藏</a></li>
         <li><a href="#">操作中心</a></li>
-  
     </ul>
 </div>
 <div class="container">
@@ -104,6 +103,7 @@
 {% block scripts %}
 {{ super() }}
 <script>
+    //用户关注
     function follow(e) {
         var $el = $(e.target); //当前元素
         var id = $el.data('id');
@@ -121,7 +121,7 @@
             }
         });
     }
-
+    //用户取消关注
     function unfollow(e) {
         var $el = $(e.target);
         var id = $el.data('id');
@@ -158,8 +158,6 @@ $(document).ready(function(){
     $(".follow-btn").on('click', follow.bind(this)); //需要绑定this， 否则this为全局变量
     $(".unfollow-btn").on('click', unfollow.bind(this));
 });
-        
-    //$(document).on('click', '.follow-btn', follow.bind(this));
-    //$(document).on('click', '.unfollow-btn', unfollow.bind(this));
+
 </script>
 {% endblock %}

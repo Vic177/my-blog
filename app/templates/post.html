@@ -4,17 +4,56 @@
 
 {% block title %}Flasky - Post{% endblock %}
 
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login.css') }}">
+<style>
+.posts {
+	margin-left: 0;
+	margin-right: 0;
+	padding: 0;
+}
+#commentForm #body{
+	background: #f8f8f8;
+	border: 3px solid #ddd;
+	font-size: 16px;
+    font-weight: 300;
+    color: #888;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.comment-title{
+    margin: 20px 0;
+    margin-bottom: 0;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    color: #555555;
+    height: 20px;
+    line-height: 20px;
+    font-size: 18px;
+    color: black;
+}
+
+</style>
+{% endblock %}
+
 {% block page_content %}
 <div class="container">
 	<div class="row">
-		<div class="col-sm-8 col-sm-offset-2 col-xs-12">
+		<div class="col-sm-8 col-sm-offset-2 col-xs-12 post-page">
 			{% include '_posts.html' %}
 			{% if current_user.can(Permission.COMMENT) %}
-			<form role="form" id="comment" method="post">
-				{{ form.hidden_tag() }}
-				{{ wtf.form_field(form.body) }}
-				{{ wtf.form_field(form.submit) }}
+			<div class="comment-title"><p>欢迎评论！</p></div>
+			<form role="form" id="commentForm">
+				{{ form.csrf_token() }}
+				{{ wtf.form_field(form.body, placeholder="请输入评论内容！") }}
+				{{ wtf.form_field(form.submit, id="submit-comment") }}
 			</form>
+			{% else %}
+			<div class="comment-title"><p>登陆后可以评论！</p></div>
 			{% endif %}
 			{% include '_comments.html' %}
 			{% if pagination %}
@@ -31,6 +70,40 @@
 {% block scripts %}
 {{ super() }}
 <script>
+
+	//使用validate插件，验证表单评论post表单
+	$(document).ready(function(){
+		$("#commentForm").validate({
+			rules: {
+				body: "required" 
+			} 
+		});
+	});
+
+	function showRequest(formData,jqForm,options){
+	  	return $("#commentForm").valid(); 
+	}
+	//使用jqueryForm插件进行异步提交
+	$(document).ready(function(){
+		$("#commentForm").submit(function(){
+			$(this).ajaxSubmit({
+				type: 'post',
+				url: $SCRIPT_ROOT +'/post/{{ posts[0].id }}',
+				beforeSubmit: showRequest,
+				success: function(data) {
+					$(".comments").prepend($(data).fadeIn("100"));
+					$("#commentForm").resetForm();
+					toast('评论成功！');
+				}
+			});
+			return false;//返回false，阻止表单的正常提交
+		});
+	});
+
+
+
+
+	
 	
 </script>
 {% endblock %}

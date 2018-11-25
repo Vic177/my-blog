@@ -1,0 +1,90 @@
+
+.navbar {
+	border-radius: 1px;
+	background-color: #fff;
+}
+
+
+.drop-meau{
+	width: 100%;
+}
+
+
+.dropdown-title {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  color: #263238;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 10px 20px 10px;
+  text-align: center;
+}
+
+.notif-box {
+  width: 300px;
+  padding-bottom: 0px;
+}
+.notif-box .notif-center a {
+  display: flex;
+  border-bottom: 1px solid #eaeaea;
+  color: #4d585f;
+}
+.notif-box .notif-center a:hover {
+  text-decoration: none;
+  background: #fafafa;
+  transition: all .2s;
+}
+.notif-box .notif-center a .notif-icon {
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  margin: 10px;
+  align-items: center;
+  justify-content: center;
+  background: #eee;
+  border-radius: 50%;
+}
+
+
+.notif-box .notif-center a .notif-icon.notif-primary {
+  background: #1D62F0 !important;
+}
+
+.notif-box .notif-center a .notif-icon.notif-success {
+  background: #59d05d !important;
+}
+
+.notif-box .notif-center a:hover{
+	background-color: #CBC8C8;
+}
+
+
+.notif-box .notif-center a .notif-content .notif-block {
+ 	padding: 5px 0;
+	font-size: 14px;
+	line-height: 20px;
+	display: block;
+}
+.notif-box .notif-center a .notif-content .time {
+    color: #7d8c95;
+    font-size: 12px;
+    display: block;
+}
+
+#navbar-user {
+	height: 50px;
+	line-height: 50px;
+	padding: 0 15px;
+}
+
+.dropdown-user {
+  width: 300px;
+}
+
+.user-box {
+  display: flex;
+  padding: .25rem 1rem;
+}
+
+.user-box .u-text {
+	padding: 0 10px;
+}
