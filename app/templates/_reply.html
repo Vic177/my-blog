@@ -6,18 +6,22 @@
     </div>
     <div class="media-body">
         <h5 class="media-heading">
-                <a href="{{ url_for('.user', username=reply.author.username)}}">{{ reply.author.username }}</a>
-                <span style="font-size: 15px;"><i class="fa fa-at" aria-hidden="true"></i></span>
-                <a href="{{ url_for('.user', username=reply.replyto_user.username) }}">{{ reply.replyto_user.username }}</a>
+            {% if reply.reply_type == "reply" %}
+            <a href="{{ url_for('.user', username=reply.author.username)}}">{{ reply.author.username }}</a>
+            <span style="font-size: 15px;"><i class="fa fa-at" aria-hidden="true"></i></span>
+            <a href="{{ url_for('.user', username=reply.replyto_user.username) }}">{{ reply.replyto_user.username }}</a>
+            {% else %}
+            <a href="{{ url_for('.user', username=reply.author.username)}}">{{ reply.author.username }}</a>
+            {% endif %}   
         </h5>
         <div>{{ reply.body | safe }}</div>
-        <div class="row comment-footer">
-            <ul class="list-inline col-xs-12">
-                <li class="comment-date"><small>{{ moment(reply.timestamp).format('YYYY-MM-DD HH:mm:ss') }}</small></li>
+        <div class="comment-footer">
+            <ul class="list-inline">
+                <li class="comment-date"><small>{{ timestamp }}</small></li>
                 {% if current_user.is_authenticated %}
                 <li><a href="#" class="btn btn-default btn-xs"><i class="fa fa-trash-o" aria-hidden="true"></i></a></li>
                 <li><a href="#" class="btn btn-default btn-xs"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></a></li>
-                <li><a href="#" class="btn btn-default btn-xs reply-btn"><i class="fa fa-commenting-o" aria-hidden="true"></i></a></li>
+                <li class="comment-btn" ><a href="javascript:void(0)" class="btn btn-default btn-xs reply-btn">回复</a></li>
                 {% endif %}
             </ul>
         </div>

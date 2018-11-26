@@ -324,8 +324,9 @@ class Reply(db.Model):
     body_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    replyto_id = db.Column(db.Integer)    #回复对象的id， 默认是comment_id
+    replyto_id = db.Column(db.Integer)
     replyto_uid = db.Column(db.Integer, db.ForeignKey('users.id'))
+    reply_type = db.Column(db.String(64))
 
     def reply_delete(self):
         db.session.delete(self)

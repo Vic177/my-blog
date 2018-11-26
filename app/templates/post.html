@@ -37,6 +37,13 @@
     color: black;
 }
 
+#reply-form {
+	margin: 10px auto;
+	max-width: 650px;
+}
+
+
+
 </style>
 {% endblock %}
 
@@ -69,20 +76,33 @@
 
 {% block scripts %}
 {{ super() }}
+
+
+<script id="comment-template" type="text/html">
+	<form action="" role="form" id="reply-form">
+	    <div class="form-group">
+	        <textarea type="text" class="form-control" name="body" rows="2"></textarea>
+	    </div>
+	    <button type="button" id="submit-reply" class="btn btn-default">提交</button>
+	</form>
+</script>
+
 <script>
 
 	//使用validate插件，验证表单评论post表单
-	$(document).ready(function(){
+	/*$(document).ready(function(){
 		$("#commentForm").validate({
 			rules: {
 				body: "required" 
 			} 
 		});
-	});
+	});*/
 
+	//提交表单前对表单验证
 	function showRequest(formData,jqForm,options){
 	  	return $("#commentForm").valid(); 
 	}
+
 	//使用jqueryForm插件进行异步提交
 	$(document).ready(function(){
 		$("#commentForm").submit(function(){
@@ -92,6 +112,7 @@
 				beforeSubmit: showRequest,
 				success: function(data) {
 					$(".comments").prepend($(data).fadeIn("100"));
+					flask_moment_render_all(); //在浏览器中，每当添加包含时间戳的元素时，浏览器中的Ajax回调都需要调用 flask_moment_render_all()
 					$("#commentForm").resetForm();
 					toast('评论成功！');
 				}
@@ -100,10 +121,83 @@
 		});
 	});
 
+	var template = $("#comment-template").html();
 
 
+	//点击出现回复表单
+	$(function(){
+		$(".comments").on("click", ".comment-btn", function(){
+			var replyform = $(this).parents(".comment-footer").find("#reply-form");
+			if(replyform.length == 0){
+				$("#reply-form").remove();
+				$(this).parents(".comment-footer").append(template);
+			}else{
+				$("#reply-form").toggle();
+			}
+			
+		});
+	});
 
+
+	//点击页面其他位置使表单隐藏
+	$(document).bind('click', function(e) {
+		var e = e || window.event; //浏览器兼容性 
+		var elem = e.target || e.srcElement;
+			while(elem) { //循环判断至跟节点，防止点击的是div子元素 
+				if(elem.id && elem.id == 'reply-form' || elem.className == 'comment-btn') {
+					return;
+				}
+				elem = elem.parentNode;
+			}
+			$('#reply-form').css('display', 'none'); //点击的不是div或其子元素 
+	});
+
+
+	function reply(e){
+		var $el = $(e.target);
+		var form = $("#reply-form");
+		//判断是否为二级回复
+		if ($el.parents(".reply").length == 0) {
+			var id = $el.parents(".comment").data('id');
+			$.ajax({
+				url: $SCRIPT_ROOT +'/reply-comment/' + id,
+				type: 'post',
+				data: form.serialize(),
+				success: function(data){
+					$el.parents(".comment").find(".replies").prepend($(data).fadeIn("100"));
+					flask_moment_render_all();
+					$("#reply-form").hide();
+					toast('回复成功！');
+					$("#reply-form").resetForm();
+				}
+			});
+		}else{
+			var id = $el.parents(".reply").data('id');
+			$.ajax({
+				url: $SCRIPT_ROOT +'/reply-reply/' + id,
+				type: 'post',
+				data: form.serialize(),
+				success: function(data){
+					$el.parents(".reply").after($(data).fadeIn("100"));
+					flask_moment_render_all();
+					$("#reply-form").hide();
+					toast('回复成功！');
+					$("#reply-form").resetForm();
+				}
+			});
+		}
+	}
+
+	//点击#submit-reply按钮提交表单, on 需要绑定页面中已经存在的html元素
+	$(function(){
+		$(".post-page").on("click", "#submit-reply", reply.bind(this));
+	});
 	
 	
+	
+
+
+
+
 </script>
 {% endblock %}

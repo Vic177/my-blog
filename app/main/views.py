@@ -12,6 +12,8 @@ from ..utils import resize_image
 
 from .. import db, photosSet
 
+from .. import moment
+
 from . import main 
 import os
 
@@ -94,7 +96,8 @@ def post(id):
                           author=current_user._get_current_object())
         db.session.add(comment)
         db.session.commit()
-        return render_template('_com.html', comment=comment)
+        timestamp = moment.create(comment.timestamp).format('YY-MM-DD HH:mm') #在视图函数中渲染时间戳
+        return render_template('_com.html', comment=comment, timestamp=timestamp) 
     page = request.args.get('page', 1, type=int)
     if page == -1:
         page = (post.comments.count() - 1) / \
@@ -170,24 +173,28 @@ def reply_comment(id):
                       author=current_user._get_current_object(),
                       replyto_id=comment.id,
                       replyto_user=comment.author,
+                      reply_type = 'comment'
                       )
         db.session.add(reply)
         db.session.commit()
-        return render_template("_reply.html", reply=reply)
+        timestamp = moment.create(reply.timestamp).format('YY-MM-DD HH:mm:ss')
+        return render_template("_reply.html", reply=reply, timestamp=timestamp)
 
 @main.route('/reply-reply/<int:id>', methods=['GET', 'POST'])
 @login_required
 def reply_reply(id):
     reply = Reply.query.get_or_404(id)
     if request.method == 'POST':
-        replyto = Reply(body=request.form.get('body'),
+        reply1 = Reply(body=request.form.get('body'),
                         comment=reply.comment,
                         author=current_user._get_current_object(),
                         replyto_id=reply.id,
                         replyto_user=reply.author,
                         reply_type='reply')
-        db.session.add(replyto)
-        return redirect(url_for('.post', id=reply.comment.post_id))
+        db.session.add(reply1)
+        db.session.commit()
+        timestamp = moment.create(reply1.timestamp).format('YY-MM-DD HH:mm:ss')
+        return render_template("_reply.html", reply=reply1, timestamp=timestamp)
 
 @main.route('/write_post/', methods=['GET', 'POST'])
 def write_post():
