@@ -3,13 +3,55 @@
 
 {% block title %}Flasky - Edit Post{% endblock %}
 
+{% block head %}
+{{ super() }}
+
+<style>
+#postForm #title {
+	width: 100%;
+	height: 40px;
+	margin: 10px 0;
+	margin-top: 0;
+	padding: 0 10px;
+	background: #fff;
+	border: 1px solid #c5c5c5;
+	font-size: 18px;
+	font-weight: 400;
+	color: #000;
+	-moz-border-radius: 1px;
+	-webkit-border-radius: 1px;
+	border-radius: 1px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+
+#postForm {
+	position: relative;
+	margin-bottom: 200px;
+}
+
+#cate{
+	margin: 20px 0;
+}
+
+
+#category {
+	display: inline-block;
+	margin: 0 10px;
+	height: 30px;
+}
+
+</style>
+
+{% endblock %}
+
 {% block page_content %}
 <div class="page-header">
     <h1>Edit Post</h1>
 </div>
-<form class="form" method="POST">
+<form class="form" id="postForm" method="POST">
 	{{ form.hidden_tag() }}
-	    {{ wtf.form_field(form.title) }}
+	    {{ form.title }}
 	    {{ wtf.form_field(form.body, id="tinymce1") }}
 	    {{ wtf.form_field(form.category) }}
 	    {{ wtf.form_field(form.submit) }}

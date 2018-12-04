@@ -153,6 +153,15 @@
 	});
 
 
+	//使用validate插件，验证表单评论post表单
+	$(document).ready(function(){
+		$("#reply-form").validate({
+			rules: {
+				body: "required" 
+			} 
+		});
+	});
+
 	function reply(e){
 		var $el = $(e.target);
 		var form = $("#reply-form");

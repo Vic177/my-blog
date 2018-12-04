@@ -69,11 +69,12 @@
 	font-size: 16px;
     font-weight: 300;
     line-height: 50px;
-    color: #888;
+    color: #000;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     border-radius: 4px;
 }
+
 
 #submit{
 	width: 100%;

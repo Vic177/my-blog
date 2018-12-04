@@ -8,45 +8,381 @@
 {{ super() }}
 
 <style type="text/css">
-.user-info{text-align: center;}
-#info span,strong{display: block;}
-#myModal{ position: fixed;}
-.index-top{margin-bottom: 20px; margin-top: 0px; padding:15px; background-color: #9DABCD;}
-.index-top h3{margin: 0px;}
+
+.index-mainColumn .index-tabCard {
+	background-color: #fff;
+	height: 58px;
+	line-height: 58px;
+	-moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+
+}
+
+
+
+.index-mainColumn .index-tabCard ul.tabs {
+	margin: 0;
+}
+
+
+.index-mainColumn .index-tabCard ul li {
+	margin: 0;
+	text-align: center;
+}
+
+.index-mainColumn .index-tabCard ul li a {
+	display: inline-block;
+	font-size: 16px;
+	color: #000000;
+	text-decoration: none;
+}
+
+.index-mainColumn .index-tabCard ul li a:hover {
+	font-size: 16px;
+	font-weight: 600;
+	color: #000;
+	opacity: .5;
+}
+
+
+.index-tabActive {
+	font-weight: 600;
+	background-color:  #4aaf51;
+	color: #FFFFFF;
+}
+
+.index-mainColumn .index-tabCard ul li.index-tabActive a{
+	color: #FFFFFF;
+}
+
+.index-userColumn .user-info {
+	margin-bottom: 5px;
+	background-color: #FFFFFF;
+	-moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.index-userColumn .user-info > .cover {
+	height: 75px;
+	line-height: 75px;
+	position: relative;
+/* 	background-image: url('/static/image/bg.jpg'); */
+	background-repeat: no-repeat;
+	text-align: center;
+	-moz-border-radius: 4px 4px 0 0;
+    -webkit-border-radius: 4px 4px 0 0;
+    border-radius: 4px 4px 0 0;
+}
+
+.index-userColumn .user-info > .cover img {
+	width: 70px;
+	height: 70px;
+}
+
+.index-userColumn .info-detail {
+	padding: 10px 20px;
+	text-align: center;
+}
+
+.info-detail .nameBox .username {
+	max-width: 200px;
+    display: inline-block;
+    overflow: hidden;
+    font-size: 16px;
+    font-weight: bold;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-decoration: none;
+    color: #000000;
+}
+
+.info-detail .nameBox a:hover {
+	color: #f78c2f;
+}
+
+.info-detail p {
+	width: 100%;
+	text-align: center;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.info-detail .detail {
+	margin-bottom: 0;
+	text-decoration: none;
+    color: #000000;
+
+
+}
+
+.info-detail ul.detail {
+	height: 65px;
+	border-top: 1px dashed #ccc;
+	padding: 10px 0;
+}
+
+.info-detail ul.detail li {
+	float: left;
+	width: 24%;
+	border-right: 1px solid #ccc;
+}
+
+.info-detail ul.detail li:last-child {
+	border-right: none;
+}
+
+
+.info-detail ul.detail > li a {
+	margin-bottom: 0;
+	text-decoration: none;
+    color: #000000;
+    text-align: center;
+}
+
+.info-detail ul.detail > li a:hover strong {
+	color: #f78c2f;
+}
+
+.info-detail ul.detail > li a span,  .info-detail ul.detail > li a strong{
+	display: block;
+}
+
+.info-detail ul.detail > li a strong {
+	font-size: 18px;
+}
+
+.info-detail ul.detail > li a span {
+	font-size: 12px;
+	color: #808080;
+}
+
+.index-userColumn .user-operition {
+	margin-bottom: 5px;
+	padding-bottom: 10px;
+	background-color: #FFFFFF;
+	-moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.user-operition > ul{
+	margin-bottom: 0;
+
+}
+
+.user-operition ul:after {
+	content: "";
+	display: block;
+	clear: both;
+}
+
+.user-operition ul.write li {
+	float: left;
+	width: 33%;
+	text-align: center;
+	padding: 25px 10px;
+}
+
+.user-operition ul.write li a {
+	text-align: center;
+	text-decoration: none;
+	color: #5c5b5b;
+	font-size: 14px; 
+}
+
+.user-operition ul.write li a:hover {
+	color: #337ab7;
+	font-weight: 600;
+	opacity: 0.8;
+}
+
+.user-operition ul.write > li a span, .user-operition ul.write > li a i{
+	display: block;
+	margin-bottom: 5px;
+}
+
+
+.user-operition .my-favor ul li a {
+	width: 100%;
+	display: inline-block;
+	height: 40px;
+	line-height: 40px;
+	font-size: 14px;
+	color: #5c5b5b;
+	text-decoration: none;
+	padding: 0 20px;
+}
+
+.user-operition .my-favor ul li a i {
+	opacity: 0.5;
+}
+
+.user-operition .my-favor ul li a:hover {
+	background-color: #f5f5f5;
+}
+
+.user-operition .my-favor ul li a:hover i {
+	opacity: 1;
+}
+
+
+.sidebar .login-card {
+	background-color: #FFFFFF;
+	-moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    padding: 10px;
+}
+
+.sidebar .login-card h4 {
+	margin: 0;
+	text-align: center;
+}
+
+.login-card #email, .login-card #password, .login-card #password2 {
+	height: 40px;
+	background: #fff;
+	border: 1px solid #ddd;
+	font-size: 14px;
+    font-weight: 300;
+    line-height: 40px;
+    color: #888;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.login-card .form-group {
+	margin-bottom: 0;
+}
+
+.login-card #email:focus, .login-card #password:focus {
+	opacity: .8;
+	border: 1px solid #55acee;
+}
+
+.login-card #submit {
+	width: 100%;
+	background-color: #4aaf51;
+	height: 40px;
+	font-size: 16px;
+}
+
+.login-card #submit:hover { opacity: 0.8; color: #fff; }
+
+.login-card #submit:active {outline: 0;opacity: 0.8;color: #fff;-moz-box-shadow: none;-webkit-box-shadow: none;box-shadow: none;}
+
+.login-card #submit:focus { outline: 0; opacity: 0.8; background: #4aaf51; color: #fff; }
+
+.login-card p.social-login a {
+	padding: 0 5px;
+	color: #f78c2f;
+}
+
+.advertisement {
+	margin-top: 10px;
+	height: 200px;
+	background-color: #fff;
+	-moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+}
+
 </style>
 
 {% endblock %}
 
 {% block page_content %}
-    {% include 'modal.html' %}
-	<div class="index-top">
-		<h3>欢迎来到Vic的小站！</h3>
-		<button type="button" class="btn btn-default"><a href="{{ url_for('.write_post') }}">写文章</a></button>
-	   <!--  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">写文章</button> -->
-	</div>
-	<div class="container">
-		<div class="row">
-			<div class="side col-md-3">
-			    <div class="panel panel-info">
-			    	<div class="panel-heading"><small>个人中心</small></div>
-			    	<div class="panel-body">
-			    		<div class="user-info">
-							<ul class="list-inline" id="info">
-								<li><a href="#"><span>文章</span><strong>55</strong></a></li>
-								<li><a href="#"><span>关注</span><strong>55</strong></a></li>
-								<li><a href="#"><span>粉丝</span><strong>55</strong></a></li>
-							</ul>
-							<ul class="list-inline" id="contact">
-								<p style="display: inline;">联系方式：</p>
-								<li><a href="#"><i class="fa fa-envelope" aria-hidden="true"></i></a></li>
-								<li><a href="#"><i class="fa fa-weibo" aria-hidden="true"></i></a></li>
-								<li><a href="#"><i class="fa fa-github" aria-hidden="true"></i></a></li>
-							</ul>
-			    		</div>
-			    	</div>
-			    </div>
+<div class="row">
+	<div class="col-md-3">
+		<div class="sidebar index-userColumn">
+			{% if current_user.is_authenticated %}
+			<div class="user-info">
+				<div class="cover">
+					<a href="{{ url_for('.user', username=current_user.username) }}">
+						<img class="img-circle" src="{{ url_for('main.get_avatar', filename=current_user.avatar_m ) }}" alt="{{ current_user.username }}">
+					</a>
+				</div>	
+				<div class="info-detail">
+					<div class="nameBox">
+						<a href="{{ url_for('.user', username=current_user.username) }}" class="username">{{ current_user.username }}</a>
+					</div>
+					<p>
+						{% if current_user.about_me is none %}
+                        暂无个人简介
+                        {% else %}
+                        <span>{{ current_user.about_me }}</span>
+                        {% endif %}
+                    </p>
+					<ul class="detail">
+						<li><a href="#"><strong>{{ current_user.posts.count() }}</strong><span>文章</span></a></li>
+						<li><a href="#"><strong>{{ current_user.albums.count() }}</strong><span>相册</span></a></li>
+						<li><a href="#"><strong>{{ current_user.followed.count() -1 }}</strong><span>关注</span></a></li>
+						<li><a href="#"><strong>{{ current_user.followers.count() -1 }}</strong><span>粉丝</span></a></li>
+					</ul>	
+				</div>
 			</div>
-			<div class="col-md-8 col-xs-12">
+			<div class="user-operition">
+				<ul class="write">
+					<li>
+						<a href="{{ url_for('.write_post') }}"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i><span>写文章</span></a>
+					</li>
+					<li>
+						<a href="#"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i><span>写说说</span></a>
+					</li>
+					<li>
+						<a href="#"><i class="fa fa-upload fa-lg" aria-hidden="true"></i><span>传照片</span></a>
+					</li>
+				</ul>
+				<div class="my-favor">
+					<ul>
+						<li><a href=""><i class="fa fa-files-o" aria-hidden="true"></i>&nbsp;草稿箱</a></li>
+						<li><a href=""><i class="fa fa-star" aria-hidden="true"></i>&nbsp;我关注的文章</a></li>
+						<li><a href=""><i class="fa fa-star-o" aria-hidden="true"></i>&nbsp;我收藏的相册</a></li>
+						<li><a href=""><i class="fa fa-picture-o" aria-hidden="true"></i>&nbsp;我收藏的图片</a></li>
+					</ul>
+				</div>
+			</div>
+			{% else %}
+			<div class="login-card">
+				<h4>账号密码登陆</h4>
+				<form role="form" method="post" class="login-form">
+	            	{{ form1.hidden_tag() }}
+	            	{{ wtf.form_field(form1.email, placeholder="邮箱地址...") }}
+	            	{{ wtf.form_field(form1.password, placeholder="密码..." ) }}
+	            	{{ wtf.form_field(form1.remember_me) }}
+	            	{{ wtf.form_field(form1.submit) }}
+	            </form>
+	            <p style="margin-top: 10px; height: 15px; font-size: 12px;">
+                	<a href="{{ url_for('auth.password_reset_request') }}" style="float: left; color: #000;">忘记密码？</a>
+                	<a href="{{ url_for('auth.register') }}" style="float: right; color: #000;">注册账号</a>
+                <p>
+                <p class="social-login" style="height: 15px; font-size: 16px; text-align: center">
+               		<a href="#"><i class="fa fa-qq"></i></a>
+               		<a href="#"><i class="fa fa-wechat"></i></a>
+               		<a href="#"><i class="fa fa-github"></i></a>
+                </p>
+			</div>
+			{% endif %}
+			<div class="advertisement">
+				
+			</div>
+		</div>
+	</div>
+	<div class="col-md-8 col-xs-12">
+		<div class="index-mainColumn">
+			<div class="index-tabCard">
+				<ul class="row list-inline tabs">
+					<li class="col-md-2 col-xs-4 tab-items index-tabActive"><a class="tab-link" href="#">所有动态</a></li>
+					{% if current_user.is_authenticated %}
+					<li class="col-md-2 col-xs-4 tab-items"><a class="tab-link" href="#">关注</a></li>
+					{% endif %}
+				</ul>
+			</div>
+			<div class="index-content">
 				{% include 'post_summary.html' %}
 	            {% if pagination %}
 	            <div class="pagination">
@@ -55,8 +391,49 @@
 	            {% endif %}
 			</div>
 		</div>
-	<div>
+	</div>
+	
+</div>
 {% endblock %}
 
+{% block scripts %}
+{{ super() }}
+<script>
+	$(function(){
+		$(".tab-items").click(function(){
+			$(this).siblings().removeClass("index-tabActive");
+			$(this).addClass("index-tabActive");
+		});
+	});
+
+	/*$(function(){
+		var tabH = $("ul.tabs").offset().top;
+		console.log(tabH);
+		$(window).scroll(function(){
+			var scroH = $(this).scrollTop();
+			console.log(scroH);
+			if(scroH >= tabH){
+				$("ul.tabs").css({"position":"fixed", "top": 0});
+			}else if (scroH < tabH){
+				$("ul.tabs").css({"position":"static"});
+			}
+		});
+	});*/
+
+	/*$(function(){
+		var tabH = $(".index-tabCard").offset().top;
+		console.log(tabH);
+		$(window).scroll(function(){
+			var scroH = $(this).scrollTop();
+			if(scroH >= tabH) {
+				$(".index-tabCard").css({"position":"fixed", "top": 0});
+			}else if (scroH < tabH) {
+				$(".index-tabCard").css({"position":"static", "z-index": 10});
+			}
+		});
+	});*/
+</script>
+{{ moment.include_moment() }}
+{% endblock %}
 
 

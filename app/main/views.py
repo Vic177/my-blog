@@ -5,7 +5,7 @@ from ..models import User, Role, Post, Permission, Comment, Category, Reply, \
 from ..models import Album, Photo
 from .forms import EditProfileForm, PostForm, CommentForm, EditProfileAdminForm, ReplyForm, \
                    MessageForm, AlbumForm
-from flask_login import login_required, current_user
+from flask_login import login_required, current_user, login_user
 from ..decorators import admin_required, permission_required
 from flask_dropzone import random_filename
 from ..utils import resize_image
@@ -16,10 +16,12 @@ from .. import moment
 
 from . import main 
 import os
+from ..auth.forms import LoginForm
 
 @main.route('/', methods=['GET','POST'])
 def index():
     form = PostForm()
+    form1 = LoginForm()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
         post = Post(title=form.title.data,
                     body=form.body.data,
@@ -28,12 +30,17 @@ def index():
         db.session.add(post)
         db.session.commit()
         return redirect(url_for('.index'))
-    admin = User.query.filter(Role.name=="Administrator").first()
+    if form1.validate_on_submit():
+        user = User.query.filter_by(email=form1.email.data).first()
+        if user is not None and user.verify_password(form1.password.data):
+            login_user(user, form1.remember_me.data)
+            return redirect(url_for('main.index'))
+        flash('Invalid username or password')
     page = request.args.get('page', 1, type=int)
     pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page,
         per_page=current_app.config['FLASKY_POSTS_PER_PAGE'], error_out=False)
     posts = pagination.items
-    return render_template('index.html', posts=posts, admin=admin, pagination=pagination, form=form)
+    return render_template('index.html', posts=posts, pagination=pagination, form=form, form1=form1)
     
 @main.route('/user/<username>')
 def user(username):
@@ -196,7 +203,7 @@ def reply_reply(id):
         timestamp = moment.create(reply1.timestamp).format('YY-MM-DD HH:mm:ss')
         return render_template("_reply.html", reply=reply1, timestamp=timestamp)
 
-@main.route('/write_post/', methods=['GET', 'POST'])
+@main.route('/write_post', methods=['GET', 'POST'])
 def write_post():
     form = PostForm()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
@@ -286,7 +293,7 @@ def get_avatar(filename):
     return send_from_directory(current_app.config['AVATARS_SAVE_PATH'], filename)
 
 @main.route('/images/<path:filename>')
-def  get_image(filename):
+def get_image(filename):
     return send_from_directory(current_app.config['IMAGE_SAVE_PATH'], filename)
 
 @main.route('/upload', methods=['GET', 'POST']) #文章图片上传
@@ -298,8 +305,6 @@ def upload():
         f.save(os.path.join(current_app.config['IMAGE_SAVE_PATH'], filename))
         url = url_for('main.get_image', filename=filename)
         return jsonify( location = url )
-
-
 
 @main.route('/album/<int:user_id>', methods=['GET', 'POST'])
 @login_required

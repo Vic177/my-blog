@@ -52,5 +52,6 @@ tinymce.init({
 
 		    
 		  },
-
+		height : 400,
+  		menubar: false,
 	});

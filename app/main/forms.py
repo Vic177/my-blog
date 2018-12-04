@@ -47,7 +47,7 @@ class CommentForm(FlaskForm):
     submit = SubmitField('提交')
     
 class PostForm(FlaskForm):
-    title = StringField("标题", validators=[Required()])
+    title = StringField("", validators=[Required()])
     body = TextAreaField("")
     category = SelectField("分类", validators=[Required()], coerce=int)
     submit = SubmitField('提交')

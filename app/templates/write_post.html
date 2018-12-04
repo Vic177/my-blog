@@ -4,21 +4,98 @@
 
 {% block title %}写文章{% endblock %}
 
+{% block head %}
+{{ super() }}
+<style>
+
+#postForm #title {
+	width: 100%;
+	height: 40px;
+	margin: 10px 0;
+	margin-top: 0;
+	padding: 0 10px;
+	background: #fff;
+	border: 1px solid #c5c5c5;
+	font-size: 18px;
+    font-weight: 400;
+    color: #000;
+    -moz-border-radius: 1px;
+    -webkit-border-radius: 1px;
+    border-radius: 1px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+
+#postForm {
+	position: relative;
+	margin-bottom: 200px;
+}
+
+#cate{
+	margin: 20px 0;
+}
+
+
+#category {
+	display: inline-block;
+	margin: 0 10px;
+	height: 30px;
+}
+
+#draft {
+	margin-left: 20px;
+}
+
+</style>
+
+{% endblock %}
+
 {% block page_content %}
-<form class="form" method="POST">
-	{% if current_user.can(Permission.WRITE_ARTICLES) %}
-	    {{ form.hidden_tag() }}
-	    {{ wtf.form_field(form.title) }}
-	    {{ wtf.form_field(form.body, id="tinymce1") }}
-	    {{ wtf.form_field(form.category) }}
-	    {{ wtf.form_field(form.submit) }}
-	{% endif %}
+<div class="row">
+	<div class="col-md-10 col-md-offset-1 col-xs-12">
+		<form class="form" id="postForm" method="POST">
+		{% if current_user.can(Permission.WRITE_ARTICLES) %}
+		    {{ form.hidden_tag() }}
+		    {{ form.title(placeholder="请输入标题！") }}
+		    {{ form.body(id="tinymce1") }}
+		    <div id="cate">
+		    	<span>请选择文章分类</span>
+		    	{{ form.category(placeholder="选择分类") }}
+		    </div>
+		    {{ form.submit(class="btn btn-info") }}
+		    <button class="btn btn-info" id="draft">保存到草稿</button>
+		{% endif %}
+		</form>
+	</div>
+</div>
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
 <script src="{{ url_for('static', filename='tinymce/js/tinymce/tinymce.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/tinymce_setup.js') }}"></script>
+<script>
+	
+	var form = $("#postForm");
+
+	//使用validate插件，验证表单评论post表单
+	$(document).ready(function(){
+		$("#postForm").validate({
+			rules: {
+				title: "required",
+				body: "required"
+			} 
+		});
+	});
+
+	$(function(){
+		$("#submit").click(function(){
+			form.submit();
+		})
+	});
+
+
+</script>
 {{ pagedown.include_pagedown() }}
 {% endblock %}
 

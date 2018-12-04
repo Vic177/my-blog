@@ -19,10 +19,13 @@ ul{
 
 .post
 {
-    margin: 10px 0;
+    margin: 2px 0;
     padding: 10px 0;
     background-color: #fff;
     position: relative;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
 }
 
 .post .post-header

@@ -79,6 +79,7 @@ class User(UserMixin,db.Model):
     avatar_m = db.Column(db.String(64))
     avatar_l = db.Column(db.String(64))
     albums = db.relationship('Album', backref='author', lazy='dynamic', cascade='all')
+    draftss = db.relationship('Draft', backref='author', lazy='dynamic', cascade='all')
 
     #用户的关注
     followed = db.relationship('Follow',
@@ -287,6 +288,16 @@ class Post(db.Model):
         p = Post.query.filter_by(id=id).first()
         if p:
             db.session.delete(p)
+# 草稿箱数据表
+class Draft(db.Model):
+    __tablename__ = 'drafts'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(64))
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
+   
 
 class Comment(db.Model):
     __tablename__ = 'comments'
@@ -348,6 +359,7 @@ class Category(db.Model):
     name = db.Column(db.String(64), unique=True, index=True, nullable=False)
     posts = db.relationship('Post', backref='category', lazy='dynamic')
     tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'))
+    drafts = db.relationship('Draft', backref='category', lazy='dynamic')
 
     def __repr__(self):
         return '<Category %r>' % self.name
