@@ -132,7 +132,7 @@
 <script type=text/javascript>
     $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 
-    
+    $("body").css("width", $(window).width());
 </script>
 
 {{ moment.include_moment() }}

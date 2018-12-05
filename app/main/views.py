@@ -203,7 +203,7 @@ def reply_reply(id):
         timestamp = moment.create(reply1.timestamp).format('YY-MM-DD HH:mm:ss')
         return render_template("_reply.html", reply=reply1, timestamp=timestamp)
 
-@main.route('/write_post', methods=['GET', 'POST'])
+@main.route('/write_post/', methods=['GET', 'POST'])
 def write_post():
     form = PostForm()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
@@ -384,3 +384,8 @@ def delete_album(album_id):
     db.session.commit()
     flash('相册已删除！')
     return redirect(url_for('.album', user_id=album.author.id))
+
+@main.route('/user/message/<username>', methods=['GET', 'POST'])
+def message(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    return render_template('message.html', user=user)

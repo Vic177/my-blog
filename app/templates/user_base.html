@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Blog - {{ user.username }}{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user.css') }}">
+<style>
+/* .user-content {
+	height: 260px;
+	background-color: #66A0B3;
+	background-image: url("/static/image/bg2.jpg");
+	background-repeat: no-repeat;
+
+} */
+
+.user-content .content-header {
+	height: 300px;
+	position: relative;
+	background-color: #6086DE;
+	background-image: url("/static/image/bg2.jpg");
+	background-repeat: no-repeat;
+}
+
+.user-content .content-header .user-profile {
+	width: 100%;
+	height: 300px;
+	position: absolute;
+}
+
+.user-content .content-header .user-profile .profile-top {
+	width: 100px;
+	height: 100px;
+	position: absolute;
+	top: 40px;
+	left: 0;
+	right: 0%;
+	margin: auto;
+}
+
+.user-content .content-header .user-profile .profile-top img {
+	border: 3px solid #B9F0E7;
+}
+
+.content-header .user-profile .profile-bottom {
+	width: 100%;
+	position: absolute;
+	top: 150px;
+
+}
+
+.user-profile .profile-bottom .username {
+	max-width: 200px;
+	margin: 0 auto;
+	text-align: center;
+	font-size: 22px;
+	color: #fff;
+	font-weight: bold;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-shadow: 0 0 4px rgba(0,0,0,0.5);
+
+}
+
+.user-profile .profile-bottom .about_me {
+	margin: 0 auto;
+	max-width: 300px;
+	text-align: center;
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: normal;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-decoration: none;
+    color: #fff;
+    text-shadow: 0 0 4px rgba(0,0,0,0.5);
+}
+.user-profile .profile-bottom .follow {
+	margin: 10px auto;
+	max-width: 300px;
+	text-align: center;
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: normal;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-decoration: none;
+    color: #5c5b5b;
+}
+
+.user-profile .profile-bottom .follow button {
+	margin: 0 10px;
+}
+
+.user-nav {
+	height: 40px;
+	line-height: 40px;
+	background-color: #fff;
+}
+.user-nav ul.nav-tabs {
+	border: none;
+	background-color: #fff;
+	width: 60%;
+	margin: 0 auto;
+}
+
+.user-nav ul.nav-tabs li {
+	width: 25%;
+	text-align: center;
+	font-size: 16px;
+	color: #000;
+
+}
+
+.user-nav ul.nav-tabs li a {
+	display: inline-block;
+	position: relative;
+	color: #000;
+	text-decoration: none;
+	border: none;
+	height: 40px;
+	line-height: 40px;
+}
+
+.user-nav ul.nav-tabs li a:hover {
+	font-weight: 600;
+    color: #000;
+    opacity: .5;
+}
+
+</style>
+{% endblock %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-md-10 col-md-offset-1 col-xs-12">
+        <div class="user-content">
+            <div class="content-header">
+                <div class="user-profile">
+                	<div class="profile-top">
+                	    <img class="img-circle" src="{{ url_for('main.get_avatar', filename=user.avatar_m ) }}" alt="{{ user.username }}">
+                	</div>
+                	<div class="profile-bottom">
+                	    <div class="username">
+                	        {{ user.username }}
+                	    </div>
+                	    <p class="about_me">
+                	        {% if user.about_me is none %}
+                	        <span>暂无个人简介</span>
+                	        {% else %}
+                	        {{ user.about_me }}
+                	        {% endif %}
+                	    </p>
+                	    <div class="follow">
+                	        {% if current_user.is_authenticated and user != current_user %}
+                	        {% if current_user.is_following(user) %}
+                	            <button data-id="{{ user.id }}"
+                	                    data-href="{{ url_for('main.unfollow', username=user.username) }}" 
+                	                    class=" btn btn-dark unfollow-btn">
+                	                取消关注
+                	            </button>
+                	            <button data-id="{{ user.id }}" 
+                	                    data-href="{{ url_for('main.follow', username=user.username) }}" 
+                	                    class="btn btn-info follow-btn"
+                	                    style="display: none;">
+                	                关注
+                	            </button>
+                	        {% else %}
+                	            <button data-id="{{ user.id }}" 
+                	                    data-href="{{ url_for('main.follow', username=user.username) }}" 
+                	                    class="btn btn-info follow-btn">
+                	                关注
+                	            </button>
+                	            <button data-id="{{ user.id }}"
+                	                    data-href="{{ url_for('main.unfollow', username=user.username) }}" 
+                	                    class=" btn btn-dark unfollow-btn"
+                	                    style="display: none;">
+                	                取消关注
+                	            </button>
+                	        {% endif %}
+                	        <button class="btn btn-info">发送私信</button>
+                	        {% endif %}
+                	    </div>
+                	</div>
+                </div>
+            </div>
+            <div class="user-nav">
+            	<ul class="nav-tabs">
+            		{% if current_user == user %}
+            		<li><a id="user-page" href="{{ url_for('main.user', username=current_user.username) }}">我的主页</a></li>
+            		<li><a id="post" href="javascript:void(0)">我的文章</a></li>
+            		<li><a id="albums" href="javascript:void(0)">我的相册</a></li>
+            		<li><a id="message" href="{{ url_for('main.message', username=user.username) }}">留言板</a></li>
+            		{% else %}
+					<li><a id="user-page" href="{{ url_for('main.user', username=current_user.username) }}">主页</a></li>
+					<li><a id="post" href="javascript:void(0)">文章</a></li>
+            		<li><a id="album" href="javascript:void(0)">相册</a></li>
+            		<li><a id="message" href="{{ url_for('main.message', username=user.username) }}">留言板</a></li>
+            		{% endif %}
+            	</ul>
+            </div>
+            <div class="content_page">
+            	{% block user_page %}
+            	{% endblock %}
+            </div>
+        </div> 
+    </div> 
+</div>
+{% endblock %}

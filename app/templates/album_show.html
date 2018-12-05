@@ -85,6 +85,23 @@ em.photos-count{
 	width: inherit;
 }
 
+ul.show-body {
+	margin-bottom: 200px;
+}
+
+ul.show-body:after {
+	content: "";
+	display: block;
+	clear: both;
+}
+
+ul.show-body > li {
+	padding: 0; 
+	border: 1px solid #797575; 
+	text-align: center;
+	margin-bottom: 5px;
+}
+
 </style>
 {% endblock %}
 
@@ -137,10 +154,10 @@ em.photos-count{
 			  	</div>
 			</div>	
 		</div>
-		<ul class="show-body" style=" background-color: #FFFFFF;">
+		<ul class="show-body">
 			{% for photo in photos %}
-			<li class="photo col-xs-6 col-sm-4 col-md-3 col-lg-3 col-xl-2" style="padding: 0; border: 1px solid #DCD9D9; text-align: center;">
-				<a href="{{ photo.url_m }}"><img src="{{ photo.url_s }}" alt="Cinque Terre" class="img-responsive" style="width: 100%; height: 140px;"></a>
+			<li class="col-xs-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 photo" style="">
+				<a href="{{ photo.url_m }}"><img src="{{ photo.url_s }}" alt="图片" class="img-responsive" style="width: 100%; height: 140px;"></a>
 				<div class="photo-footer">
 					{{ moment(photo.timestamp).format('YYYY-MM-DD') }}
 				</div>

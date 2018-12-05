@@ -1,16 +1,16 @@
 # Python:
 *.py[cod]
-*.pyc
 *.so
 *.egg
 *.egg-info
 *.sqlite
+*.jpg
 dist
 build
 migrations/
 __pycache__/
 uploads/
-
+ll_env/
 # Windows:
 Thumbs.db
 ehthumbs.db

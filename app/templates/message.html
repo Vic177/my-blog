@@ -1,68 +1,24 @@
-{% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
+{% extends "user_base.html" %}
 
-{% block title %}留言{% endblock %}
+{% block title %}{% endblock %}
+
 {% block head %}
 {{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user.css') }}">
 {% endblock %}
 
-{% block page_content %}
-<div class="container">
-	<div class="row">
-		<div class="col-sm-8 col-sm-offset-2">
-			<h3>欢迎！登陆后可以留言哦！</h3>
-			{% if current_user.can(Permission.COMMENT) %}
-			<form role="form" method="post">
-				{{ form.hidden_tag() }}
-				{{ wtf.form_field(form.body) }}
-				{{ wtf.form_field(form.submit) }}
-			</form>
-			{% endif %}
-			<ul class="messages">
-				{% for message in messages %}
-				<li class="message">
-					<div class="row">
-						<div class="col-xs-1 col-md-offset-1">
-							<img class="img-rounded profile-thumbnail" src="{{ message.author.gravatar(size=30) }}">
-						</div>
-						<div class="col-xs-9">
-							<div class="message-body">
-								<p>
-									<a href="{{ url_for('.user', username=message.author.username) }}">
-									    {{ message.author.username }}
-									</a>留言给：&nbsp;
-									<a href="{{ url_for('.user', username=message.author.username) }}">{{ message.messageto_user.username }}</a>：
-									{{ message.body | safe }}
-								</p>
-							</div>
-							<div class="message-footer">
-								<div class="row">
-									<div class="col-xs-5">
-										<div class="message-date"><small>{{ moment(message.timestamp).format('YYYY-MM-DD HH:mm:ss') }}</small></div>
-									</div>
-									<div class="col-xs-7">
-										<ul class="list-inline">
-											<li><button class="btn btn-info btn-xs">隐藏</button></li>
-			                    			<li><button class="btn btn-info btn-xs">不看此条</button></li>
-			                    			<li><button class="btn btn-info btn-xs">赞</button></li>
-			                    			<li class="to-message"><button class="btn btn-info btn-xs">回复</button></li>
-										</ul>
-									</div>
-								</div>		
-							</div>
-							<!-- <form role="form" class="comment-message" method="post" action="{{ url_for('.comment_message', id=message.id)}}"> -->
-<!-- 								{{ form.hidden_tag() }} -->
-<!-- 								{{ wtf.form_field(form.body) }} -->
-<!-- 								{{ wtf.form_field(form.submit) }} -->
-<!-- 							</form> -->
-							{% set comments = message.comments %}
-							{% include '_comments.html' %}
-						</div>
-					</div>
-				</li>
-				{% endfor %}
-			</ul>
-		</div>
-	</div>
-</div>
+{% block user_page %}
+
+
+
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script>
+	$(function(){
+		$("#message").addClass("user-tabActive");
+	})
+</script>
 {% endblock %}

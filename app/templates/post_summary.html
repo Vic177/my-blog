@@ -25,7 +25,7 @@
                 </ul>   
             </div>
             <div class="post-body">
-                {{ post.body | safe  }}
+                {{ post.body | safe  | truncate(200,true) | striptags }}
             </div>
             <div class="post-footer">
                 <div class="footer-info">
