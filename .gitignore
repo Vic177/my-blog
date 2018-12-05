@@ -12,7 +12,7 @@ data-dev.sqlite
 dist
 build
 migrations/
-__pycache__/
+**/__pycache__/
 uploads/
 ll_env/
 app/static/image/
