@@ -1,10 +1,10 @@
 from flask import render_template, session, redirect, url_for, flash, request, \
-    current_app, send_from_directory, flash, jsonify
+    current_app, send_from_directory, flash, jsonify, abort
 from ..models import User, Role, Post, Permission, Comment, Category, Reply, \
-                     Message
+                     Message, MessageReply
 from ..models import Album, Photo
 from .forms import EditProfileForm, PostForm, CommentForm, EditProfileAdminForm, ReplyForm, \
-                   MessageForm, AlbumForm
+                   MessageForm, AlbumForm, MessageReplyForm
 from flask_login import login_required, current_user, login_user
 from ..decorators import admin_required, permission_required
 from flask_dropzone import random_filename
@@ -204,6 +204,7 @@ def reply_reply(id):
         return render_template("_reply.html", reply=reply1, timestamp=timestamp)
 
 @main.route('/write_post/', methods=['GET', 'POST'])
+@login_required
 def write_post():
     form = PostForm()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
@@ -387,5 +388,82 @@ def delete_album(album_id):
 
 @main.route('/user/message/<username>', methods=['GET', 'POST'])
 def message(username):
+    form = MessageForm()
+    form1 = MessageReplyForm()
     user = User.query.filter_by(username=username).first_or_404()
-    return render_template('message.html', user=user)
+    if request.method == "POST":
+        message = Message(body=form.body.data,
+                          author=current_user._get_current_object(),
+                          owner=user)
+        db.session.add(message)
+        db.session.commit()
+        timestamp = moment.create(message.timestamp).format('YY-MM-DD HH:mm')
+        return render_template('_ms.html', message=message, timestamp=timestamp)
+    page = request.args.get('page', 1, type=int)
+    if page == -1:
+        page = (user.own_messages.count() - 1) / \
+            current_app.config['FLASKY_COMMENTS_PER_PAGE'] + 1
+    pagination = user.own_messages.order_by(Message.timestamp.asc()).paginate(
+        page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
+        error_out=False)
+    messages = pagination.items
+    return render_template('message.html', user=user, form=form, pagination=pagination,
+                            messages=messages, form1=form1)
+
+@main.route('/update-user-messages-count/<int:user_id>')
+def update_user_messages_count(user_id):
+    user = User.query.get_or_404(user_id)
+    count = user.own_messages.count()
+    return jsonify(count=count)
+
+#回复留言
+@main.route('/user/message/reply-message/<int:message_id>', methods=['GET', 'POST'])
+def message_replyto_message(message_id):
+    message = Message.query.get_or_404(message_id)
+    if request.method == 'POST':
+        reply = MessageReply(body=request.form.get('body'),
+                             message=message,
+                             author=current_user._get_current_object(),
+                             to_user=message.author,
+                             reply_type="message")
+        db.session.add(reply)
+        db.session.commit()
+        timestamp = moment.create(reply.timestamp).format('YY-MM-DD HH:mm:ss')
+        return render_template("_ms_reply.html", reply=reply, timestamp=timestamp)
+
+#回复留言中的回复
+@main.route('/user/message/reply-reply/<int:reply_id>', methods=['GET', 'POST'])
+def message_replyto_reply(reply_id):
+    reply = MessageReply.query.get_or_404(reply_id)
+    message = reply.message
+    to_user = reply.author
+    if request.method == 'POST':
+        newreply = MessageReply(body=request.form.get('body'),
+                                message=message,
+                                author=current_user._get_current_object(),
+                                to_user=to_user,
+                                reply_type="reply")
+        db.session.add(newreply)
+        db.session.commit()
+        timestamp = moment.create(newreply.timestamp).format('YY-MM-DD HH:mm:ss')
+        return render_template("_ms_reply.html", reply=newreply, timestamp=timestamp)
+
+@main.route('/user/message/<int:id>/delete', methods=['POST'])
+@login_required
+def delete_message(id):
+    message = Message.query.get_or_404(id)
+    if current_user != message.author and current_user != message.owner:
+        return jsonify(message='请求错误！'), 403
+    db.session.delete(message)
+    db.session.commit()
+    return jsonify(message='留言已删除！')
+
+@main.route('/user/message/reply/<int:id>/delete', methods=['POST'])
+@login_required
+def delete_message_reply(id):
+    reply = MessageReply.query.get_or_404(id)
+    if current_user != reply.author and current_user != reply.message.owner:
+        return jsonify(message='请求错误！'), 403
+    db.session.delete(reply)
+    db.session.commit()
+    return jsonify(message='回复已删除！')

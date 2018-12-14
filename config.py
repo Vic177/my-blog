@@ -11,14 +11,15 @@ class Config:
     FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')
     FLASKY_UPLOAD_PATH = os.path.join(basedir, 'uploads')
     FLASKY_POSTS_PER_PAGE = 10
-    FLASKY_COMMENTS_PER_PAGE = 5
+    FLASKY_COMMENTS_PER_PAGE = 10
+    FLASKY_MESSAGES_PER_PAGE = 5
     FLASKY_FOLLOWERS_PER_PAGE = 50
     DROPZONE_MAX_FILE_SIZE = 5
     DROPZONE_MAX_FILES = 30
     DROPZONE_ALLOWED_FILE_TYPE = 'image'
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024
     AVATARS_SAVE_PATH = os.path.join(FLASKY_UPLOAD_PATH, 'avatars')
-    AVATARS_SIZE_TUPLE = (30, 100, 200)
+    AVATARS_SIZE_TUPLE = (30, 100, 150)
     IMAGE_SAVE_PATH = os.path.join(FLASKY_UPLOAD_PATH, 'images') #文章图片保存
     PHOTO_SAVE_PATH = os.path.join(FLASKY_UPLOAD_PATH, 'photos') #flask_dropdown路径
     FLASKY_PHOTO_SIZE = {'small': 200, 'medium': 800}

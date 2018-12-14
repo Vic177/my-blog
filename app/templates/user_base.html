@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Blog - {{ user.username }}{% endblock %}
+{% block title %}{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -40,6 +40,8 @@
 
 .user-content .content-header .user-profile .profile-top img {
 	border: 3px solid #B9F0E7;
+    width: 100px;
+    height: 100px;
 }
 
 .content-header .user-profile .profile-bottom {
@@ -187,14 +189,14 @@
             <div class="user-nav">
             	<ul class="nav-tabs">
             		{% if current_user == user %}
-            		<li><a id="user-page" href="{{ url_for('main.user', username=current_user.username) }}">我的主页</a></li>
+            		<li><a id="user-page" href="{{ url_for('main.user', username=user.username) }}">我的主页</a></li>
             		<li><a id="post" href="javascript:void(0)">我的文章</a></li>
-            		<li><a id="albums" href="javascript:void(0)">我的相册</a></li>
-            		<li><a id="message" href="{{ url_for('main.message', username=user.username) }}">留言板</a></li>
+            		<li><a id="albums" href="{{ url_for('main.album', user_id=user.id) }}">我的相册</a></li>
+            		<li><a id="message" href="{{ url_for('main.message', username=user.username) }}" data-pjax="">留言板</a></li>
             		{% else %}
-					<li><a id="user-page" href="{{ url_for('main.user', username=current_user.username) }}">主页</a></li>
+					<li><a id="user-page" href="{{ url_for('main.user', username=user.username) }}">主页</a></li>
 					<li><a id="post" href="javascript:void(0)">文章</a></li>
-            		<li><a id="album" href="javascript:void(0)">相册</a></li>
+            		<li><a id="album" href="{{ url_for('main.album', user_id=user.id) }}">相册</a></li>
             		<li><a id="message" href="{{ url_for('main.message', username=user.username) }}">留言板</a></li>
             		{% endif %}
             	</ul>
@@ -206,4 +208,65 @@
         </div> 
     </div> 
 </div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    //用户关注
+    function follow(e) {
+        var $el = $(e.target); //当前元素
+        var id = $el.data('id');
+        $.ajax({
+            type: 'POST',
+            url: $el.data('href'),
+            success: function(data) {
+                $el.siblings(".unfollow-btn").show();
+                $el.hide();
+                update_followers_count();
+                toast(data.message);
+            },
+            error: function(error) {
+                toast('Server error, please try again later.')
+            }
+        });
+    }
+    //用户取消关注
+    function unfollow(e) {
+        var $el = $(e.target);
+        var id = $el.data('id');
+        $.ajax({
+            type: 'POST',
+            url: $el.data('href'),
+            success: function(data) {
+                $el.siblings(".follow-btn").show();
+                $el.hide();
+                update_followers_count();
+                toast(data.message);
+            },
+            error: function(error) {
+                toast('Server error, please try again later.')
+            }
+        });
+    }
+
+    function update_followers_count(id) {
+        var $el = $("#followers-count");
+        $.ajax({
+            type: 'GET',
+            url: $el.data('href'),
+            success: function(data) {
+                $el.text(data.count);
+            },
+            error: function(error) {
+                toast('Server error, please try again later.')
+            }
+        });
+    }
+
+    $(document).ready(function(){
+        $(".follow-btn").on('click', follow.bind(this)); //需要绑定this， 否则this为全局变量
+        $(".unfollow-btn").on('click', unfollow.bind(this));
+    });
+</script>
 {% endblock %}

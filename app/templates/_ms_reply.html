@@ -1,0 +1,27 @@
+<li class="reply" data-id="{{ reply.id }}">
+	<div class="reply-content">
+		<div class="reply-thumbnail">
+			<span class="avatar"><img src="{{ url_for('main.get_avatar', filename=reply.author.avatar_s ) }}"></span>
+			<span class="username"><a href="{{ url_for('main.user', username=reply.author.username) }}">{{ reply.author.username }}</a></span>
+			{% if reply.reply_type == "reply" %}
+			<span class="to-user">
+				<span style="font-size: 14px; color: #8590a6;">回复</span>
+				<a href="{{ url_for('main.user', username=reply.to_user.username) }}">{{ reply.to_user.username }}</a>
+			</span>
+			{% endif %}
+			<span class="time">{{ moment(reply.timestamp).format('YY-MM-DD HH:mm') }}</span>
+		</div>
+		<div class="reply-body">
+			<p>{{ reply.body | safe }}</p>
+		</div>
+	</div>
+	<div class="reply-footer">
+		<div>
+			{% if current_user == reply.author or current_user == reply.message.owner %}
+			<button class="messageLike-btn"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i>&nbsp;赞</button>
+			<button class="messageHover-btn reply-btn"><i class="fa fa-reply" aria-hidden="true"></i>&nbsp;回复</button>
+			<button class="messageHover-btn delete-reply-btn"><i class="fa fa-trash-o" aria-hidden="true"></i>&nbsp;删除</button>
+			{% endif %}
+		</div>
+	</div>
+</li>

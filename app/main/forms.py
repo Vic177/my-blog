@@ -70,3 +70,7 @@ class AlbumForm(FlaskForm):
     albumname = StringField("相册名", validators=[Required()])
     decription = TextAreaField("相册描述", validators=[Required()])
     submit = SubmitField('提交')
+
+class MessageReplyForm(FlaskForm):
+    body = TextAreaField("留言", validators=[Required()])
+    submit = SubmitField('提交')

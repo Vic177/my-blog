@@ -71,9 +71,13 @@ class User(UserMixin,db.Model):
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     avatar_hash = db.Column(db.String(32))
     posts = db.relationship('Post', backref='author', lazy='dynamic', cascade='all')
-    comments = db.relationship('Comment', backref='author', lazy='dynamic')
+    comments = db.relationship('Comment', backref='author', lazy='dynamic', cascade="all")
     replies = db.relationship('Reply', backref='author', primaryjoin='Reply.author_id==User.id')
     relpies_to = db.relationship('Reply', backref='replyto_user', primaryjoin='Reply.replyto_uid==User.id')
+    messages = db.relationship('Message', backref='author', primaryjoin='Message.author_id==User.id', lazy='dynamic', cascade='all')
+    own_messages = db.relationship('Message', backref='owner', primaryjoin='Message.user_id==User.id', lazy='dynamic', cascade='all')
+    message_replies = db.relationship('MessageReply', backref='author', primaryjoin='MessageReply.author_id==User.id', lazy='dynamic', cascade="all")
+    message_repliesto = db.relationship('MessageReply', backref='to_user', primaryjoin='MessageReply.to_uid==User.id', lazy='dynamic', cascade="all")
     avatar_row = db.Column(db.String(64))
     avatar_s = db.Column(db.String(64))
     avatar_m = db.Column(db.String(64))
@@ -93,7 +97,6 @@ class User(UserMixin,db.Model):
                                backref=db.backref('followed',lazy='joined'),
                                lazy='dynamic',
                                cascade='all, delete-orphan')
-    comments = db.relationship('Comment', backref='author', lazy='dynamic')
 
     
     def __init__(self,**kwargs):
@@ -277,11 +280,9 @@ class Post(db.Model):
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    body_html = db.Column(db.Text)
     comments = db.relationship('Comment', backref='post', lazy='dynamic', cascade='all')
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     title = db.Column(db.String(64))
-    relpies = db.relationship('Reply', backref='post', lazy='dynamic')
     
     
     def post_delete(self, id):
@@ -303,36 +304,22 @@ class Comment(db.Model):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text) 
-    body_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True,  default=datetime.utcnow)
     disabled = db.Column(db.Boolean) 
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
     replies = db.relationship('Reply', backref='comment', lazy='dynamic', cascade='all')
-    comment_type = db.Column(db.String(64))
     
     def comment_delete(self):
         db.session.delete(self)
         db.session.commit()
-
-    @staticmethod
-    def on_changed_body(target, value, oldvalue, initiator):
-        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i',
-                        'strong']
-        target.body_html = bleach.linkify(bleach.clean(
-            markdown(value, output_format='html'),
-            tags=allowed_tags, strip=True))
-
-db.event.listen(Comment.body, 'set', Comment.on_changed_body)
 
 
 class Reply(db.Model):
     __tablename__ = 'relpies'
     id = db.Column(db.Integer, primary_key=True)
     comment_id = db.Column(db.Integer, db.ForeignKey('comments.id'))
-    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
     body = db.Column(db.Text)
-    body_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     replyto_id = db.Column(db.Integer)
@@ -393,8 +380,19 @@ class Message(db.Model):
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id')) 
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    replies = db.relationship(' MessageReply', backref='message', lazy='dynamic', cascade='all')
+ 
+
+class MessageReply(db.Model):
+    __tablename__ = "message_replies"
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    message_id = db.Column(db.Integer, db.ForeignKey('messages.id'))
     to_uid = db.Column(db.Integer, db.ForeignKey('users.id'))
-    
+    reply_type = db.Column(db.String(64))
 
 class Photo(db.Model):
     __tablename__ = "photos"

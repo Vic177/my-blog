@@ -1,6 +1,6 @@
 {% extends "user_base.html" %}
 
-{% block title %}{% endblock %}
+{% block title %}用户主页{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -14,10 +14,10 @@
             <div class="sidebar">
                 <div class="user-info">
                     <ul class="detail">
-                        <li><a href="#"><strong>{{ current_user.posts.count() }}</strong><span>文章</span></a></li>
-                        <li><a href="#"><strong>{{ current_user.albums.count() }}</strong><span>相册</span></a></li>
-                        <li><a href="#"><strong>{{ current_user.followed.count() -1 }}</strong><span>关注</span></a></li>
-                        <li><a href="#"><strong>{{ current_user.followers.count() -1 }}</strong><span>粉丝</span></a></li>
+                        <li><a href="#"><strong>{{ user.posts.count() }}</strong><span>文章</span></a></li>
+                        <li><a href="#"><strong>{{ user.albums.count() }}</strong><span>相册</span></a></li>
+                        <li><a href="#"><strong>{{ user.followed.count() -1 }}</strong><span>关注</span></a></li>
+                        <li><a href="#"><strong>{{ user.followers.count() -1 }}</strong><span>粉丝</span></a></li>
                     </ul>
                     <div class="user-favor">
                         <ul>

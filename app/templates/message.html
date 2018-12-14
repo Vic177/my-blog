@@ -1,24 +1,618 @@
 {% extends "user_base.html" %}
+{% import "_macros.html" as macros %}
 
-{% block title %}{% endblock %}
+{% block title %}留言板{% endblock %}
 
 {% block head %}
 {{ super() }}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user.css') }}">
+<style>
+
+.board{
+	margin: 20px 0;
+	margin-top: 5px;
+}
+
+.board .board-top h4 {
+	width: 100%;
+	margin-top: 0;
+	margin-bottom: 0;
+	height: 30px;
+	line-height: 30px;
+	background-color: #fff;
+	color: #000;
+	font-size: 16px;
+	text-align: center;
+}
+
+.board .board-body {
+	background-color: #fff;
+	margin-bottom: 100px;
+}
+
+.board .board-body h4 {
+	margin: 0;
+	height: 40px;
+	line-height: 40px;
+	border-bottom: 1px dotted #959393;
+	padding: 0 10px;
+}
+
+#messageForm {
+	margin: 10px 10px;
+	padding-bottom: 20px;
+}
+
+#messageFormbody {
+	width: 100%;
+	max-width: 100%;
+	padding: 10px;
+	min-height: 100px;
+	background: #F8F7F7;
+	border: 1px solid #ddd;
+	font-size: 14px;
+    color: #000;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+#messageFormsubmit {
+	margin-top: 5px;
+	display: inline-block;
+	background-color: #4aaf51; 
+	border: none;
+}
+
+.message-items .messages {
+	padding: 10px 15px;
+}
+
+.message-items .messages .message {
+	margin: 10px 5px;
+	border-top: 1px dotted #B4B6B5;
+	padding-top: 10px;
+}
+
+.message-items .messages .message:first-child {
+	border: none;
+	padding-top: 0;
+}
+
+.messages .message .message-body {
+	padding-left: 38px;
+	font-size: 14px;
+}
+
+.message .message-thumbnail .avatar {
+	display: inline-block;
+	width: 35px;
+	text-align: left;
+}
+
+.message .message-thumbnail .username {
+	margin: 0;
+	padding: 0;
+}
+
+.message .message-thumbnail .username a {
+	text-align: left;
+	text-decoration: none;
+	font-size: 20px;
+	color: #337ab7;
+}
+
+.message .message-thumbnail .username a:hover {
+	color: #f78c2f;
+	font-size: 20px;
+	font-weight: 600;
+}
+
+.message .message-thumbnail .time {
+	float: right;
+    font-size: 14px;
+    color: #8590a6;
+}
+
+.messages .message .message-footer {
+	padding-left: 38px;
+	margin-bottom: 10px;
+}
+
+.messages .message .message-footer button {
+	margin-right: 15px;
+	padding: 0;
+	padding-left: 0;
+	border: none;
+	background-color: #fff;
+	outline:none;
+	color: #8590a6;
+}
+
+.messages .message-footer .footer-btn button:active {
+	border: none;
+}
+
+.messages .message-footer .footer-btn button.messageHover-btn {
+	opacity: 0;
+	transition: opacity .2s;
+}
+
+form.replyForm {
+	margin: 10px 10px;
+}
+
+form.replyForm .replyForm-body {
+	display: block;
+	width: 100%;
+	background: #F8F7F7;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    box-sizing: border-box;
+    transition: background .3s,border .3s;
+    font-size: 14px;
+    padding: 8px 12px;
+    overflow: hidden;
+}
+
+form.replyForm .replyForm-btn {
+	display: inline-block;
+	margin-top: 5px;
+	border: none;
+	background-color: #4aaf51;
+}
+
+form.replyForm .replyForm-btn:hover {
+	background-color: #4aaf51;
+	border: none;
+}
+
+.is_focus {
+	border: 1px solid #8590a6 !important;
+	background-color: #fff !important;
+	outline: none;
+}
+
+.messages .replies {
+	margin-left: 38px;
+	background-color: #F5F5F6;
+	padding: 0 10px;
+}
+
+.messages .replies .reply {
+	margin: 10px 5px;
+	border-top: 1px solid #f6f6f6;
+	padding-top: 10px
+}
+
+
+.messages .replies .reply .reply-body {
+	padding-left: 38px;
+	font-size: 14px;
+}
+
+.messages .reply .reply-thumbnail .avatar {
+	display: inline-block;
+	width: 35px;
+	text-align: left;
+}
+
+.messages .reply .reply-thumbnail .username {
+	margin: 0;
+	padding: 0;
+}
+
+.messages .reply-content .reply-thumbnail .username a {
+	text-align: left;
+	text-decoration: none;
+	font-size: 18px;
+	color: #337ab7;
+}
+
+.messages .reply-content .reply-thumbnail .username a:hover {
+	color: #f78c2f;
+	font-size: 18px;
+	font-weight: 500;
+}
+
+.messages .reply-content .reply-thumbnail .to-user a {
+	text-align: left;
+	text-decoration: none;
+	font-size: 18px;
+	color: #337ab7;
+}
+
+.messages .reply-content .reply-thumbnail .to-user a:hover {
+	color: #f78c2f;
+	font-size: 18px;
+	font-weight: 500;
+}
+
+.messages .reply-content .reply-thumbnail .time {
+	float: right;
+    font-size: 14px;
+    color: #8590a6;
+}
+
+.messages .reply .reply-footer {
+	padding-left: 38px;
+	margin-bottom: 10px;
+}
+
+.messages .reply .reply-footer button {
+	margin-right: 15px;
+	padding: 0;
+	padding-left: 0;
+	border: none;
+	background-color: #fff;
+	outline:none;
+	color: #8590a6;
+	background-color: #F5F5F6;
+}
+
+.messages .reply .reply-footer .footer-btn button:active {
+	border: none;
+}
+
+.messages .reply-footer .footer-btn button.messageHover-btn {
+	opacity: 0;
+	transition: opacity .2s;
+}
+
+
+
+
+</style>
+
 {% endblock %}
 
 {% block user_page %}
-
-
-
+<div class="row">
+	<div class="col-md-10 col-md-offset-1 col-xs-12">
+		<div class="board">
+			<div class="board-top">
+				<h4>
+					{% if current_user == user %}
+					我的留言板
+					{% else %}
+					{{ user.username }}的留言板
+					{% endif %}
+				</h3>
+			</div>
+			<div class="board-body">
+				<h4>发表留言</h4>
+				<form id="messageForm" action="#" method="post">
+					{{ form.hidden_tag() }}
+					{{ form.body(id="messageFormbody") }}
+					{{ form.submit(class="btn btn-info", id="messageFormsubmit") }}
+				</form>
+				<div class="message-items">
+					<h4><span id="message-count" data-id="{{ user.id }}">{{ user.own_messages.count() }}</span>条留言</h4>
+					<div>
+						{% include "_messages.html" %}
+						{% if pagination %}
+						<div class="pagination">
+						    {{ macros.pagination_widget(pagination, 'main.message', username=user.username) }}
+						</div>
+						{% endif %}		
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 {% endblock %}
 
 
 {% block scripts %}
 {{ super() }}
+<script id="template" type="text/html">
+	<form class="replyForm" action="#" method="post">
+		{{ form1.hidden_tag() }}
+		{{ form1.body(class="replyForm-body", rows="1") }}
+		{{ form1.submit(class="replyForm-btn btn btn-info", type="button") }}
+	</form>
+</script>
+
 <script>
 	$(function(){
 		$("#message").addClass("user-tabActive");
 	})
+
+	function showRequest(formData,jqForm,options){
+	  	return $("#messageForm").valid(); 
+	}
+
+	//使用jqueryForm插件进行异步提交
+	$(document).ready(function(){
+		$("#messageForm").submit(function(){
+			$(this).ajaxSubmit({
+				type: 'post',
+				url: $SCRIPT_ROOT +'/user/message/{{ user.username }}',
+				beforeSubmit: showRequest,
+				success: function(data) {
+					$(".messages").prepend($(data).fadeIn("100"));
+					flask_moment_render_all(); //在浏览器中，每当添加包含时间戳的元素时，浏览器中的Ajax回调都需要调用 flask_moment_render_all()
+					$("#messageForm").resetForm();
+					$('#messageFormsubmit').prop("disabled", true);
+					toast.success('留言已发布！');
+					update_user_messages_count();
+				}
+			});
+			return false;//返回false，阻止表单的正常提交
+		});
+	});
+
+	//动态更新留言数量
+	function update_user_messages_count(id) {
+		var $el = $("#message-count");
+		var id = $el.data("id");
+		$.ajax({
+            type: 'GET',
+            url: $SCRIPT_ROOT +'/update-user-messages-count/' + id,
+            success: function(data) {
+                $el.text(data.count);
+            }
+        });
+	}
+
+	//定义动态添加回复表单的模板
+	var template = $("#template").html();
+
+	$(function(){
+		$(".messages").on("click", "button.reply-btn", function(){
+			if ($(this).parents(".message").length > 0) {
+				var form = $(this).parents(".message-footer").find('form.replyForm');
+				//先判断表单是否存在，如果已存在，就显示，不存在就动态添加表单
+				if (form.length == 0) {
+					$(this).parents(".message-footer").append(template);
+					$(this).parents(".message-footer").find(".replyForm-btn").prop("disabled", true);
+					$(this).after('<button class="cancel-reply-btn"><i class="fa fa-reply" aria-hidden="true"></i>&nbsp;取消回复</button>');
+					$(this).remove();
+				}else {
+					$(this).after('<button class="cancel-reply-btn"><i class="fa fa-reply" aria-hidden="true"></i>&nbsp;取消回复</button>');
+					$(this).remove();
+					form.show();
+				}
+			}else {
+				var form = $(this).parents(".reply-footer").find('form.replyForm');
+				//先判断表单是否存在，如果已存在，就显示，不存在就动态添加表单
+				if (form.length == 0) {
+					$(this).parents(".reply-footer").append(template);
+					$(this).parents(".reply-footer").find(".replyForm-btn").prop("disabled", true);
+					$(this).after('<button class="cancel-reply-btn"><i class="fa fa-reply" aria-hidden="true"></i>&nbsp;取消回复</button>');
+					$(this).remove();
+				}else {
+					$(this).after('<button class="cancel-reply-btn"><i class="fa fa-reply" aria-hidden="true"></i>&nbsp;取消回复</button>');
+					$(this).remove();
+					form.show();
+				}
+			}	
+		});
+	});
+
+	//点击取消按钮使表单隐藏.hide(), 再次动态添加一个添加回复按钮，并将取消回复按钮移除
+	$(function(){
+		$('.messages').on("click", "button.cancel-reply-btn", function() {
+			if ($(this).parents(".message").length > 0) {
+				$(this).parents('.message-footer').find('form.replyForm').hide();
+				$(this).after(
+					'<button class="messageHover-btn reply-btn" style="opacity: 1;">' +
+					'<i class="fa fa-reply" aria-hidden="true"></i>&nbsp;回复</button>'
+					);
+				$(this).remove();
+			}else {
+				$(this).parents('.reply-footer').find('form.replyForm').hide();
+				$(this).after(
+					'<button class="messageHover-btn reply-btn" style="opacity: 1;">' +
+					'<i class="fa fa-reply" aria-hidden="true"></i>&nbsp;回复</button>'
+					);
+				$(this).remove();
+			}		
+		})
+	})
+
+
+	//控制鼠标进入或移除时.message-footer .footer-button的显示和隐藏
+	$(function(){
+		$(".messages").on("mouseover", ".message", function(){
+			$(this).find("button.messageHover-btn").css("opacity", "1");
+		});
+		$(".messages").on("mouseout", ".message", function(){
+			var form = $(this).children(".message-footer").find("form.replyForm");
+			//如何回复表单存在，鼠标移出时不隐藏，否则就隐藏
+			if (form.length == 0) {
+				$(this).find("button.messageHover-btn").css("opacity", "0");
+			}else if (form.css("display") == "none"){
+				$(this).find("button.messageHover-btn").css("opacity", "0");
+			}else {
+				$(this).find("button.messageHover-btn").css("opacity", "1");
+			}
+		});
+	});
+
+	//#messageForm表单输入文本域获取焦点
+	$(function() {
+		$("#messageFormbody").focus(function(){
+			$(this).addClass("is_focus");
+		})
+		$("#messageFormbody").focusout(function(){
+			$(this).removeClass("is_focus");
+		})
+	})
+
+	//#messageForm 的提交按钮设置默认disabled
+	$(function(){
+		$('#messageFormsubmit').prop("disabled", true)
+	})
+
+	//监听表单输入值，如果表单的值为空，则提交按钮设置disabled禁用属性
+	$(function(){
+		$("#messageFormbody").bind("input propertychange", function(){
+			var val = $("#messageFormbody").val();
+			if ( val=="" || val==null) {
+				$('#messageFormsubmit').prop("disabled", true);
+			}else {
+				$('#messageFormsubmit').removeProp("disabled");
+			}
+		});
+	});
+  
+	//.replyForm表单输入文本域获取焦点
+    $(function(){
+    	$(".messages").on("focus", ".replyForm", function(){
+    		$(this).find(".replyForm-body").addClass("is_focus");
+    	});
+    	$(".messages").on("focusout", ".replyForm", function(){
+    		$(this).find(".replyForm-body").removeClass("is_focus");
+    	});
+    });
+
+    //监听.replyForm表单输入值，如果表单的值为空，则提交按钮设置disabled禁用属性
+    $(function(){
+    	$(".messages").on("input propertychange", ".replyForm-body", function(){
+    		var val = $(".replyForm-body").val();
+    		if ( val=="" || val==null) {
+				$(this).siblings(".replyForm-btn").prop("disabled", true);
+			}else {
+				$(this).siblings(".replyForm-btn").removeProp("disabled");
+			}
+    	});
+    });
+
+
+    function submit_reply(e) {
+    	var $el = $(e.target)
+    	var form = $el.parent("form.replyForm");
+    	if($el.parents(".reply").length == 0) {
+    		var id = $el.parents(".message").data("id");
+    		$.ajax({
+    			url: $SCRIPT_ROOT + '/user/message/reply-message/' + id,
+				type: 'post',
+				data: form.serialize(),
+				success: function(data){
+					$el.parents(".message").next().prepend($(data).fadeIn("100"));
+					flask_moment_render_all();
+					$el.parent().siblings(".footer-btn").find("button.cancel-reply-btn").replaceWith(
+						'<button class="messageHover-btn reply-btn" style="opacity: 1;">' +
+						'<i class="fa fa-reply" aria-hidden="true"></i>&nbsp;回复</button>'
+						);
+					form.remove();
+					toast.success('回复成功！');
+				}
+    		});
+    	}else {
+    		var id = $el.parents(".reply").data("id");
+    		$.ajax({
+    			url: $SCRIPT_ROOT + '/user/message/reply-reply/' + id,
+				type: 'post',
+				data: form.serialize(),
+				success: function(data){
+					$el.parents(".reply").after($(data).fadeIn("100"));
+					flask_moment_render_all();
+					$el.parent().siblings(".footer-btn").find("button.cancel-reply-btn").replaceWith(
+						'<button class="messageHover-btn reply-btn" style="opacity: 1;">' +
+						'<i class="fa fa-reply" aria-hidden="true"></i>&nbsp;回复</button>'
+						);
+					form.remove();
+					toast.success('回复成功！');
+				}
+    		});
+    	}
+    }
+
+    $(function(){
+		$(".messages").on("click", ".replyForm-btn", submit_reply.bind(this));
+	});
+
+    $(function(){
+		$(".replies").on("mouseover", ".reply", function(){
+			$(this).find("button.messageHover-btn").css("opacity", "1");
+		});
+		$(".replies").on("mouseout", ".reply", function(){
+			var form = $(this).children(".reply-footer").find("form.replyForm");
+			//如何回复表单存在，鼠标移出时不隐藏，否则就隐藏
+			if (form.length == 0) {
+				$(this).find("button.messageHover-btn").css("opacity", "0");
+			}else if (form.css("display") == "none"){
+				$(this).find("button.messageHover-btn").css("opacity", "0");
+			}else {
+				$(this).find("button.messageHover-btn").css("opacity", "1");
+			}
+		});
+	});
+ 	
+
+ 	//留言删除
+    function delete_message(e){
+    	var $el = $(e.target);
+    	var id = $el.parents(".message").data("id");
+    	toast.confirm({
+		  	title: '提示',  // title 是可选的
+		  	text: '确认删除此条留言？',
+		  	onConfirm: function() {
+			    $.ajax({
+			    	url: $SCRIPT_ROOT +'/user/message/' + id + '/delete',
+			    	type: 'post',
+			    	success: function(data) {
+			    		$el.parents(".message").next(".replies").fadeOut(200, function(){
+			    			$el.parents(".message").next(".replies").remove();
+			    		});	
+						$el.parents(".message").fadeOut(200, function(){
+			    			$el.parents(".message").remove();
+			    		});
+						update_user_messages_count();
+						toast.success(data.message);
+					},
+					error: function(data) {
+						toast(data.message);
+					}
+		        })
+		    },
+		    onCancel: function() {
+		        // 点击“取消”后的回调函数
+		    	return false;
+		    }
+		});
+	}
+
+    $(function(){
+		$(".messages").on("click", ".delete-message-btn", delete_message.bind(this));
+	});
+
+    //回复删除
+    function delete_reply(e) {
+    	var $el = $(e.target);
+    	var id = $el.parents(".reply").data("id");
+    	toast.confirm({
+		  	title: '提示',  // title 是可选的
+		  	text: '确认删除此条回复？',
+		  	onConfirm: function() {
+			    $.ajax({
+			    	url: $SCRIPT_ROOT +'/user/message/reply/' + id + '/delete',
+			    	type: 'post',
+			    	success: function(data) {
+			    		$el.parents(".reply").fadeOut(200, function(){
+			    			$el.parents(".reply").remove();
+			    		})
+						toast.success(data.message);
+					},
+					error: function(data) {
+						toast(data.message);
+					}
+		        })
+		    },
+		    onCancel: function() {
+		        // 点击“取消”后的回调函数
+		    	return false;
+		    }
+		});
+    }
+
+    $(function(){
+		$(".messages").on("click", ".delete-reply-btn", delete_reply.bind(this));
+	});
+
 </script>
 {% endblock %}

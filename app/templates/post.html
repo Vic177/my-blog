@@ -145,7 +145,7 @@
 		var elem = e.target || e.srcElement;
 			while(elem) { //循环判断至跟节点，防止点击的是div子元素 
 				if(elem.id && elem.id == 'reply-form' || elem.className == 'comment-btn') {
-					return;
+					return false;
 				}
 				elem = elem.parentNode;
 			}
@@ -169,7 +169,7 @@
 		if ($el.parents(".reply").length == 0) {
 			var id = $el.parents(".comment").data('id');
 			$.ajax({
-				url: $SCRIPT_ROOT +'/reply-comment/' + id,
+				url: $SCRIPT_ROOT + '/reply-comment/' + id,
 				type: 'post',
 				data: form.serialize(),
 				success: function(data){
@@ -201,12 +201,6 @@
 	$(function(){
 		$(".post-page").on("click", "#submit-reply", reply.bind(this));
 	});
-	
-	
-	
-
-
-
 
 </script>
 {% endblock %}

@@ -10,6 +10,7 @@ from flask_avatars import Avatars
 from flask_dropzone import Dropzone
 from flask_ckeditor import CKEditor
 from flask_uploads import UploadSet, IMAGES, configure_uploads
+from flask_pjax import  PJAX
 
 
 bootstrap = Bootstrap()
@@ -24,6 +25,7 @@ ckeditor = CKEditor()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
 photosSet = UploadSet('photos', IMAGES)
+pjax = PJAX()
 
 
 def create_app(config_name):
@@ -40,6 +42,7 @@ def create_app(config_name):
     avatars.init_app(app)
     dropzone.init_app(app)
     ckeditor.init_app(app)
+    pjax.init_app(app)
 
     configure_uploads(app, photosSet)
     
