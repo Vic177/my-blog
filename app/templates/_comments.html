@@ -1,58 +1,63 @@
-<ul class="comments media-list">
+<ul class="comments">
     {% for comment in comments %}
-    <li class="comment media" data-id="{{ comment.id }}">
-        <a href="#" class="pull-left">
-            <img class="media-object" src="{{ url_for('main.get_avatar', filename=comment.author.avatar_s ) }}">
-        </a>
-        <div class="media-body" style="max-width: 680px; overflow: visible;">
-            <h4 class="media-heading">
-                <a href="{{ url_for('.user', username=comment.author.username) }}">{{ comment.author.username }}</a>
-            </h4>
-            <div>{{ comment.body | safe }}</div>
-            <div class="comment-footer">
-                <ul class="list-inline">
-                    <li class="comment-date"><small>{{ moment(comment.timestamp).format('YY-MM-DD HH:mm:ss') }}</small></li>
-                    {% if current_user.is_authenticated %}
-                    <li><a href="#" class="btn btn-default btn-xs"><i class="fa fa-trash-o" aria-hidden="true"></i></a></li>
-                    <li><a href="#" class="btn btn-default btn-xs"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></a></li>
-                    <li class="comment-btn"><a href="javascript:void(0)" class="btn btn-default btn-xs">回复</a></li>
-                    {% endif %}
-                </ul>
+        {% set counts = comment.replies.count() %}
+        <li class="comment" data-id="{{ comment.id }}">
+            <div class="comment-content">
+                <div class="comment-thumbnail">
+                    <span class="avatar"><img src="{{ url_for('main.get_avatar', filename=comment.author.avatar_s ) }}"></span>
+                    <span class="username"><a href="{{ url_for('main.user', username=comment.author.username) }}">{{ comment.author.username }}</a></span>
+                    <span class="time">{{ moment(comment.timestamp).format('YY-MM-DD HH:mm') }}</span>
+                </div>
+                <div class="comment-body">
+                    <p>{{ comment.body | safe }}</p>
+                </div>
             </div>
-        </div>
-        <ul class="replies media-list"  style="margin-left: 40px;">
+            <div class="comment-footer">
+                <div class="footer-btn">
+                    <button class="commentLike-btn"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i>&nbsp;<span>20</span></button>
+                    <button class="commentHover-btn reply-btn"><i class="fa fa-reply" aria-hidden="true"></i>&nbsp;回复</button>
+                    {% if current_user == comment.author or current_user == post.author %}
+                    <button class="commentHover-btn delete-comment-btn"><i class="fa fa-trash-o" aria-hidden="true"></i>&nbsp;删除</button>
+                    {% endif %}
+                    {% if counts > 2 %}
+                    <button class="commentHover-btn">{{ counts }}条回复</button>
+                    {% endif %}
+                </div>
+            </div>
+        </li>
+        <ul class="replies">
             {% for reply in comment.replies %}
-            {% if reply.comment==comment %}
-            <li class="reply media" style="margin-top: 5px; border-top: 1px dashed #D6D9D9; padding: 5px 0;" data-id="{{ reply.id }}">
-                <a href="#" class="pull-left">
-                    <img class="media-object" src="{{ url_for('main.get_avatar', filename=reply.author.avatar_s ) }}" alt="...">
-                </a>
-                <div class="media-body">
-                    <h5 class="media-heading">
+            <li class="reply {% if loop.index > 2 %}reply-hide{% endif %}" data-id="{{ reply.id }}">
+                <div class="reply-content">
+                    <div class="reply-thumbnail">
+                        <span class="avatar"><img src="{{ url_for('main.get_avatar', filename=reply.author.avatar_s ) }}"></span>
+                        <span class="username"><a href="{{ url_for('main.user', username=reply.author.username) }}">{{ reply.author.username }}</a></span>
                         {% if reply.reply_type == "reply" %}
-                        <a href="{{ url_for('.user', username=reply.author.username)}}">{{ reply.author.username }}</a>
-                        <span style="font-size: 15px;"><i class="fa fa-at" aria-hidden="true"></i></span>
-                        <a href="{{ url_for('.user', username=reply.replyto_user.username) }}">{{ reply.replyto_user.username }}</a>
-                        {% else %}
-                        <a href="{{ url_for('.user', username=reply.author.username)}}">{{ reply.author.username }}</a>
+                        <span class="to-user">
+                            <span style="font-size: 14px; color: #8590a6;">回复</span>
+                            <a href="{{ url_for('main.user', username=reply.replyto_user.username) }}">{{ reply.replyto_user.username }}</a>
+                        </span>
                         {% endif %}
-                    </h5>
-                    <div>{{ reply.body | safe }}</div>
-                    <div class="comment-footer">
-                        <ul class="list-inline">
-                            <li class="comment-date"><small>{{ moment(reply.timestamp).format('YY-MM-DD HH:mm:ss') }}</small></li>
-                            {% if current_user.is_authenticated %}
-                            <li><a href="#" class="btn btn-default btn-xs"><i class="fa fa-trash-o" aria-hidden="true"></i></a></li>
-                            <li><a href="#" class="btn btn-default btn-xs"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></a></li>
-                             <li class="comment-btn"><a href="javascript:void(0)" class="btn btn-default btn-xs">回复</a></li>
-                            {% endif %}
-                        </ul>
+                        <span class="time">{{ moment(reply.timestamp).format('YY-MM-DD HH:mm') }}</span>
+                    </div>
+                    <div class="reply-body">
+                        <p>{{ reply.body | safe }}</p>
+                    </div>
+                </div>
+                <div class="reply-footer">
+                    <div class="footer-btn">
+                        <button class="commentLike-btn"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i>&nbsp;<span>60</span></button>
+                        <button class="commentHover-btn reply-btn"><i class="fa fa-reply" aria-hidden="true"></i>&nbsp;回复</button>
+                        {% if current_user == reply.author or current_user == post.author %}
+                        <button class="commentHover-btn delete-reply-btn"><i class="fa fa-trash-o" aria-hidden="true"></i>&nbsp;删除</button>
+                        {% endif %}
                     </div>
                 </div>
             </li>
-            {% endif %}
             {% endfor %}
+            {% if counts > 2  %}
+            <!-- <div class="commentShowMore"><button type="button" class="commentHover-btn more-reply">查看其他<span class="more-count">{{ counts - 2 }}</span>条回复</button></div> -->
+            {% endif %}
         </ul>
-    </li>
     {% endfor %}
 </ul>

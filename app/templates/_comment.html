@@ -1,0 +1,24 @@
+<li class="comment" data-id="{{ comment.id }}">
+    <div class="comment-content" >
+        <div class="comment-thumbnail">
+            <span class="avatar"><img src="{{ url_for('main.get_avatar', filename=comment.author.avatar_s ) }}"></span>
+            <span class="username"><a href="{{ url_for('main.user', username=comment.author.username) }}">{{ comment.author.username }}</a></span>
+            <span class="time">{{ moment(comment.timestamp).format('YY-MM-DD HH:mm') }}</span>
+        </div>
+        <div class="comment-body">
+            <p>{{ comment.body | safe }}</p>
+        </div>
+    </div>
+    <div class="comment-footer">
+        <div class="footer-btn">
+            {% if current_user == comment.author or current_user == comment.post.author %}
+            <button class="commentLike-btn"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i>&nbsp;赞</button>
+            <button class="commentHover-btn reply-btn"><i class="fa fa-reply" aria-hidden="true"></i>&nbsp;回复</button>
+            <button class="commentHover-btn delete-comment-btn"><i class="fa fa-trash-o" aria-hidden="true"></i>&nbsp;删除</button>
+            {% endif %}
+        </div>
+    </div>
+</li>
+<!-- 为Ajax填充回复reply预先留出空间 -->
+<ul class="replies">
+</ul>

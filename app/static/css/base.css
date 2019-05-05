@@ -1,11 +1,10 @@
-
 .navbar {
-	border-radius: 1px;
-	background-color: #fff;
+    border-radius: 1px;
+    background-color: #fff;
 }
 
 .drop-meau{
-	width: 100%;
+    width: 100%;
 }
 
 
@@ -17,7 +16,6 @@
     padding: 10px 20px 10px;
     text-align: center;
 }
-
 .notif-box {
     width: 300px;
     padding-bottom: 0px;
@@ -53,15 +51,15 @@
 }
 
 .notif-box .notif-center a:hover{
-	background-color: #CBC8C8;
+    background-color: #CBC8C8;
 }
 
 
 .notif-box .notif-center a .notif-content .notif-block {
- 	padding: 5px 0;
-	font-size: 14px;
-	line-height: 20px;
-	display: block;
+     padding: 5px 0;
+    font-size: 14px;
+    line-height: 20px;
+    display: block;
 }
 .notif-box .notif-center a .notif-content .time {
     color: #7d8c95;
@@ -70,9 +68,9 @@
 }
 
 #navbar-user {
-	height: 50px;
-	line-height: 50px;
-	padding: 0 15px;
+    height: 50px;
+    line-height: 50px;
+    padding: 0 15px;
 }
 
 .dropdown-user {
@@ -85,5 +83,5 @@
 }
 
 .user-box .u-text {
-	padding: 0 10px;
+    padding: 0 10px;
 }

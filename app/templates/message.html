@@ -345,7 +345,7 @@ form.replyForm .replyForm-btn:hover {
 	});
 
 	//动态更新留言数量
-	function update_user_messages_count(id) {
+	function update_user_messages_count() {
 		var $el = $("#message-count");
 		var id = $el.data("id");
 		$.ajax({
@@ -527,10 +527,10 @@ form.replyForm .replyForm-btn:hover {
 	});
 
     $(function(){
-		$(".replies").on("mouseover", ".reply", function(){
+		$(".messages").on("mouseover", ".reply", function(){
 			$(this).find("button.messageHover-btn").css("opacity", "1");
 		});
-		$(".replies").on("mouseout", ".reply", function(){
+		$(".messages").on("mouseout", ".reply", function(){
 			var form = $(this).children(".reply-footer").find("form.replyForm");
 			//如何回复表单存在，鼠标移出时不隐藏，否则就隐藏
 			if (form.length == 0) {

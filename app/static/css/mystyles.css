@@ -7,7 +7,7 @@
 body
 {
     /* background-image: url('/static/image/bg6.jpg'); */
-    background-color: #D5DDDA;
+    background-color: #DDE4E3;
     background-position: center; 
 	background-repeat: no-repeat; 
 	background-attachment: fixed;
@@ -19,7 +19,11 @@ ul{
 	list-style-type: none;
 }
 
-.post
+button {
+    cursor:pointer;
+}
+
+/* .post
 {
     margin: 2px 0;
     padding: 10px 0;
@@ -104,23 +108,23 @@ ul{
 }
 
 .post-op{
-	position: absolute;
-	top: 10px;
-	right: 10px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
 }
 
 .post-op{
-	margin: 0 5px;
-	width: 80px;
-	height: 100px;
-	position: absolute;
-	top: 10px;
-	right: 0;
+    margin: 0 5px;
+    width: 80px;
+    height: 100px;
+    position: absolute;
+    top: 10px;
+    right: 0;
 }
 
 .post-op .op-log{
-	text-align: right;
-	padding-right: 10px;
+    text-align: right;
+    padding-right: 10px;
 }
 
 .post-op .op-log i{
@@ -129,71 +133,48 @@ ul{
 }
 
 .post-op .op{
-	margin-top: 10px;
-	width: 80px;
-	border: 1px solid #8D8C8C;
-	position: relative;
-	background-color: #F8F4F4;
+    margin-top: 10px;
+    width: 80px;
+    border: 1px solid #8D8C8C;
+    position: relative;
+    background-color: #F8F4F4;
     display: none;
 
 }
-
-/* 实现小三角 */
+ */
+/* 实现小三角
 .post-op .op:before{ 
-	content: "";
-	width: 10px;
-	height: 10px;
-	border: 1px solid #8D8C8C;
-	position: absolute;
-	top: -6px;
-	right: 10px;
-	transform: rotate(45deg);/* 旋转45度 */
-	border-bottom: none;
-	border-right: none;
-	background-color:  #F8F4F4;
+    content: "";
+    width: 10px;
+    height: 10px;
+    border: 1px solid #8D8C8C;
+    position: absolute;
+    top: -6px;
+    right: 10px;
+    transform: rotate(45deg);旋转45度
+    border-bottom: none;
+    border-right: none;
+    background-color:  #F8F4F4;
 }
 
 .post-op ul {
-	margin: 10px 0;
+    margin: 10px 0;
 }
 .post-op .op ul li a{
-	display: block;
-	width: inherit;
-	height: 20px;
-	line-height: 20px;
-	text-align: center;
-	text-decoration: none;
-	color: #2C2B2B;
+    display: block;
+    width: inherit;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    text-decoration: none;
+    color: #2C2B2B;
 }
 
 .post-op .op ul li a:hover{
-	color: #f78c2f;
-	text-decoration: none;
-	background-color: #E2E0E0;
-}
-
-
-form.comment-message{
-    display: none;
-}
-
-.comments {
-	margin-top: 30px;
-	padding: 15px; 
-	background-color: #FAF6F6; 
-	width: 100%;
-}
-
-.comments .comment {
-	border-top: 1px solid #B4B6B5; 
-	padding: 10px 0;
-}
-
-.comments .comment .comment-footer ul{
-	height: 25px;
-	line-height: 25px;
-	
-}
+    color: #f78c2f;
+    text-decoration: none;
+    background-color: #E2E0E0;
+} */
 
 /* admin_base */
 

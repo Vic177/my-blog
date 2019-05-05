@@ -1,0 +1,13 @@
+{% extends pjax('index.html') %}
+{% import "_pjax_macros.html" as macros %}
+
+{% block title %}首页 - 前行之路{% endblock %}
+
+{% block pjax %}
+	{% include 'post_summary.html' %}
+    {% if pagination %}
+    <div class="pagination">
+    {{ macros.pagination_widget(pagination, '.show_followed') }}
+    </div>
+    {% endif %}
+{% endblock %}

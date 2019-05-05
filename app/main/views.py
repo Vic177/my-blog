@@ -1,7 +1,8 @@
 from flask import render_template, session, redirect, url_for, flash, request, \
     current_app, send_from_directory, flash, jsonify, abort
+from flask import make_response
 from ..models import User, Role, Post, Permission, Comment, Category, Reply, \
-                     Message, MessageReply
+                     Message, MessageReply, Praise
 from ..models import Album, Photo
 from .forms import EditProfileForm, PostForm, CommentForm, EditProfileAdminForm, ReplyForm, \
                    MessageForm, AlbumForm, MessageReplyForm
@@ -20,16 +21,7 @@ from ..auth.forms import LoginForm
 
 @main.route('/', methods=['GET','POST'])
 def index():
-    form = PostForm()
     form1 = LoginForm()
-    if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
-        post = Post(title=form.title.data,
-                    body=form.body.data,
-                    category=Category.query.get(form.category.data),
-                    author=current_user._get_current_object())
-        db.session.add(post)
-        db.session.commit()
-        return redirect(url_for('.index'))
     if form1.validate_on_submit():
         user = User.query.filter_by(email=form1.email.data).first()
         if user is not None and user.verify_password(form1.password.data):
@@ -37,18 +29,53 @@ def index():
             return redirect(url_for('main.index'))
         flash('Invalid username or password')
     page = request.args.get('page', 1, type=int)
-    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page,
+    show_followed = False
+    #如果不是pjax请求，就判断 cookie show_followed的值, 以确定首页显示全部文章还是关注的文章
+    if not "X-PJAX" in request.headers:
+        if current_user.is_authenticated:
+            show_followed = bool(request.cookies.get('show_followed', ''))
+        if show_followed:
+           return redirect(url_for('.show_followed'))
+    query = Post.query
+    pagination = query.order_by(Post.timestamp.desc()).paginate(page, \
+                                 per_page=current_app.config['FLASKY_POSTS_PER_PAGE'], \
+                                 error_out=False)
+    posts = pagination.items
+    resp = make_response(render_template('index_all.html', posts=posts, pagination=pagination, form1=form1, \
+                            show_followed=show_followed))
+    if current_user.is_authenticated and 'X-PJAX' in request.headers:
+        resp.set_cookie('show_followed', '', max_age=10*24*60*60)
+    return resp
+
+@main.route('/show-followed', methods=['GET', 'POST'])
+@login_required
+def show_followed():
+    query = current_user.followed_posts
+    page = request.args.get('page', 1, type=int)
+    pagination = query.order_by(Post.timestamp.desc()).paginate(page,
         per_page=current_app.config['FLASKY_POSTS_PER_PAGE'], error_out=False)
     posts = pagination.items
-    return render_template('index.html', posts=posts, pagination=pagination, form=form, form1=form1)
-    
+    resp = make_response(render_template('index_follow.html', posts=posts, pagination=pagination, show_followed=show_followed)) 
+    resp.set_cookie('show_followed', '1', max_age=10*24*60*60)
+    return resp
+
+
 @main.route('/user/<username>')
 def user(username):
     user = User.query.filter_by(username=username).first()
-    posts = Post.query.filter_by(author=user).order_by(Post.timestamp.desc()).all()
     if user is None:
         abort(404)
-    return render_template('user.html', user=user, posts=posts)
+    return render_template('user/user.html', user=user)
+
+@main.route('/user/<username>/posts')
+def user_posts(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    query = Post.query.filter_by(author=user)
+    page = request.args.get('page', 1, type=int)
+    pagination = query.order_by(Post.timestamp.desc()).paginate(page,
+        per_page=current_app.config['FLASKY_POSTS_PER_PAGE'], error_out=False)
+    posts = pagination.items
+    return render_template('user/user_post.html', user=user, posts=posts, pagination=pagination)
     
 @main.route('/edit-profile', methods=['GET','POST'])
 @login_required
@@ -97,6 +124,7 @@ def edit_profile_admin(id):
 def post(id):
     post = Post.query.get_or_404(id)
     form = CommentForm()
+    form1 = ReplyForm()
     if request.method == 'POST':
         comment = Comment(body=form.body.data,
                           post=post,
@@ -104,7 +132,7 @@ def post(id):
         db.session.add(comment)
         db.session.commit()
         timestamp = moment.create(comment.timestamp).format('YY-MM-DD HH:mm') #在视图函数中渲染时间戳
-        return render_template('_com.html', comment=comment, timestamp=timestamp) 
+        return render_template('_comment.html', comment=comment, timestamp=timestamp) 
     page = request.args.get('page', 1, type=int)
     if page == -1:
         page = (post.comments.count() - 1) / \
@@ -113,8 +141,9 @@ def post(id):
         page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
         error_out=False)
     comments = pagination.items
-    return render_template('post.html', posts=[post], form=form,
-                           comments=comments, pagination=pagination)
+    return render_template('post.html', form=form, post=post,
+                           comments=comments, pagination=pagination, 
+                           form1=form1)
     
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -143,25 +172,28 @@ def post_delete(id):
         flash('文章删除成功！')
     return redirect(url_for('.index'))
 
-@main.route('/comment/<int:id>/delete')
+
+@main.route('/comment/<int:id>/delete', methods=['POST'])
 @login_required
 def comment_delete(id):
     comment = Comment.query.get_or_404(id)
-    post_id = comment.post.id
     if current_user == comment.author or current_user.can(Permission.ADMINISTER):
         comment.comment_delete()
-        flash('评论删除成功！')
-    return redirect(url_for('.post', id=post_id))
+    return jsonify(message="评论已删除！")
 
-@main.route('/reply/<int:id>/delete')
+@main.route('/reply/<int:id>/delete',  methods=['POST'])
 @login_required
 def reply_delete(id):
     reply = Reply.query.get_or_404(id)
-    post_id = reply.post.id
     if current_user == reply.author or current_user.can(Permission.ADMINISTER):
         reply.reply_delete()
-        flash('回复删除成功！')
-    return redirect(url_for('.post', id=post_id))
+    return jsonify(message="回复已删除！")
+
+@main.route('/update-post-comments-count/<int:post_id>')
+def update_post_comments_count(post_id):
+    post =  Post.query.get_or_404(post_id)
+    count = post.comments_count()
+    return jsonify(count=count)
 
 @main.route('/category/<name>')
 def category(name):
@@ -169,11 +201,12 @@ def category(name):
     posts = Post.query.filter_by(category=category).order_by(Post.timestamp.desc()).all()
     return render_template('category.html', posts=posts, category=category)
 
-
+#回复评论
 @main.route('/reply-comment/<int:id>', methods=['POST'])
-@login_required
 def reply_comment(id):
     comment = Comment.query.get_or_404(id)
+    if not current_user.is_authenticated:
+        return jsonify(message='请先登陆！'), 403
     if request.method == 'POST':
         reply = Reply(body=request.form.get('body'),
                       comment=comment,
@@ -185,10 +218,10 @@ def reply_comment(id):
         db.session.add(reply)
         db.session.commit()
         timestamp = moment.create(reply.timestamp).format('YY-MM-DD HH:mm:ss')
-        return render_template("_reply.html", reply=reply, timestamp=timestamp)
+        return render_template("_comment_reply.html", reply=reply, timestamp=timestamp)
 
+#回复评论下的回复
 @main.route('/reply-reply/<int:id>', methods=['GET', 'POST'])
-@login_required
 def reply_reply(id):
     reply = Reply.query.get_or_404(id)
     if request.method == 'POST':
@@ -201,7 +234,7 @@ def reply_reply(id):
         db.session.add(reply1)
         db.session.commit()
         timestamp = moment.create(reply1.timestamp).format('YY-MM-DD HH:mm:ss')
-        return render_template("_reply.html", reply=reply1, timestamp=timestamp)
+        return render_template("_comment_reply.html", reply=reply1, timestamp=timestamp)
 
 @main.route('/write_post/', methods=['GET', 'POST'])
 @login_required
@@ -358,12 +391,6 @@ def album_show(album_id):
         return jsonify(albumname=albumname, decription=decription, message=message)
     return render_template('album_show.html', album=album, photos=photos, form=form)
 
-"""
-@main.route('/get_photo/<path:filename>')
-def get_photo(filename):
-    return photosSet.url(filename)
-"""
-
 @main.route('/delete/photo/<int:photo_id>', methods=['GET', 'POST'])
 @login_required
 def delete_photo(photo_id):
@@ -398,7 +425,7 @@ def message(username):
         db.session.add(message)
         db.session.commit()
         timestamp = moment.create(message.timestamp).format('YY-MM-DD HH:mm')
-        return render_template('_ms.html', message=message, timestamp=timestamp)
+        return render_template('_message.html', message=message, timestamp=timestamp)
     page = request.args.get('page', 1, type=int)
     if page == -1:
         page = (user.own_messages.count() - 1) / \
@@ -429,7 +456,7 @@ def message_replyto_message(message_id):
         db.session.add(reply)
         db.session.commit()
         timestamp = moment.create(reply.timestamp).format('YY-MM-DD HH:mm:ss')
-        return render_template("_ms_reply.html", reply=reply, timestamp=timestamp)
+        return render_template("_message_reply.html", reply=reply, timestamp=timestamp)
 
 #回复留言中的回复
 @main.route('/user/message/reply-reply/<int:reply_id>', methods=['GET', 'POST'])
@@ -446,7 +473,7 @@ def message_replyto_reply(reply_id):
         db.session.add(newreply)
         db.session.commit()
         timestamp = moment.create(newreply.timestamp).format('YY-MM-DD HH:mm:ss')
-        return render_template("_ms_reply.html", reply=newreply, timestamp=timestamp)
+        return render_template("_message_reply.html", reply=newreply, timestamp=timestamp)
 
 @main.route('/user/message/<int:id>/delete', methods=['POST'])
 @login_required
@@ -467,3 +494,36 @@ def delete_message_reply(id):
     db.session.delete(reply)
     db.session.commit()
     return jsonify(message='回复已删除！')
+
+#文章点赞
+@main.route('/post/praise/<int:id>',  methods=['GET', 'POST'])
+def post_praise(id):
+    post = Post.query.get_or_404(id)
+    if not current_user.is_authenticated:
+        return jsonify(message='请先登陆！'), 403
+    if current_user.has_praised(post):
+        return jsonify(message='你已经点过赞了！'), 400
+    praise = Praise(post=post,
+                    user=current_user._get_current_object())
+    db.session.add(praise)
+    db.session.commit()
+    return jsonify(message='已赞！')
+
+#文章取消赞
+@main.route('/post/cancel_praise/<int:id>',  methods=['GET', 'POST'])
+def post_cancel_praise(id):
+    post = Post.query.get_or_404(id)
+    praise = Praise.query.filter(Praise.post == post, Praise.user == current_user).first()
+    db.session.delete(praise)
+    db.session.commit()
+    return jsonify(message='已取消！')
+
+#更新文章点赞数量
+@main.route('/update-post-praise-counts/<int:id>')
+def update_post_praise_counts(id):
+    post = Post.query.get_or_404(id)
+    counts = post.praises.count()
+    return jsonify( counts = counts )
+
+
+   

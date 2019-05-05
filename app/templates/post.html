@@ -2,74 +2,339 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html" as macros %}
 
-{% block title %}Flasky - Post{% endblock %}
+{% block title %}{{ post.title }} - 前行之路{% endblock %}
 
 {% block head %}
 {{ super() }}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login.css') }}">
 <style>
-.posts {
-	margin-left: 0;
-	margin-right: 0;
+
+.comments-board {
+	background-color: #fff;
+	margin-top: 5px;
+	padding: 10px 15px;
+}
+
+.comments-board #comments-count p {
+	border-bottom: 1px solid #B4B6B5;
+}
+
+.comments-board #comments-count p span {
+	display: inline-block;
+	height: 30px;
+	line-height: 30px;
+	font-size: 16px;
+	border-bottom: 3px solid #4aaf51;
+}
+
+
+.comments {
+	background-color: #fff;
+}
+
+.comments .comment {
+	margin: 10px 5px;
+	border-top: 1px dotted #B4B6B5;
+	padding-top: 10px;
+}
+
+.comments .comment:first-child {
+	border: none;
+	padding-top: 0;
+}
+
+.comments .comment .comment-body {
+	padding-left: 38px;
+	font-size: 14px;
+}
+
+.comment .comment-thumbnail .avatar {
+	display: inline-block;
+	width: 35px;
+	text-align: left;
+}
+
+.comment .comment-thumbnail .username {
+	margin: 0;
 	padding: 0;
 }
-#commentForm #body{
-	background: #f8f8f8;
-	border: 3px solid #ddd;
+
+.comment .comment-thumbnail .username a {
+	text-align: left;
+	text-decoration: none;
+	font-size: 20px;
+	color: #337ab7;
+}
+
+.comment .comment-thumbnail .username a:hover {
+	color: #f78c2f;
+	font-size: 20px;
+	font-weight: 600;
+}
+
+.comment .comment-thumbnail .time {
+	float: right;
+    font-size: 14px;
+    color: #8590a6;
+}
+
+.comments .comment .comment-footer {
+	padding-left: 38px;
+	margin-bottom: 10px;
+}
+
+.comments .comment .comment-footer button {
+	margin-right: 15px;
+	padding: 0;
+	padding-left: 0;
+	border: none;
+	background-color: #fff;
+	outline:none;
+	color: #8590a6;
+}
+
+.comments .comment-footer .footer-btn button:active {
+	border: none;
+}
+
+.comments .comment-footer .footer-btn button.commentHover-btn {
+	opacity: 0;
+	transition: opacity .2s;
+}
+
+.is_focus {
+	border: 1px solid #8590a6 !important;
+	background-color: #fff !important;
+	outline: none;
+}
+
+.comments .replies {
+	margin-left: 38px;
+	background-color: #F5F5F6;
+	padding: 0 10px;
+}
+
+.comments .replies .reply {
+	margin: 10px 5px;
+	border-top: 1px solid #f6f6f6;
+	padding-top: 10px
+}
+
+
+.comments .replies .reply .reply-body {
+	padding-left: 38px;
+	font-size: 14px;
+}
+
+.comments .reply .reply-thumbnail .avatar {
+	display: inline-block;
+	width: 35px;
+	text-align: left;
+}
+
+.comments .reply .reply-thumbnail .username {
+	margin: 0;
+	padding: 0;
+}
+
+.comments .reply-content .reply-thumbnail .username a {
+	text-align: left;
+	text-decoration: none;
+	font-size: 18px;
+	color: #337ab7;
+}
+
+.comments .reply-content .reply-thumbnail .username a:hover {
+	color: #f78c2f;
+	font-size: 18px;
+	font-weight: 500;
+}
+
+.comments .reply-content .reply-thumbnail .to-user a {
+	text-align: left;
+	text-decoration: none;
+	font-size: 18px;
+	color: #337ab7;
+}
+
+.comments .reply-content .reply-thumbnail .to-user a:hover {
+	color: #f78c2f;
+	font-size: 18px;
+	font-weight: 500;
+}
+
+.comments .reply-content .reply-thumbnail .time {
+	float: right;
+    font-size: 14px;
+    color: #8590a6;
+}
+
+.comments .reply .reply-footer {
+	padding-left: 38px;
+	margin-bottom: 10px;
+}
+
+button.commentHover-btn {
+	margin-right: 15px;
+	padding: 0;
+	padding-left: 0;
+	border: none;
+	background-color: #fff;
+	outline:none;
+	color: #8590a6;
+	background-color: #F5F5F6;
+}
+
+.comments .reply .reply-footer button {
+	margin-right: 15px;
+	padding: 0;
+	padding-left: 0;
+	border: none;
+	background-color: #fff;
+	outline:none;
+	color: #8590a6;
+	background-color: #F5F5F6;
+}
+
+.comments .reply .reply-footer .footer-btn button:active {
+	border: none;
+}
+
+.comments .reply-footer .footer-btn button.commentHover-btn {
+	opacity: 0;
+	transition: opacity .2s;
+}
+
+.comments-top {
+	margin-top: 5px;
+	padding: 10px;
+	background-color: #fff;
+	-webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    -webkit-box-shadow: 1px px 1px rgba(0,0,0,.065);
+    -moz-box-shadow: 1px 1px 1px rgba(0,0,0,.065);
+    box-shadow: 1px 1px 1px rgba(0,0,0,.065);
+}
+
+.comments-top .comments-tip p {
+	margin: 0;
+	height: 30px;
+	line-height: 30px;
 	font-size: 16px;
-    font-weight: 300;
-    color: #888;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
+	font-weight: 500;
 }
 
-.comment-title{
-    margin: 20px 0;
-    margin-bottom: 0;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
+#commentForm {
+	margin-top: 0;
+}
+
+#commentFormbody {
+	max-width: 100%;
+	min-height: 50px;
+	width: 100%;
+	outline: none;
+	background: #F8F7F7;
+	border: 1px solid #ddd;
+	font-size: 14px;
+    color: #000;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    overflow: hidden;
+    padding: 10px;
+}
+
+#commentFormsubmit {
+	margin-top: 5px;
+	display: inline-block;
+	background-color: #4aaf51; 
+	border: none;
+}
+
+form.replyForm {
+	margin: 10px 10px;
+}
+
+form.replyForm .replyForm-body {
+	display: block;
+	width: 100%;
+	background: #F8F7F7;
+    border: 1px solid #ddd;
     border-radius: 3px;
-    color: #555555;
-    height: 20px;
-    line-height: 20px;
-    font-size: 18px;
-    color: black;
+    box-sizing: border-box;
+    transition: background .3s,border .3s;
+    font-size: 14px;
+    padding: 8px 12px;
+    overflow: hidden;
 }
 
-#reply-form {
-	margin: 10px auto;
-	max-width: 650px;
+form.replyForm .replyForm-btn {
+	display: inline-block;
+	margin-top: 5px;
+	border: none;
+	background-color: #4aaf51;
+}
+
+form.replyForm .replyForm-btn:hover {
+	background-color: #4aaf51;
+	border: none;
+}
+
+.is_liked {
+	color: #337ab7
+}
+
+.commentShowMore {
+	margin: 10px 5px;
+	border-top: 1px solid #f6f6f6;
+	padding-top: 10px;
+	padding-bottom: 5px;
 }
 
 
+.reply-hide {
+	display: none;
+}
 
 </style>
 {% endblock %}
 
 {% block page_content %}
-<div class="container">
-	<div class="row">
-		<div class="col-sm-8 col-sm-offset-2 col-xs-12 post-page">
-			{% include '_posts.html' %}
+<div class="row">
+	<div class="col-md-3">
+		<div class="sidebar">
+			<div style="height: 300px; background-color: #fff;">
+				<div><span>{{ post }}</span></div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-8 col-xs-12 post-page">
+		{% include '_post.html' %}
+		<div class="comments-top">
 			{% if current_user.can(Permission.COMMENT) %}
-			<div class="comment-title"><p>欢迎评论！</p></div>
+			<div class="comments-tip"><p><span>发表评论：</span></p></div>
 			<form role="form" id="commentForm">
-				{{ form.csrf_token() }}
-				{{ wtf.form_field(form.body, placeholder="请输入评论内容！") }}
-				{{ wtf.form_field(form.submit, id="submit-comment") }}
+				{{ form.hidden_tag() }}
+				{{ form.body(id="commentFormbody") }}
+				{{ form.submit(id="commentFormsubmit", class="btn btn-info") }}
 			</form>
 			{% else %}
-			<div class="comment-title"><p>登陆后可以评论！</p></div>
+			<div class="comments-tip"><p>登陆后可以评论！</p></div>
 			{% endif %}
-			{% include '_comments.html' %}
+		</div>
+		<div class="comments-board">
+			<div id="comments-count"><p><span class="count">{{ post.comments_count() }}</span><span>条评论</span></p></div>
+			<div id="comments">{% include '_comments.html' %}</div>
 			{% if pagination %}
 			<div class="pagination">
-			    {{ macros.pagination_widget(pagination, '.post', fragment='#comments', id=posts[0].id) }}
+			    {{ macros.pagination_widget(pagination, '.post', fragment='#comments', id=post.id) }}
 			</div>
 			{% endif %}
 		</div>
 	</div>
+</div>
+<div>
+	
 </div>
 {% endblock %}
 
@@ -78,25 +343,24 @@
 {{ super() }}
 
 
-<script id="comment-template" type="text/html">
-	<form action="" role="form" id="reply-form">
-	    <div class="form-group">
-	        <textarea type="text" class="form-control" name="body" rows="2"></textarea>
-	    </div>
-	    <button type="button" id="submit-reply" class="btn btn-default">提交</button>
+<script id="template" type="text/html">
+	<form class="replyForm" method="post">
+		{{ form1.hidden_tag() }}
+		{{ form1.body(class="replyForm-body", rows="1") }}
+		{{ form1.submit(class="replyForm-btn btn btn-info", type="button") }}
 	</form>
 </script>
 
 <script>
 
 	//使用validate插件，验证表单评论post表单
-	/*$(document).ready(function(){
+	$(document).ready(function(){
 		$("#commentForm").validate({
 			rules: {
 				body: "required" 
 			} 
 		});
-	});*/
+	});
 
 	//提交表单前对表单验证
 	function showRequest(formData,jqForm,options){
@@ -108,99 +372,338 @@
 		$("#commentForm").submit(function(){
 			$(this).ajaxSubmit({
 				type: 'post',
-				url: $SCRIPT_ROOT +'/post/{{ posts[0].id }}',
+				url: $SCRIPT_ROOT +'/post/{{ post.id }}',
 				beforeSubmit: showRequest,
 				success: function(data) {
 					$(".comments").prepend($(data).fadeIn("100"));
-					flask_moment_render_all(); //在浏览器中，每当添加包含时间戳的元素时，浏览器中的Ajax回调都需要调用 flask_moment_render_all()
+					flask_moment_render_all(); 
+					//在浏览器中，每当添加包含时间戳的元素时，浏览器中的Ajax回调都需要调用 flask_moment_render_all()
 					$("#commentForm").resetForm();
-					toast('评论成功！');
+					$('#commentFormsubmit').prop("disabled", true);
+					update_comments_count();
+					toast.success('评论成功！');
 				}
 			});
 			return false;//返回false，阻止表单的正常提交
 		});
 	});
 
-	var template = $("#comment-template").html();
+	function update_comments_count() {
+		$.ajax({
+            type: 'GET',
+            url: $SCRIPT_ROOT +'/update-post-comments-count/{{ post.id }}',
+            success: function(data) {
+                $(".count").text(data.count);
+            }
+        });
+	}
 
+	//#commentForm表单输入文本域获取焦点
+	$(function() {
+		$("#commentFormbody").focus(function(){
+			$(this).addClass("is_focus");
+		})
+		$("#commentFormbody").focusout(function(){
+			$(this).removeClass("is_focus");
+		})
+	})
 
-	//点击出现回复表单
+	//#commentForm 的提交按钮设置默认disabled
 	$(function(){
-		$(".comments").on("click", ".comment-btn", function(){
-			var replyform = $(this).parents(".comment-footer").find("#reply-form");
-			if(replyform.length == 0){
-				$("#reply-form").remove();
-				$(this).parents(".comment-footer").append(template);
-			}else{
-				$("#reply-form").toggle();
+		$('#commentFormsubmit').prop("disabled", true)
+	})
+
+	//监听表单输入值，如果表单的值为空，则提交按钮设置disabled禁用属性
+	$(function(){
+		$("#commentFormbody").bind("input propertychange", function(){
+			var val = $("#commentFormbody").val();
+			if ( val=="" || val==null) {
+				$('#commentFormsubmit').prop("disabled", true);
+			}else {
+				$('#commentFormsubmit').removeProp("disabled");
 			}
-			
 		});
 	});
 
 
-	//点击页面其他位置使表单隐藏
-	$(document).bind('click', function(e) {
-		var e = e || window.event; //浏览器兼容性 
-		var elem = e.target || e.srcElement;
-			while(elem) { //循环判断至跟节点，防止点击的是div子元素 
-				if(elem.id && elem.id == 'reply-form' || elem.className == 'comment-btn') {
-					return false;
+	//控制鼠标进入或移除时.comment-footer .footer-button的显示和隐藏
+	$(function(){
+		$(".comments").on("mouseover", ".comment", function(){
+			$(this).find("button.commentHover-btn").css("opacity", "1");
+		});
+		$(".comments").on("mouseout", ".comment", function(){
+			var form = $(this).children(".comment-footer").find("form.replyForm");
+			//如何回复表单存在，鼠标移出时不隐藏，否则就隐藏
+			if (form.length == 0) {
+				$(this).find("button.commentHover-btn").css("opacity", "0");
+			}else if (form.css("display") == "none"){
+				$(this).find("button.commentHover-btn").css("opacity", "0");
+			}else {
+				$(this).find("button.commentHover-btn").css("opacity", "1");
+			}
+		});
+	});
+
+	//控制鼠标进入或移除时.reply-footer .footer-button的显示和隐藏
+	$(function(){
+		$(".comments").on("mouseover", ".reply", function(){
+			$(this).find("button.commentHover-btn").css("opacity", "1");
+		});
+		$(".comments").on("mouseout", ".reply", function(){
+			var form = $(this).children(".reply-footer").find("form.replyForm");
+			//如何回复表单存在，鼠标移出时不隐藏，否则就隐藏
+			if (form.length == 0) {
+				$(this).find("button.commentHover-btn").css("opacity", "0");
+			}else if (form.css("display") == "none"){
+				$(this).find("button.commentHover-btn").css("opacity", "0");
+			}else {
+				$(this).find("button.commentHover-btn").css("opacity", "1");
+			}
+		});
+	});
+
+	var template = $("#template").html();
+
+	$(function(){
+		$(".comments").on("click", "button.reply-btn", function(){
+			if ($(this).parents(".comment").length > 0) {
+				var form = $(this).parents(".comment-footer").find('form.replyForm');
+				//先判断表单是否存在，如果已存在，就显示，不存在就动态添加表单
+				if (form.length == 0) {
+					$(this).parents(".comment-footer").append(template);
+					$(this).parents(".comment-footer").find(".replyForm-btn").prop("disabled", true);
+					$(this).after('<button class="cancel-reply-btn"><i class="fa fa-reply" aria-hidden="true"></i>&nbsp;取消回复</button>');
+					$(this).remove();
+				}else {
+					$(this).after('<button class="cancel-reply-btn"><i class="fa fa-reply" aria-hidden="true"></i>&nbsp;取消回复</button>');
+					$(this).remove();
+					form.show();
 				}
-				elem = elem.parentNode;
-			}
-			$('#reply-form').css('display', 'none'); //点击的不是div或其子元素 
-	});
-
-
-	//使用validate插件，验证表单评论post表单
-	$(document).ready(function(){
-		$("#reply-form").validate({
-			rules: {
-				body: "required" 
-			} 
+			}else {
+				var form = $(this).parents(".reply-footer").find('form.replyForm');
+				//先判断表单是否存在，如果已存在，就显示，不存在就动态添加表单
+				if (form.length == 0) {
+					$(this).parents(".reply-footer").append(template);
+					$(this).parents(".reply-footer").find(".replyForm-btn").prop("disabled", true);
+					$(this).after('<button class="cancel-reply-btn"><i class="fa fa-reply" aria-hidden="true"></i>&nbsp;取消回复</button>');
+					$(this).remove();
+				}else {
+					$(this).after('<button class="cancel-reply-btn"><i class="fa fa-reply" aria-hidden="true"></i>&nbsp;取消回复</button>');
+					$(this).remove();
+					form.show();
+				}
+			}	
 		});
 	});
 
-	function reply(e){
-		var $el = $(e.target);
-		var form = $("#reply-form");
-		//判断是否为二级回复
-		if ($el.parents(".reply").length == 0) {
-			var id = $el.parents(".comment").data('id');
-			$.ajax({
-				url: $SCRIPT_ROOT + '/reply-comment/' + id,
+	//点击取消按钮使表单隐藏.hide(), 再次动态添加一个添加回复按钮，并将取消回复按钮移除
+	$(function(){
+		$('.comments').on("click", "button.cancel-reply-btn", function() {
+			if ($(this).parents(".comment").length > 0) {
+				$(this).parents('.comment-footer').find('form.replyForm').hide();
+				$(this).after(
+					'<button class="commentHover-btn reply-btn" style="opacity: 1;">' +
+					'<i class="fa fa-reply" aria-hidden="true"></i>&nbsp;回复</button>'
+					);
+				$(this).remove();
+			}else {
+				$(this).parents('.reply-footer').find('form.replyForm').hide();
+				$(this).after(
+					'<button class="commentHover-btn reply-btn" style="opacity: 1;">' +
+					'<i class="fa fa-reply" aria-hidden="true"></i>&nbsp;回复</button>'
+					);
+				$(this).remove();
+			}		
+		})
+	})
+
+	//.replyForm表单输入文本域获取焦点
+    $(function(){
+    	$(".comments").on("focus", ".replyForm", function(){
+    		$(this).find(".replyForm-body").addClass("is_focus");
+    	});
+    	$(".comments").on("focusout", ".replyForm", function(){
+    		$(this).find(".replyForm-body").removeClass("is_focus");
+    	});
+    });
+
+    //监听.replyForm表单输入值，如果表单的值为空，则提交按钮设置disabled禁用属性
+    $(function(){
+    	$(".comments").on("input propertychange", ".replyForm-body", function(){
+    		var val = $(".replyForm-body").val();
+    		if ( val=="" || val==null) {
+				$(this).siblings(".replyForm-btn").prop("disabled", true);
+			}else {
+				$(this).siblings(".replyForm-btn").removeProp("disabled");
+			}
+    	});
+    });
+
+
+
+    function submit_reply(e) {
+    	var $el = $(e.target)
+    	var form = $el.parent("form.replyForm");
+    	//判断是否为二级回复
+    	if($el.parents(".reply").length == 0) {
+    		var id = $el.parents(".comment").data('id');
+    		$.ajax({
+    			url: $SCRIPT_ROOT + '/reply-comment/' + id,
 				type: 'post',
 				data: form.serialize(),
 				success: function(data){
-					$el.parents(".comment").find(".replies").prepend($(data).fadeIn("100"));
+					$el.parents(".comment").next().prepend($(data).fadeIn("100"));
 					flask_moment_render_all();
-					$("#reply-form").hide();
-					toast('回复成功！');
-					$("#reply-form").resetForm();
-				}
-			});
-		}else{
-			var id = $el.parents(".reply").data('id');
-			$.ajax({
-				url: $SCRIPT_ROOT +'/reply-reply/' + id,
+					$el.parent().siblings(".footer-btn").find("button.cancel-reply-btn").replaceWith(
+						'<button class="commentHover-btn reply-btn" style="opacity: 1;">' +
+						'<i class="fa fa-reply" aria-hidden="true"></i>&nbsp;回复</button>'
+						);
+					form.remove();
+					update_comments_count();
+					toast.success('回复成功！');
+				},
+				error: function(error) {
+			           toast.alert('请先登陆！');
+			    }
+    		});
+    	}else {
+    		var id = $el.parents(".reply").data('id');
+    		$.ajax({
+    			url: $SCRIPT_ROOT +'/reply-reply/' + id,
 				type: 'post',
 				data: form.serialize(),
 				success: function(data){
 					$el.parents(".reply").after($(data).fadeIn("100"));
 					flask_moment_render_all();
-					$("#reply-form").hide();
-					toast('回复成功！');
-					$("#reply-form").resetForm();
+					$el.parent().siblings(".footer-btn").find("button.cancel-reply-btn").replaceWith(
+						'<button class="commentHover-btn reply-btn" style="opacity: 1;">' +
+						'<i class="fa fa-reply" aria-hidden="true"></i>&nbsp;回复</button>'
+						);
+					form.remove();
+					update_comments_count();
+					toast.success('回复成功！');
 				}
-			});
-		}
+    		});
+    	}
+    }
+
+    $(function(){
+		$(".comments").on("click", ".replyForm-btn", submit_reply.bind(this));
+	});
+
+    //评论删除
+    function delete_comment(e){
+    	var $el = $(e.target);
+    	var id = $el.parents(".comment").data("id");
+    	toast.confirm({
+		  	title: '提示',  // title 是可选的
+		  	text: '确认删除此评论？',
+		  	onConfirm: function() {
+			    $.ajax({
+			    	url: $SCRIPT_ROOT +'/comment/' + id + '/delete',
+			    	type: 'post',
+			    	success: function(data) {
+			    		$el.parents(".comment").next(".replies").fadeOut(200, function(){
+			    			$el.parents(".comment").next(".replies").remove();
+			    		});	
+						$el.parents(".comment").fadeOut(200, function(){
+			    			$el.parents(".comment").remove();
+			    		});
+						update_comments_count();
+						toast.success(data.message);
+					}
+		        });
+		    },
+		    onCancel: function() {
+		        // 点击“取消”后的回调函数
+		    	return false;
+		    }
+		});
 	}
 
-	//点击#submit-reply按钮提交表单, on 需要绑定页面中已经存在的html元素
-	$(function(){
-		$(".post-page").on("click", "#submit-reply", reply.bind(this));
+    $(function(){
+		$(".comments").on("click", ".delete-comment-btn", delete_comment.bind(this));
 	});
+
+    //回复删除
+    function delete_reply(e) {
+    	var $el = $(e.target);
+    	var id = $el.parents(".reply").data("id");
+    	toast.confirm({
+		  	title: '提示',  // title 是可选的
+		  	text: '确认删除此回复？',
+		  	onConfirm: function() {
+			    $.ajax({
+			    	url: $SCRIPT_ROOT +'/reply/' + id + '/delete',
+			    	type: 'post',
+			    	success: function(data) {
+			    		$el.parents(".reply").fadeOut(200, function(){
+			    			$el.parents(".reply").remove();
+			    		});
+			    		update_comments_count();
+						toast.success(data.message);
+					},
+		        })
+		    },
+		    onCancel: function() {
+		        // 点击“取消”后的回调函数
+		    	return false;
+		    }
+		});
+    }
+
+
+    $(function(){
+		$(".comments").on("click", ".delete-reply-btn", delete_reply.bind(this));
+	});
+
+    //文章点赞函数
+	$(function(){
+		$("#post-praise").click(function(){
+			if ($(this).hasClass("has_praised")) {
+				$.ajax({
+					url: $SCRIPT_ROOT +'/post/cancel_praise/{{ post.id }}', 
+					type: 'post',
+					success: function(data){
+						$("#post-praise").removeClass("has_praised");
+						update_post_praise_counts();
+						toast.success(data.message);
+					}
+				})
+			}else{
+				$.ajax({
+					url: $SCRIPT_ROOT +'/post/praise/{{ post.id }}', 
+					type: 'post',
+					success: function(data){
+						$("#post-praise").addClass("has_praised");
+						update_post_praise_counts();
+						toast.success(data.message);			
+					},
+					error: function(error) {
+			               toast.alert('请先登陆！')
+			        }
+				})
+			}
+		})
+	});
+
+	//更新文章点赞数
+	function update_post_praise_counts(){
+		$.ajax({
+            type: 'GET',
+            url: $SCRIPT_ROOT +'/update-post-praise-counts/{{ post.id }}',
+            success: function(data) {
+                $(".praise-counts").text(data.counts);
+            }
+        });
+	}
+ 
+
+
+ 	//查看全部回复
+    function show_comment_more(argument) {
+    	// body...
+    }
 
 </script>
 {% endblock %}

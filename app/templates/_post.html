@@ -1,0 +1,174 @@
+<style>
+.post {
+	margin-top: 0;
+	padding: 0;
+	position: relative;
+}
+
+.post a {
+	text-decoration: none;
+}
+
+.post .post-header {
+	height: 40px;
+	line-height: 40px;
+	font-size: 16px;
+	text-align: left;
+	padding-left: 10px;
+	color: #555555;
+	background-color: #fff;
+	-webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    box-shadow: 2px 2px 2px rgba(0,0,0,.065);
+
+}
+
+.post .post-header a:hover {
+	color: #337ab7;
+}
+
+.post .post-body {
+	margin-top: 5px;
+	margin-bottom: 0;
+	background-color: #fff;
+	-webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    box-shadow: 2px 2px 2px rgba(0,0,0,.065);
+}
+
+.post .post-body .post-title {
+	margin: 0;
+	color: #555555;
+	text-align: center;
+	padding: 20px 0;
+
+}
+
+.post .post-body .post-thumbnail {
+	text-align: center;
+	font-size: 14px;
+	color: #8590a6;
+}
+
+.post .post-body .post-thumbnail > span {
+	padding: 0 3px;
+}
+
+.post .post-body .post-thumbnail em {
+	font-style: normal;
+}
+
+.post .post-body .post-thumbnail a {
+	text-decoration: none;
+	color: #8590a6;
+    
+}
+
+.post .post-body .post-thumbnail a:hover {
+	color: #337ab7;
+}
+
+.post .post-body .post-content {
+	padding: 20px 15px;
+}
+
+.post .post-body .post-content img {
+	max-width: 100%;
+}
+
+.post .post-body .post-footer {
+	margin: 10px 0;
+	border-top: 1px solid #f2f2f5;
+	padding: 13px 0;
+	font-size: 16px;
+	color: #555555;
+	text-align: right;
+
+}
+
+.post .post-body .post-footer > button {
+	display: inline-block;
+	text-align: center;
+	border: none;
+	background-color: #fff;
+	margin: 0 10px;
+	outline: none;
+}
+
+.post .post-body .post-footer a {
+	color: #8590a6;
+}
+
+.post .post-body .post-footer a:hover {
+	color: #337ab7;
+}
+
+
+.footerButton {
+	color: #8590a6;
+}
+
+.footerButton:hover {
+	color: #6B6B6B;
+}
+
+.has_praised {
+	color: #337ab7; 
+}
+
+.has_praised:hover {
+	color: #175199;
+}
+
+</style>
+<div class="post">
+	<div class="post-header">
+		<a href="{{ url_for('main.index') }}">首页</a>
+		&nbsp;<i class="fa fa-angle-double-right" aria-hidden="true"></i>&nbsp;
+		<a href="{{ url_for('main.category', name=post.category.name) }}">{{ post.category.name }}</a>
+	</div>
+	<div class="post-body">
+		<h3 class="post-title">{{ post.title }}</h3>
+		<div class="post-thumbnail">
+			<span>
+				<a href="{{ url_for('.user', username=post.author.username) }}">
+                    <i class="fa fa-user-circle"></i>&nbsp;{{ post.author.username }}
+                </a>
+            </span>
+            <span>
+            	<i class="fa fa-calendar fa-fw" aria-hidden="true"></i>
+                <em>{{ moment(post.timestamp).format('YYYY/MM/DD HH:mm:ss') }}&nbsp;</em>
+            </span>
+            <span>
+            	<a href="{{ url_for('main.category', name=post.category.name) }}">
+            	    <i class="fa fa-tags"></i>
+            	    <em>&nbsp;{{ post.category.name }}</em>
+            	</a>
+            </span>
+            <span>
+            	<i class="fa fa-eye" aria-hidden="true"></i>
+            	<em>阅读量</em>
+            </span>
+		</div>
+		<div class="post-content">
+			{{ post.body | safe  }}
+		</div>
+		<div class="post-footer">
+			{% if current_user.is_authenticated and current_user.has_praised(post) %}
+			<button id="post-praise" class="footerButton has_praised">
+				<i class="fa fa-thumbs-up" aria-hidden="true"></i>
+				<span class="praise-counts">{{ post.praises.count() }}</span>
+			</button>
+			{% else %}
+			<button id="post-praise" class="footerButton">
+				<i class="fa fa-thumbs-up" aria-hidden="true"></i>
+				<span class="praise-counts">{{ post.praises.count() }}</span>
+			</button>
+			{% endif %}
+			<button><a href="{{ url_for('main.post', id=post.id) }}#comments"><i class="fa fa-commenting-o" aria-hidden="true"></i>&nbsp;<span class="count">{{ post.comments_count() }}</span>评论</a></button>
+			<button><a href="{{ url_for('main.index') }}">返回首页</a></button>
+		</div>
+	</div>
+</div>

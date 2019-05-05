@@ -84,6 +84,7 @@ class User(UserMixin,db.Model):
     avatar_l = db.Column(db.String(64))
     albums = db.relationship('Album', backref='author', lazy='dynamic', cascade='all')
     draftss = db.relationship('Draft', backref='author', lazy='dynamic', cascade='all')
+    praises = db.relationship('Praise', backref='user', lazy='dynamic', cascade='all')
 
     #用户的关注
     followed = db.relationship('Follow',
@@ -251,6 +252,12 @@ class User(UserMixin,db.Model):
         return Post.query.join(Follow,Follow.followed_id == Post.author_id)\
             .filter(Follow.follower_id == self.id)
     
+    def has_praised(self, post):
+        if post.id is None:
+            return False
+        return self.praises.filter_by(post_id=post.id).first() is not None
+
+
     def __repr__(self):
         return '<User %r>' %self.name
 
@@ -283,12 +290,33 @@ class Post(db.Model):
     comments = db.relationship('Comment', backref='post', lazy='dynamic', cascade='all')
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     title = db.Column(db.String(64))
+    praises = db.relationship('Praise', backref='post', lazy='dynamic', cascade='all')
     
+
+    def comments_count(self):
+        comment_count = self.comments.count()
+        i = 0
+        for comment in self.comments:
+            j = comment.replies.count()
+            i += j
+        reply_count = i
+        count = comment_count + reply_count
+        return count
     
     def post_delete(self, id):
         p = Post.query.filter_by(id=id).first()
         if p:
             db.session.delete(p)
+
+#文章点赞表
+class Praise(db.Model):
+    __tablename__ = 'praises'
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+
 # 草稿箱数据表
 class Draft(db.Model):
     __tablename__ = 'drafts'
@@ -299,7 +327,7 @@ class Draft(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
    
-
+#文章评论
 class Comment(db.Model):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)
@@ -314,7 +342,7 @@ class Comment(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-
+#文章评论回复
 class Reply(db.Model):
     __tablename__ = 'relpies'
     id = db.Column(db.Integer, primary_key=True)
@@ -339,7 +367,7 @@ class Tag(db.Model):
     
     def __repr__(self):
         return '<Tag %r>' % self.tag_name
-
+#文章分类
 class Category(db.Model):
     __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True)
@@ -443,7 +471,3 @@ class Album(db.Model):
 
     def __repr__(self):
         return '<Album %r>' % self.albumname
-
-"""
-@db.event.listen_for(Album, 'after_delete', name=True)
-"""

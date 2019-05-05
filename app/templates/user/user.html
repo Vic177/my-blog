@@ -1,0 +1,43 @@
+{% extends pjax('user_base.html') %}
+{% import "_pjax_macros.html" as macros %}
+
+{% block title %}用户主页 - 前行之路{% endblock %}
+
+{% block pjax %}
+	<div class="user-main">
+		<ul role="tablist" class="nav user-nav tabs" data-pjax>
+			<li class="tabs-item is-active" role="tab"><a class="tab-link" href="{{ url_for('main.user', username=user.username) }}">动态</a></li>
+			<li class="tabs-item" role="tab"><a class="tab-link" href="{{ url_for('main.user_posts', username=user.username) }}">文章</a></li>
+			<li class="tabs-item" role="tab"><a class="tab-link" href="#">评论</a></li>
+			<li class="tabs-item dropdown" role="tab">
+				<a href="#" class="dropdown-toggle tab-link" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">收藏<span class="caret"></span></a>
+				<ul class="dropdown-menu" style="min-width: 100%;" aria-labelledby="dropdownMenu1">
+					<li><a href="#">文章</a></li>
+					<li><a href="#">图片</a></li>
+				</ul>
+			</li>
+			<li class="tabs-item" role="tab"><a class="tab-link" href="#">相册</a></li>
+			<li class="tabs-item" role="tab"><a class="tab-link" href="#">资料</a></li>
+			<li class="tabs-item" role="tab"><a class="tab-link" href="#">好友</a></li>
+		</ul>
+		<div class="main-content-wrapper">
+			<div class="main-content">
+				<div class="content-body">
+					<div class="content-header">
+						{% if current_user.is_authenticated and user == current_user %}
+						<span>我的动态</span>
+						{% else %}
+						<span>他的动态</span>
+						{% endif %}
+				    </div>
+				</div>
+				<div class="content-blank">
+					<div class="blank-top">
+						<span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+					</div>
+					<p>暂无动态！</p>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

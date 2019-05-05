@@ -1,295 +1,57 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
-{% import "_macros.html" as macros %}
+{% import "_pjax_macros.html" as macros %}
 
-{% block title %}我的博客{% endblock %}
+{% block title %}首页 - 前行之路{% endblock %}
 
 {% block head %}
 {{ super() }}
 
-<style type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+<style>
+	.Index-tabCard {
+		background-color: #FFF;
+		height: 50px;
+		line-height: 50px;
+	}
 
-.index-mainColumn .index-tabCard {
-	background-color: #fff;
-	height: 58px;
-	line-height: 58px;
-	-moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
+	ul.tabs {
+		margin: 0;
+	}
 
-}
+	li.tabs-item{
+		position: relative;
+		padding: 0 20px;
+	}
 
+	a.tabs-link {
+		position: relative;
+		text-decoration: none;
+		font-size: 16px;
+		color: #1a1a1a;
+		padding: 17px 0;
+	}
 
+	.is-active {
+		font-weight: 600;
+	}
 
-.index-mainColumn .index-tabCard ul.tabs {
-	margin: 0;
-}
+	.is-active:after {
+		position: absolute;
+	    right: 0;
+	    bottom: -1px;
+	    left: 0;
+	    height: 3px;
+	    background: #4aaf51;
+	    content: "";
+	}
 
+	.content {
+		position: relative;
+		min-height: 150px;
+		
+	}
 
-.index-mainColumn .index-tabCard ul li {
-	margin: 0;
-	text-align: center;
-}
-
-.index-mainColumn .index-tabCard ul li a {
-	display: inline-block;
-	font-size: 16px;
-	color: #000000;
-	text-decoration: none;
-}
-
-.index-mainColumn .index-tabCard ul li a:hover {
-	font-size: 16px;
-	font-weight: 600;
-	color: #000;
-	opacity: .5;
-}
-
-
-.index-tabActive {
-	font-weight: 600;
-	background-color:  #4aaf51;
-	color: #FFFFFF;
-}
-
-.index-mainColumn .index-tabCard ul li.index-tabActive a{
-	color: #FFFFFF;
-}
-
-.index-userColumn .user-info {
-	margin-bottom: 5px;
-	background-color: #FFFFFF;
-	-moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-}
-
-.index-userColumn .user-info > .cover {
-	height: 75px;
-	line-height: 75px;
-	position: relative;
-/* 	background-image: url('/static/image/bg.jpg'); */
-	background-repeat: no-repeat;
-	text-align: center;
-	-moz-border-radius: 4px 4px 0 0;
-    -webkit-border-radius: 4px 4px 0 0;
-    border-radius: 4px 4px 0 0;
-}
-
-.index-userColumn .user-info > .cover img {
-	width: 70px;
-	height: 70px;
-}
-
-.index-userColumn .info-detail {
-	padding: 10px 20px;
-	text-align: center;
-}
-
-.info-detail .nameBox .username {
-	max-width: 200px;
-    display: inline-block;
-    overflow: hidden;
-    font-size: 16px;
-    font-weight: bold;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-decoration: none;
-    color: #000000;
-}
-
-.info-detail .nameBox a:hover {
-	color: #f78c2f;
-}
-
-.info-detail p {
-	width: 100%;
-	text-align: center;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
-
-.info-detail .detail {
-	margin-bottom: 0;
-	text-decoration: none;
-    color: #000000;
-
-
-}
-
-.info-detail ul.detail {
-	height: 65px;
-	border-top: 1px dashed #ccc;
-	padding: 10px 0;
-}
-
-.info-detail ul.detail li {
-	float: left;
-	width: 24%;
-	border-right: 1px solid #ccc;
-}
-
-.info-detail ul.detail li:last-child {
-	border-right: none;
-}
-
-
-.info-detail ul.detail > li a {
-	margin-bottom: 0;
-	text-decoration: none;
-    color: #000000;
-    text-align: center;
-}
-
-.info-detail ul.detail > li a:hover strong {
-	color: #f78c2f;
-}
-
-.info-detail ul.detail > li a span,  .info-detail ul.detail > li a strong{
-	display: block;
-}
-
-.info-detail ul.detail > li a strong {
-	font-size: 18px;
-}
-
-.info-detail ul.detail > li a span {
-	font-size: 12px;
-	color: #808080;
-}
-
-.index-userColumn .user-operition {
-	margin-bottom: 5px;
-	padding-bottom: 10px;
-	background-color: #FFFFFF;
-	-moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-}
-
-.user-operition > ul{
-	margin-bottom: 0;
-
-}
-
-.user-operition ul:after {
-	content: "";
-	display: block;
-	clear: both;
-}
-
-.user-operition ul.write li {
-	float: left;
-	width: 33%;
-	text-align: center;
-	padding: 25px 10px;
-}
-
-.user-operition ul.write li a {
-	text-align: center;
-	text-decoration: none;
-	color: #5c5b5b;
-	font-size: 14px; 
-}
-
-.user-operition ul.write li a:hover {
-	color: #337ab7;
-	font-weight: 600;
-	opacity: 0.8;
-}
-
-.user-operition ul.write > li a span, .user-operition ul.write > li a i{
-	display: block;
-	margin-bottom: 5px;
-}
-
-
-.user-operition .my-favor ul li a {
-	width: 100%;
-	display: inline-block;
-	height: 40px;
-	line-height: 40px;
-	font-size: 14px;
-	color: #5c5b5b;
-	text-decoration: none;
-	padding: 0 20px;
-}
-
-.user-operition .my-favor ul li a i {
-	opacity: 0.5;
-}
-
-.user-operition .my-favor ul li a:hover {
-	background-color: #f5f5f5;
-}
-
-.user-operition .my-favor ul li a:hover i {
-	opacity: 1;
-}
-
-
-.sidebar .login-card {
-	background-color: #FFFFFF;
-	-moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-    padding: 10px;
-}
-
-.sidebar .login-card h4 {
-	margin: 0;
-	text-align: center;
-}
-
-.login-card #email, .login-card #password, .login-card #password2 {
-	height: 40px;
-	background: #fff;
-	border: 1px solid #ddd;
-	font-size: 14px;
-    font-weight: 300;
-    line-height: 40px;
-    color: #888;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-}
-
-.login-card .form-group {
-	margin-bottom: 0;
-}
-
-.login-card #email:focus, .login-card #password:focus {
-	opacity: .8;
-	border: 1px solid #55acee;
-}
-
-.login-card #submit {
-	width: 100%;
-	background-color: #4aaf51;
-	height: 40px;
-	font-size: 16px;
-}
-
-.login-card #submit:hover { opacity: 0.8; color: #fff; }
-
-.login-card #submit:active {outline: 0;opacity: 0.8;color: #fff;-moz-box-shadow: none;-webkit-box-shadow: none;box-shadow: none;}
-
-.login-card #submit:focus { outline: 0; opacity: 0.8; background: #4aaf51; color: #fff; }
-
-.login-card p.social-login a {
-	padding: 0 5px;
-	color: #f78c2f;
-}
-
-.advertisement {
-	margin-top: 10px;
-	height: 200px;
-	background-color: #fff;
-	-moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-}
 
 </style>
 
@@ -297,7 +59,7 @@
 
 {% block page_content %}
 <div class="row">
-	<div class="col-md-3">
+	<div class="col-md-3 col-xs-12">
 		<div class="sidebar index-userColumn">
 			{% if current_user.is_authenticated %}
 			<div class="user-info">
@@ -340,7 +102,7 @@
 				<div class="my-favor">
 					<ul>
 						<li><a href=""><i class="fa fa-files-o" aria-hidden="true"></i>&nbsp;草稿箱</a></li>
-						<li><a href=""><i class="fa fa-star" aria-hidden="true"></i>&nbsp;我关注的文章</a></li>
+						<li><a href=""><i class="fa fa-star" aria-hidden="true"></i>&nbsp;我收藏的文章</a></li>
 						<li><a href=""><i class="fa fa-star-o" aria-hidden="true"></i>&nbsp;我收藏的相册</a></li>
 						<li><a href=""><i class="fa fa-picture-o" aria-hidden="true"></i>&nbsp;我收藏的图片</a></li>
 					</ul>
@@ -372,27 +134,38 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-md-8 col-xs-12">
-		<div class="index-mainColumn">
-			<div class="index-tabCard">
-				<ul class="row list-inline tabs">
-					<li class="col-md-2 col-xs-4 tab-items index-tabActive"><a class="tab-link" href="#">所有动态</a></li>
+	<div class="col-md-6 col-xs-12">
+		<div class="Index-mainColumn">
+			<div class="Index-tabCard">
+				<ul class="list-inline tabs" role="tablist">
+					<li class="tabs-item">
+						<a data-pjax="#pjax-container" class="tabs-link {% if not show_followed %}is-active{% endif %}" href="/">
+						全部
+						</a>
+					</li>
 					{% if current_user.is_authenticated %}
-					<li class="col-md-2 col-xs-4 tab-items"><a class="tab-link" href="#">关注</a></li>
+					<li class="tabs-item">
+						<a data-pjax="#pjax-container" class="tabs-link {% if show_followed %}is-active{% endif %}" href="{{ url_for('main.show_followed') }}">
+						关注
+						</a>
+					</li>
 					{% endif %}
 				</ul>
 			</div>
-			<div class="index-content">
-				{% include 'post_summary.html' %}
-	            {% if pagination %}
-	            <div class="pagination">
-	            {{ macros.pagination_widget(pagination, '.index') }}
-	            </div>
-	            {% endif %}
+			<div class="content">
+				<div id="pjax-container" class="Index-postContent">
+					{% block pjax %}        
+						{% include 'post_summary.html' %}
+			            {% if pagination %}
+			            <div class="pagination">
+			            {{ macros.pagination_widget(pagination, '.index') }}
+			            </div>
+			            {% endif %}
+					{% endblock %}
+				</div>
 			</div>
 		</div>
 	</div>
-	
 </div>
 {% endblock %}
 
@@ -400,38 +173,29 @@
 {{ super() }}
 <script>
 	$(function(){
-		$(".tab-items").click(function(){
-			$(this).siblings().removeClass("index-tabActive");
-			$(this).addClass("index-tabActive");
+		$(".tabs-link").click(function(){
+			$(this).parent().siblings(".tabs-item").find(".tabs-link").removeClass("is-active");
+			$(this).addClass("is-active");
 		});
 	});
 
-	/*$(function(){
-		var tabH = $("ul.tabs").offset().top;
-		console.log(tabH);
-		$(window).scroll(function(){
-			var scroH = $(this).scrollTop();
-			console.log(scroH);
-			if(scroH >= tabH){
-				$("ul.tabs").css({"position":"fixed", "top": 0});
-			}else if (scroH < tabH){
-				$("ul.tabs").css({"position":"static"});
-			}
-		});
-	});*/
+	$(function(){
+        $('a[data-pjax]').pjax()
+    });
 
-	/*$(function(){
-		var tabH = $(".index-tabCard").offset().top;
-		console.log(tabH);
-		$(window).scroll(function(){
-			var scroH = $(this).scrollTop();
-			if(scroH >= tabH) {
-				$(".index-tabCard").css({"position":"fixed", "top": 0});
-			}else if (scroH < tabH) {
-				$(".index-tabCard").css({"position":"static", "z-index": 10});
-			}
-		});
-	});*/
+    $(document).pjax('a[data-pjax]', '#pjax-container', {
+    	timeout: 3000,
+    })
+
+	//pjax回调，渲染时间戳
+	$(document).on('pjax:success', function() {
+		flask_moment_render_all();
+	})
+
+	//pjax 加载动画，使用Nprogress插件
+	$(document).on('pjax:start', function() { NProgress.start(); });
+	$(document).on('pjax:end',   function() { NProgress.done();  });
+
 </script>
 {{ moment.include_moment() }}
 {% endblock %}

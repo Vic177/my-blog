@@ -1,139 +1,43 @@
-{% extends "user_base.html" %}
+{% extends pjax('user_base.html') %}
+{% import "_pjax_macros.html" as macros %}
 
-{% block title %}用户主页{% endblock %}
+{% block title %}用户主页 - 前行之路{% endblock %}
 
-{% block head %}
-{{ super() }}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user.css') }}">
-{% endblock %}
-
-{% block user_page %}
-<div class="content-body">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="sidebar">
-                <div class="user-info">
-                    <ul class="detail">
-                        <li><a href="#"><strong>{{ user.posts.count() }}</strong><span>文章</span></a></li>
-                        <li><a href="#"><strong>{{ user.albums.count() }}</strong><span>相册</span></a></li>
-                        <li><a href="#"><strong>{{ user.followed.count() -1 }}</strong><span>关注</span></a></li>
-                        <li><a href="#"><strong>{{ user.followers.count() -1 }}</strong><span>粉丝</span></a></li>
-                    </ul>
-                    <div class="user-favor">
-                        <ul>
-                            <li><a href="javascript:void(0)"><i class="fa fa-files-o" aria-hidden="true"></i>&nbsp;留言板</a></li>
-                            <li>
-                                <a href="{{ url_for('main.album', user_id=user.id) }}"><i class="fa fa-file-image-o" aria-hidden="true"></i>&nbsp;相册</a>
-                            </li>
-                            <li><a href="javascript:void(0)"><i class="fa fa-star" aria-hidden="true"></i>&nbsp;关注的文章</a></li>
-                            <li><a href="javascript:void(0)"><i class="fa fa-star-o" aria-hidden="true"></i>&nbsp;收藏的相册</a></li>
-                            <li><a href="javascript:void(0)"><i class="fa fa-picture-o" aria-hidden="true"></i>&nbsp;收藏的图片</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-8 col-xs-12">
-            <div class="content">
-                <ul class="row list-inline tabCard">
-                    <li class="col-md-2 col-xs-4 dropdown tab-items">
-                        <a class="tab user-tabActive dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
-                            动态
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" style="min-width: 100%;">
-                            <li><a href="javascript:void(0)">文章</a></li>
-                            <li><a href="javascript:void(0)">相册</a></li>
-                        </ul>
-                    </li>
-                 <!--   <li class="col-md-2 col-xs-4 tab-items">
-                    <a class="tab" href="javascript:void(0)">
-                         文章
-                     </a> 
-                 </li>
-                 <li class="col-md-2 col-xs-4 tab-items">
-                     <a class="tab" href="javascript:void(0)">
-                        相册
-                     </a>
-                 </li> -->
-                </ul>
-                <div>
-                    {% include 'post_summary.html' %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
-
-{% block scripts %}
-{{ super() }}
-<script>
-    //用户关注
-    function follow(e) {
-        var $el = $(e.target); //当前元素
-        var id = $el.data('id');
-        $.ajax({
-            type: 'POST',
-            url: $el.data('href'),
-            success: function(data) {
-                $el.siblings(".unfollow-btn").show();
-                $el.hide();
-                update_followers_count();
-                toast(data.message);
-            },
-            error: function(error) {
-                toast('Server error, please try again later.')
-            }
-        });
-    }
-    //用户取消关注
-    function unfollow(e) {
-        var $el = $(e.target);
-        var id = $el.data('id');
-        $.ajax({
-            type: 'POST',
-            url: $el.data('href'),
-            success: function(data) {
-                $el.siblings(".follow-btn").show();
-                $el.hide();
-                update_followers_count();
-                toast(data.message);
-            },
-            error: function(error) {
-                toast('Server error, please try again later.')
-            }
-        });
-    }
-
-    function update_followers_count(id) {
-        var $el = $("#followers-count");
-        $.ajax({
-            type: 'GET',
-            url: $el.data('href'),
-            success: function(data) {
-                $el.text(data.count);
-            },
-            error: function(error) {
-                toast('Server error, please try again later.')
-            }
-        });
-    }
-
-    $(document).ready(function(){
-        $(".follow-btn").on('click', follow.bind(this)); //需要绑定this， 否则this为全局变量
-        $(".unfollow-btn").on('click', unfollow.bind(this));
-    });
-
-    $(document).ready(function(){
-        $("a.tab").click(function(){
-            $(this).parent("li.tab-items").siblings().find("a.tab").removeClass("user-tabActive");
-            $(this).addClass("user-tabActive");
-        })
-    })
-
-    $(function(){
-        $("#user-page").addClass("user-tabActive");
-    })
-</script>
+{% block pjax %}
+	<div class="user-main">
+		<ul role="tablist" class="nav user-nav tabs" data-pjax>
+			<li class="tabs-item is-active" role="tab"><a class="tab-link" href="{{ url_for('main.user', username=user.username) }}">动态</a></li>
+			<li class="tabs-item" role="tab"><a class="tab-link" href="{{ url_for('main.user_post', username=user.username) }}">文章</a></li>
+			<li class="tabs-item" role="tab"><a class="tab-link" href="#">评论</a></li>
+			<li class="tabs-item dropdown" role="tab">
+				<a href="#" class="dropdown-toggle tab-link" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">收藏<span class="caret"></span></a>
+				<ul class="dropdown-menu" style="min-width: 100%;" aria-labelledby="dropdownMenu1">
+					<li><a href="#">文章</a></li>
+					<li><a href="#">图片</a></li>
+				</ul>
+			</li>
+			<li class="tabs-item" role="tab"><a class="tab-link" href="#">相册</a></li>
+			<li class="tabs-item" role="tab"><a class="tab-link" href="#">资料</a></li>
+			<li class="tabs-item" role="tab"><a class="tab-link" href="#">好友</a></li>
+		</ul>
+		<div class="main-content-wrapper">
+			<div class="main-content">
+				<div class="content-body">
+					<div class="content-header">
+						{% if current_user.is_authenticated and user == current_user %}
+						<span>我的动态</span>
+						{% else %}
+						<span>他的动态</span>
+						{% endif %}
+				    </div>
+				</div>
+				<div class="content-blank">
+					<div class="blank-top">
+						<span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+					</div>
+					<p>暂无动态！</p>
+				</div>
+			</div>
+		</div>
+	</div>
 {% endblock %}

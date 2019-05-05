@@ -1,26 +1,26 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, HiddenField
-from wtforms.validators import Required, Length, Email, Regexp, EqualTo
+from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from ..models import User
 
 class LoginForm(FlaskForm):
-    email = StringField('', validators=[Required(), Length(1,64),
+    email = StringField('', validators=[DataRequired(), Length(1,64),
                                              Email()])
-    password = PasswordField('', validators=[Required()])
+    password = PasswordField('', validators=[DataRequired()])
     remember_me = BooleanField('记住密码')
     submit = SubmitField('登陆')
 
 class RegistrationForm(FlaskForm):
-    email = StringField('邮箱地址', validators=[Required(), Length(1,64),
+    email = StringField('邮箱地址', validators=[DataRequired(), Length(1,64),
                                              Email()])
-    username = StringField('用户名', validators=[Required(),
+    username = StringField('用户名', validators=[DataRequired(),
         Length(1,64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0, 
                              'Username must have only letters, numbers, dots or underscores')])
-    password = PasswordField('密码', validators=[Required(),
+    password = PasswordField('密码', validators=[DataRequired(),
         EqualTo('password2', message='Password must match,')])
-    password2 = PasswordField('确认密码', validators=[Required()])
+    password2 = PasswordField('确认密码', validators=[DataRequired()])
     submit = SubmitField('注册')
     
     def validate_email(self, field):
@@ -32,24 +32,24 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('该用户名已存在！')
 
 class ChangePasswordForm(FlaskForm):
-    old_password = PasswordField('旧密码', validators=[Required()])
+    old_password = PasswordField('旧密码', validators=[DataRequired()])
     password = PasswordField('新密码', validators=[
-        Required(), EqualTo('password2', message='Passwords must match')])
-    password2 = PasswordField('确认密码', validators=[Required()])
+        DataRequired(), EqualTo('password2', message='Passwords must match')])
+    password2 = PasswordField('确认密码', validators=[DataRequired()])
     submit = SubmitField('修改密码')
     
 class PasswordResetRequestForm(FlaskForm):
-    email = StringField('邮箱地址', validators=[Required(), Length(1, 64),
+    email = StringField('邮箱地址', validators=[DataRequired(), Length(1, 64),
                                              Email()])
     submit = SubmitField('确认')
 
 
 class PasswordResetForm(FlaskForm):
-    email = StringField('邮箱地址', validators=[Required(), Length(1, 64),
+    email = StringField('邮箱地址', validators=[DataRequired(), Length(1, 64),
                                              Email()])
     password = PasswordField('新密码', validators=[
-        Required(), EqualTo('password2', message='Passwords must match')])
-    password2 = PasswordField('确认密码', validators=[Required()])
+        DataRequired(), EqualTo('password2', message='Passwords must match')])
+    password2 = PasswordField('确认密码', validators=[DataRequired()])
     submit = SubmitField('重置密码')
 
     def validate_email(self, field):
@@ -57,9 +57,9 @@ class PasswordResetForm(FlaskForm):
             raise ValidationError('Unknown email address.')
             
 class ChangeEmailForm(FlaskForm):
-    email = StringField('新邮箱', validators=[Required(), Length(1, 64),
+    email = StringField('新邮箱', validators=[DataRequired(), Length(1, 64),
                                                  Email()])
-    password = PasswordField('密码', validators=[Required()])
+    password = PasswordField('密码', validators=[DataRequired()])
     submit = SubmitField('更改邮箱地址')
 
     def validate_email(self, field):

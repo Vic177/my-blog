@@ -1,272 +1,355 @@
 {% extends "base.html" %}
 
-{% block title %}{% endblock %}
+{% block title %}前行之路{% endblock %}
+
 
 {% block head %}
 {{ super() }}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user.css') }}">
 <style>
-/* .user-content {
-	height: 260px;
-	background-color: #66A0B3;
-	background-image: url("/static/image/bg2.jpg");
-	background-repeat: no-repeat;
+	.user-profile {
+		background-color: #fff;
+		padding: 0 20px;
+		-webkit-border-radius: 2px;
+	    -moz-border-radius: 2px;
+	    border-radius: 2px;
+	    -webkit-box-shadow: 0 1px 4px rgba(0,0,0,.065);
+	    -moz-box-shadow: 0 1px 4px rgba(0,0,0,.065);
+	    box-shadow: 0 1px 4px rgba(0,0,0,.065);
 
-} */
+	}
 
-.user-content .content-header {
-	height: 300px;
-	position: relative;
-	background-color: #6086DE;
-	background-image: url("/static/image/bg2.jpg");
-	background-repeat: no-repeat;
-}
+	.profile-avatar {
+		text-align: center;
+		padding-top: 10px;
+	}
+	
+	.avatar-link img {
 
-.user-content .content-header .user-profile {
-	width: 100%;
-	height: 300px;
-	position: absolute;
-}
+	}
 
-.user-content .content-header .user-profile .profile-top {
-	width: 100px;
-	height: 100px;
-	position: absolute;
-	top: 40px;
-	left: 0;
-	right: 0%;
-	margin: auto;
-}
+	.username {
+		margin-top: 10px;
+		text-align: center;
+	}
 
-.user-content .content-header .user-profile .profile-top img {
-	border: 3px solid #B9F0E7;
-    width: 100px;
-    height: 100px;
-}
+	.username span{
+		max-width: 200px;
+		display: inline-block;
+		overflow: hidden;
+		font-size: 22px;
+		font-weight: 300;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		text-decoration: none;
+		color: #666;
+		line-height: 24px;
+	}
 
-.content-header .user-profile .profile-bottom {
-	width: 100%;
-	position: absolute;
-	top: 150px;
+	.follow-opration {
+		padding: 10px 20px;
+		text-align: center;
+	}
 
-}
+	.follow-opration button {
+		display: inline-block;
+		margin: 0 10px;
+	}
 
-.user-profile .profile-bottom .username {
-	max-width: 200px;
-	margin: 0 auto;
-	text-align: center;
-	font-size: 22px;
-	color: #fff;
-	font-weight: bold;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-shadow: 0 0 4px rgba(0,0,0,0.5);
+	p.about-me {
+		width: 100%;
+		text-align: center;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		color: #76839b;
+		font-style: oblique;
+	}
+	
+	ul.profile-detail {
+		height: 65px;
+    	border-top: 1px dashed #ccc;
+    	padding: 10px 0;
 
-}
+	}
+	
+	ul.profile-detail > li {
+		float: left;
+		width: 24%;
+		border-right: 1px solid #ccc;
+	}
+	
+	ul.profile-detail > li:last-child {
+		border-right: none;
+	}
 
-.user-profile .profile-bottom .about_me {
-	margin: 0 auto;
-	max-width: 300px;
-	text-align: center;
-    overflow: hidden;
-    font-size: 14px;
-    font-weight: normal;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-decoration: none;
-    color: #fff;
-    text-shadow: 0 0 4px rgba(0,0,0,0.5);
-}
-.user-profile .profile-bottom .follow {
-	margin: 10px auto;
-	max-width: 300px;
-	text-align: center;
-    overflow: hidden;
-    font-size: 14px;
-    font-weight: normal;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-decoration: none;
-    color: #5c5b5b;
-}
+	ul.profile-detail > li > a {
+		margin-bottom: 0;
+		text-decoration: none;
+		color: #000000;
+		text-align: center;
+	}
 
-.user-profile .profile-bottom .follow button {
-	margin: 0 10px;
-}
+	ul.profile-detail > li > a strong {
+		display: block;
+		font-size: 18px;
+	}
 
-.user-nav {
-	height: 40px;
-	line-height: 40px;
-	background-color: #fff;
-}
-.user-nav ul.nav-tabs {
-	border: none;
-	background-color: #fff;
-	width: 60%;
-	margin: 0 auto;
-}
+	ul.profile-detail > li > a span {
+		display: block;
+		font-size: 14px;
+		color: #808080;
+	}
 
-.user-nav ul.nav-tabs li {
-	width: 25%;
-	text-align: center;
-	font-size: 16px;
-	color: #000;
+	.profile-info {
+		border-top: 1px solid #f2f2f5;
+	}
 
-}
+	.profile-info-list {
+		color: #666;
+		font-size: 14px;
+		height: 30px;
+		line-height: 30px;
+	}
 
-.user-nav ul.nav-tabs li a {
-	display: inline-block;
-	position: relative;
-	color: #000;
-	text-decoration: none;
-	border: none;
-	height: 40px;
-	line-height: 40px;
-}
+	.profile-info-list i {
+		width: 25px;
+		color: #696e78;
+		text-align: center;
+	}
+	
+	.profile-info-bottom {
+		border-top: 1px solid #f2f2f5;
+		padding: 10px;
+		text-align: center;
+	}
 
-.user-nav ul.nav-tabs li a:hover {
-	font-weight: 600;
-    color: #000;
-    opacity: .5;
-}
+	a.user-info-link {
+		text-decoration: none;
+		color: #333;
+		font-size: 13px;
+	}
+	
+	a.user-info-link:hover {
+		color: 
+	}
+
+	.user-main {
+		background-color: #fff;
+		-webkit-border-radius: 2px;
+	    -moz-border-radius: 2px;
+	    border-radius: 2px;
+	    -webkit-box-shadow: 0 1px 4px rgba(0,0,0,.065);
+	    -moz-box-shadow: 0 1px 4px rgba(0,0,0,.065);
+	    box-shadow: 0 1px 4px rgba(0,0,0,.065);
+	}
+	
+	.user-main .nav {
+		font-size: 16px;
+		color: #1a1a1a;
+		border-bottom: 1px solid #f2f2f5;
+	}
+
+	a.tab-link {
+		color: #1a1a1a;
+	}
+	
+	.user-nav > li > a.tab-link:hover {
+		border-radius: 0;
+	}
+
+	.nav-pills li a {
+		background: none;
+	}
+
+
+	.user-main .user-nav > li.tabs-item {
+		display: inline-block;
+		position: relative;
+	}
+
+	.is-active {
+		font-weight: 600;
+	}
+
+	.is-active:after {
+		position: absolute;
+	    right: 0;
+	    bottom: -1px;
+	    left: 0;
+	    height: 3px;
+	    background: #4aaf51;
+	    content: "";
+	}
+
+	.underline:after {
+		position: absolute;
+	    right: 0;
+	    bottom: -1px;
+	    left: 0;
+	    height: 3px;
+	    background: #E1D7D7;
+	    content: "";
+	}
+
+	.main-content {
+		position: relative;
+	}
+
+	.content-header {
+		height: 40px;
+		line-height: 40px;
+	    padding: 0 15px;
+	    border-bottom: 1px solid #f2f2f5;
+	}
+
+	.content-header span {
+		font-size: 15px;
+		font-weight: bold;
+	}
+
+	.content-blank {
+		position: absolute;
+		bottom: -180px;
+		left: 0;
+		width: 100%;
+		margin: 0 auto;
+		height: 150px;
+		background-color: #E5F0FA;
+	    border: 1px solid #e1e4e8;
+	    border-radius: 3px;
+	    box-shadow: inset 0 0 10px rgba(27,31,35,.05);
+	    padding: 32px;
+	    text-align: center;
+	}
+
+	.blank-top {
+		padding: 10px;
+		font-size: 20px;
+		color: #a3aab1;
+	}
+
+	.content-blank p {
+		font-weight: 300;
+		font-size: 20px;
+		font-style: oblique;
+	}
+
+	/* 好友页面 */
+
 
 </style>
 {% endblock %}
 
+
 {% block page_content %}
-<div class="row">
-    <div class="col-md-10 col-md-offset-1 col-xs-12">
-        <div class="user-content">
-            <div class="content-header">
-                <div class="user-profile">
-                	<div class="profile-top">
-                	    <img class="img-circle" src="{{ url_for('main.get_avatar', filename=user.avatar_m ) }}" alt="{{ user.username }}">
-                	</div>
-                	<div class="profile-bottom">
-                	    <div class="username">
-                	        {{ user.username }}
-                	    </div>
-                	    <p class="about_me">
-                	        {% if user.about_me is none %}
-                	        <span>暂无个人简介</span>
-                	        {% else %}
-                	        {{ user.about_me }}
-                	        {% endif %}
-                	    </p>
-                	    <div class="follow">
-                	        {% if current_user.is_authenticated and user != current_user %}
-                	        {% if current_user.is_following(user) %}
-                	            <button data-id="{{ user.id }}"
-                	                    data-href="{{ url_for('main.unfollow', username=user.username) }}" 
-                	                    class=" btn btn-dark unfollow-btn">
-                	                取消关注
-                	            </button>
-                	            <button data-id="{{ user.id }}" 
-                	                    data-href="{{ url_for('main.follow', username=user.username) }}" 
-                	                    class="btn btn-info follow-btn"
-                	                    style="display: none;">
-                	                关注
-                	            </button>
-                	        {% else %}
-                	            <button data-id="{{ user.id }}" 
-                	                    data-href="{{ url_for('main.follow', username=user.username) }}" 
-                	                    class="btn btn-info follow-btn">
-                	                关注
-                	            </button>
-                	            <button data-id="{{ user.id }}"
-                	                    data-href="{{ url_for('main.unfollow', username=user.username) }}" 
-                	                    class=" btn btn-dark unfollow-btn"
-                	                    style="display: none;">
-                	                取消关注
-                	            </button>
-                	        {% endif %}
-                	        <button class="btn btn-info">发送私信</button>
-                	        {% endif %}
-                	    </div>
-                	</div>
-                </div>
-            </div>
-            <div class="user-nav">
-            	<ul class="nav-tabs">
-            		{% if current_user == user %}
-            		<li><a id="user-page" href="{{ url_for('main.user', username=user.username) }}">我的主页</a></li>
-            		<li><a id="post" href="javascript:void(0)">我的文章</a></li>
-            		<li><a id="albums" href="{{ url_for('main.album', user_id=user.id) }}">我的相册</a></li>
-            		<li><a id="message" href="{{ url_for('main.message', username=user.username) }}" data-pjax="">留言板</a></li>
-            		{% else %}
-					<li><a id="user-page" href="{{ url_for('main.user', username=user.username) }}">主页</a></li>
-					<li><a id="post" href="javascript:void(0)">文章</a></li>
-            		<li><a id="album" href="{{ url_for('main.album', user_id=user.id) }}">相册</a></li>
-            		<li><a id="message" href="{{ url_for('main.message', username=user.username) }}">留言板</a></li>
-            		{% endif %}
-            	</ul>
-            </div>
-            <div class="content_page">
-            	{% block user_page %}
-            	{% endblock %}
-            </div>
-        </div> 
-    </div> 
+<div class="user-wrapper" >
+	<div class="row">
+		<div class="col-md-10 col-md-offset-1">
+			<div class="row">
+				<div class="col-md-4">
+					<div class="user-profile-wrapper">
+						<div class="user-profile">
+							<div class="profile-avatar">
+								<a class="avatar-link" href="{{ url_for('.user', username=current_user.username) }}">
+									<img class="img-circle" src="{{ url_for('main.get_avatar', filename=user.avatar_m ) }}" alt="{{ current_user.username }}">
+								</a>
+							</div>
+							<div class="username">
+								<span>{{ user.username }}</span>
+								<span></span>
+							</div>
+							{% if current_user.is_authenticated and user != current_user %}
+							<div class="follow-opration">
+								<button class="btn btn-default">关注</button>
+								<button class="btn btn-info">私信</button>
+							</div>
+							{% endif %}
+							<p class="about-me">
+								{% if user.about_me is none %}
+		            	        <span>- - - 暂无个人简介 - - -</span>
+		            	        {% else %}
+		            	        {{ user.about_me }}
+		            	        {% endif %}
+							</p>
+							<ul class="profile-detail">
+								<li><a href="#"><strong>{{ user.posts.count() }}</strong><span>文章</span></a></li>
+								<li><a href="#"><strong>{{ user.albums.count() }}</strong><span>相册</span></a></li>
+								<li><a href="#"><strong>{{ user.followed.count() -1 }}</strong><span>关注</span></a></li>
+								<li><a href="#"><strong>{{ user.followers.count() -1 }}</strong><span>粉丝</span></a></li>
+							</ul>
+							<div class="profile-info-wrapper">
+								<ul class="profile-info">
+									<li class="profile-info-list">
+										<i class="fa fa-map-marker" aria-hidden="true"></i>
+										<span>&nbsp;{{ user.location }}</span>
+									</li>
+									<li class="profile-info-list">
+										<i class="fa fa-birthday-cake" aria-hidden="true"></i>
+										<span>1999-05-08</span>
+									</li>
+									<li class="profile-info-list">
+										<i class="fa fa-university" aria-hidden="true"></i>
+										<span>&nbsp;哈佛大学</span>
+									</li>
+
+									<li class="profile-info-list">
+										<i class="fa fa-flag" aria-hidden="true"></i>
+										<span>&nbsp;{{ user.about_me }}</span>
+									</li>
+
+								</ul>
+								<div class="profile-info-bottom">
+									<a class="user-info-link" href="#">查看全部&nbsp;&gt;</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-8">
+					<div class="user-main-wrapper">
+						<div id="pjax-container">
+							{% block pjax %}			
+							{% endblock %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 {% endblock %}
+
 
 {% block scripts %}
 {{ super() }}
 <script>
-    //用户关注
-    function follow(e) {
-        var $el = $(e.target); //当前元素
-        var id = $el.data('id');
-        $.ajax({
-            type: 'POST',
-            url: $el.data('href'),
-            success: function(data) {
-                $el.siblings(".unfollow-btn").show();
-                $el.hide();
-                update_followers_count();
-                toast(data.message);
-            },
-            error: function(error) {
-                toast('Server error, please try again later.')
-            }
-        });
-    }
-    //用户取消关注
-    function unfollow(e) {
-        var $el = $(e.target);
-        var id = $el.data('id');
-        $.ajax({
-            type: 'POST',
-            url: $el.data('href'),
-            success: function(data) {
-                $el.siblings(".follow-btn").show();
-                $el.hide();
-                update_followers_count();
-                toast(data.message);
-            },
-            error: function(error) {
-                toast('Server error, please try again later.')
-            }
-        });
-    }
+	$(function() {
+		$("#pjax-container").on("mouseover", "li.tabs-item", function () {
+			// body...
+			if ($(this).hasClass('is-active')) {
+				console.log('active');
+			}else {
+				$(this).addClass('underline');
+			}
+		});
 
-    function update_followers_count(id) {
-        var $el = $("#followers-count");
-        $.ajax({
-            type: 'GET',
-            url: $el.data('href'),
-            success: function(data) {
-                $el.text(data.count);
-            },
-            error: function(error) {
-                toast('Server error, please try again later.')
-            }
-        });
-    }
+		$("#pjax-container").on("mouseout", "li.tabs-item", function () {
+			// body...
+			
+			$(this).removeClass('underline');
+		});
 
-    $(document).ready(function(){
-        $(".follow-btn").on('click', follow.bind(this)); //需要绑定this， 否则this为全局变量
-        $(".unfollow-btn").on('click', unfollow.bind(this));
-    });
+		$("#pjax-container").on("click", "li.tabs-item", function () {
+			// body...
+			$(this).removeClass("underline").addClass('is-active').siblings().removeClass('is-active');
+		});
+	});
+
+	$(document).pjax("[data-pjax] a, a[data-pjax]", "#pjax-container");
+
+	$(document).on('pjax:start', function() { NProgress.start(); });
+	$(document).on('pjax:end',   function() { NProgress.done();  });
 </script>
+
 {% endblock %}
+

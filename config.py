@@ -10,7 +10,7 @@ class Config:
     FLASKY_MAIL_SENDER = '1771710969@qq.com'
     FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')
     FLASKY_UPLOAD_PATH = os.path.join(basedir, 'uploads')
-    FLASKY_POSTS_PER_PAGE = 10
+    FLASKY_POSTS_PER_PAGE = 5
     FLASKY_COMMENTS_PER_PAGE = 10
     FLASKY_MESSAGES_PER_PAGE = 5
     FLASKY_FOLLOWERS_PER_PAGE = 50
@@ -29,6 +29,7 @@ class Config:
     }
     UPLOADED_PHOTOS_DEST = os.path.join(FLASKY_UPLOAD_PATH, 'photos') #flask_uploads 保存路径
     UPLOADED_PHOTOS_ALLOW = IMAGES
+    PJAX_BASE_TEMPLATE = "pjax.html"
 
 
     

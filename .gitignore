@@ -12,12 +12,13 @@
 data-dev.sqlite
 dist
 build
-migrations/
-**/__pycache__/
-uploads/
-ll_env/
-app/static/image/
+/migrations/
+/__pycache__/
+/uploads/
+/ll_env/
+/app/static/image/
 # Windows:
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+*.pyc

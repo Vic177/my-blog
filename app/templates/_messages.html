@@ -26,15 +26,15 @@
 			<li class="reply" data-id="{{ reply.id }}">
 				<div class="reply-content">
 					<div class="reply-thumbnail">
-						<span class="avatar"><img src="{{ url_for('main.get_avatar', filename=message.author.avatar_s ) }}"></span>
-						<span class="username"><a href="{{ url_for('main.user', username=message.author.username) }}">{{ message.author.username }}</a></span>
+						<span class="avatar"><img src="{{ url_for('main.get_avatar', filename=reply.author.avatar_s ) }}"></span>
+						<span class="username"><a href="{{ url_for('main.user', username=reply.author.username) }}">{{ reply.author.username }}</a></span>
 						{% if reply.reply_type == "reply" %}
 						<span class="to-user">
 							<span style="font-size: 14px; color: #8590a6;">回复</span>
 							<a href="{{ url_for('main.user', username=reply.to_user.username) }}">{{ reply.to_user.username }}</a>
 						</span>
 						{% endif %}
-						<span class="time">{{ moment(message.timestamp).format('YY-MM-DD HH:mm') }}</span>
+						<span class="time">{{ moment(reply.timestamp).format('YY-MM-DD HH:mm') }}</span>
 					</div>
 					<div class="reply-body">
 						<p>{{ reply.body | safe }}</p>
